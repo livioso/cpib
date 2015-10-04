@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C51BC1C6D300A18641 /* scanner.swift */; settings = {ASSET_TAGS = (); }; };
 		BAF324611BBC71190039CB43 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324601BBC71190039CB43 /* main.swift */; };
-		BAF324681BBC71410039CB43 /* terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324671BBC71410039CB43 /* terminal.swift */; };
+		BAF324681BBC71410039CB43 /* terminals.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324671BBC71410039CB43 /* terminals.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,7 +28,7 @@
 		BAC142C51BC1C6D300A18641 /* scanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = scanner.swift; sourceTree = "<group>"; };
 		BAF3245D1BBC71190039CB43 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF324601BBC71190039CB43 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		BAF324671BBC71410039CB43 /* terminal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = terminal.swift; sourceTree = "<group>"; };
+		BAF324671BBC71410039CB43 /* terminals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = terminals.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				BAF324601BBC71190039CB43 /* main.swift */,
-				BAF324671BBC71410039CB43 /* terminal.swift */,
+				BAF324671BBC71410039CB43 /* terminals.swift */,
 				BAC142C51BC1C6D300A18641 /* scanner.swift */,
 			);
 			path = Compiler;
@@ -128,7 +128,7 @@
 			files = (
 				BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */,
 				BAF324611BBC71190039CB43 /* main.swift in Sources */,
-				BAF324681BBC71410039CB43 /* terminal.swift in Sources */,
+				BAF324681BBC71410039CB43 /* terminals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
