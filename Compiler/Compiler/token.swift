@@ -8,6 +8,20 @@
 
 import Foundation
 
-class TokenList {
-	
+enum Token {
+	case BoolLiteralToken(value: Bool)
+	case ChangeModeToken(value: ChangeMode)
+	case DecimalLiteralToken(value: Float)
+	case FlowModeToken(value: FlowMode)
+}
+
+enum ChangeMode {
+	case CONST
+	case VAR
+}
+
+enum FlowMode {
+	case IN
+	case INOUT
+	case OUT
 }
