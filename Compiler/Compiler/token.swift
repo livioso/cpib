@@ -1,5 +1,5 @@
 //
-//  scanner.swift
+//  token.swift
 //  Compiler
 //
 //  Created by Livio Bieri on 04/10/15.
@@ -8,8 +8,6 @@
 
 import Foundation
 
-class Scanner {
-	func scan () -> TokenList? {
-		return nil
-	}
+class TokenList {
+	
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C51BC1C6D300A18641 /* scanner.swift */; settings = {ASSET_TAGS = (); }; };
+		BAC142C81BC1C7CF00A18641 /* token.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C71BC1C7CF00A18641 /* token.swift */; settings = {ASSET_TAGS = (); }; };
 		BAF324611BBC71190039CB43 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324601BBC71190039CB43 /* main.swift */; };
 		BAF324681BBC71410039CB43 /* terminals.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324671BBC71410039CB43 /* terminals.swift */; };
 /* End PBXBuildFile section */
@@ -26,6 +27,7 @@
 
 /* Begin PBXFileReference section */
 		BAC142C51BC1C6D300A18641 /* scanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = scanner.swift; sourceTree = "<group>"; };
+		BAC142C71BC1C7CF00A18641 /* token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = token.swift; sourceTree = "<group>"; };
 		BAF3245D1BBC71190039CB43 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF324601BBC71190039CB43 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		BAF324671BBC71410039CB43 /* terminals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = terminals.swift; sourceTree = "<group>"; };
@@ -64,6 +66,7 @@
 				BAF324601BBC71190039CB43 /* main.swift */,
 				BAF324671BBC71410039CB43 /* terminals.swift */,
 				BAC142C51BC1C6D300A18641 /* scanner.swift */,
+				BAC142C71BC1C7CF00A18641 /* token.swift */,
 			);
 			path = Compiler;
 			sourceTree = "<group>";
@@ -129,6 +132,7 @@
 				BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */,
 				BAF324611BBC71190039CB43 /* main.swift in Sources */,
 				BAF324681BBC71410039CB43 /* terminals.swift in Sources */,
+				BAC142C81BC1C7CF00A18641 /* token.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
