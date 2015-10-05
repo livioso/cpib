@@ -14,6 +14,11 @@ var terminal = Terminal.COMMENT
 print(terminal)
 print(terminal.rawValue)
 
+
+var scanner: ScannerStateMachine = ScannerStateMachine()
+var characters: [Character] = Array("00921 ".characters)
+scanner.scan(characters)
+
 var c: Character = "a"
 print(" isLiteral \(c.isLiteral())")
 c = "Z"
@@ -24,6 +29,6 @@ c = "."
 print(" isLiteral \(c.isLiteral())")
 
 
-var scanner = Scanner()
-scanner.scan("~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/Compiler/TestSources/test-01.iml")
+
+//scanner.scan("~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/Compiler/TestSources/test-01.iml")
 

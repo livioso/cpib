@@ -10,6 +10,10 @@ import Foundation
 
 class Token {
 	
+	enum Type {
+		case Literal
+	}
+	
 	enum Location {
 		case RowColumn(Row: Int, Column: Int)
 	}
@@ -25,35 +29,83 @@ class Token {
 
 class ScannerStateMachine {
 	
-	var currentState: ScannerState = .InitialState
+	var contentChars: [Character]? = nil
+	
+	var currentState: ScannerState = .InitialState {
+		didSet {
+			switch currentState {
+			case .ErrorState(_): print("Error Occured. Oopsie")
+			default: break
+			}
+		}
+	}
 	
 	enum ScannerState {
 		case InitialState
 		case LiteralState
 		case LetterState
 		case SymbolState
-		case Error(description: String)
+		case ErrorState(description: String)
 	}
 	
-	func transition(forChar: Character) {
-		
-		switch currentState {
-		case .InitialState:
-			if forChar.isLiteral() {
-				currentState = .LiteralState
+	func scan(contentChars: [Character]) {
+		self.contentChars = contentChars
+		for nextChar in contentChars {
+			switch currentState {
+			case .InitialState:
+				handleInitialState(nextChar)
+			case .LiteralState:
+				handleLiteralState(nextChar)
+			case _:
+				break
 			}
-			
-		case .LiteralState: break
-			
-		case .LetterState: break
-			
-		case .SymbolState: break
-		default: break
+		}
+	}
+	
+	func handleInitialState(currentChar: Character) {
+		if currentChar.isLiteral() {
+			currentState = .LiteralState
+		}
+		if currentChar.isLetter() {
+			currentState = .LetterState
+		}
+		if currentChar.isSymbol() {
+			currentState = .LetterState
+		}
+		if currentChar.isWhitespace() {
+			currentState = .InitialState
+		}
+	}
+	
+	func handleLiteralState(currentChar: Character) {
+		if currentChar.isLiteral() {
+			return // literal continues
+		}
+		if currentChar.isTerminator() {
+			print("End of literal found")
+			currentState = .InitialState
+		} else {
+			currentState = .ErrorState(description: "Fuck! Illegal after literal!")
 		}
 	}
 }
 
 extension Character {
+	
+	// in the literal context this
+	// we call it differently
+	func isTerminator() -> Bool {
+		return isWhitespace()
+	}
+	
+	func isWhitespace() -> Bool {
+		return (
+			(" " == self) ||
+			("\t" == self) ||
+			("\n" == self)
+		)
+	}
+	
 	func isLiteral() -> Bool {
 		return ("0" <= self && self <= "9")
 	}
@@ -114,8 +166,4 @@ class Scanner {
 
 		return [] // any kind of error ends up here :-/
 	}
-}
-
-class ScannerState {
-	
 }
