@@ -9,19 +9,10 @@
 import Foundation
 
 class Token {
-	
-	enum Type {
-		case Literal
-	}
-	
-	enum Location {
-		case RowColumn(Row: Int, Column: Int)
-	}
-	
-	var location: Location
+	var location: (startPos: Int, endPos: Int)
 	var terminal: Terminal
 	
-	init(location: Location, terminal: Terminal) {
+	init(location: (startPos: Int, endPos: Int), terminal: Terminal) {
 		self.location = location
 		self.terminal = terminal
 	}
@@ -30,6 +21,7 @@ class Token {
 class ScannerStateMachine {
 	
 	var contentChars: [Character]? = nil
+	var location: (startPos: Int, endPos: Int) = (startPos: 0, endPos: 0)
 	
 	var currentState: ScannerState = .InitialState {
 		didSet {
@@ -83,6 +75,7 @@ class ScannerStateMachine {
 		}
 		if currentChar.isTerminator() {
 			print("End of literal found")
+			//newToken = Token(location, Terminal.INTVAL32)
 			currentState = .InitialState
 		} else {
 			currentState = .ErrorState(description: "Fuck! Illegal after literal!")
