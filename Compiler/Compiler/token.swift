@@ -8,8 +8,8 @@
 
 import Foundation
 
-enum Token {
-	case BoolLiteralToken(value: Bool)
+enum TokenTypes {
+	case BoolLiteralToken(value: Bool, terminal: Terminal) 
 	case ChangeModeToken(value: ChangeMode)
 	case DecimalLiteralToken(value: Float)
 	case FlowModeToken(value: FlowMode)

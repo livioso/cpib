@@ -9,17 +9,17 @@
 import Foundation
 
 enum Terminal: String{
-	case LPARENT = "//("
-	case RPARENT = "//)"
+	case LPARENT = "("
+	case RPARENT = ")"
 	case COMMA = ","
     case SEMI = ";"
     case COLON = ":"
     case BECOMES = ":="
 	case TIMES = "*"
-	case DIV = "div"
-	case MOD = "mod"
 	case PLUS = "+"
 	case MINUS = "-"
+	case DIV = "div"
+	case MOD = "mod"
 	case EQ = "="
 	case NE = "/="
 	case LT = "<"
