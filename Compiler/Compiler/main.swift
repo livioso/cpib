@@ -16,7 +16,7 @@ print(terminal.rawValue)
 
 
 var scanner: ScannerStateMachine = ScannerStateMachine()
-var characters: [Character] = Array("00921 ".characters)
+var characters: [Character] = Array("a = 921".characters)
 scanner.scan(characters)
 
 var c: Character = "a"

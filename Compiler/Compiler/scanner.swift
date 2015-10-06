@@ -29,6 +29,8 @@ class ScannerStateMachine {
 			case .ErrorState(_): print("Error Occured. Oopsie")
 			default: break
 			}
+			
+			print("didSet <State> to \(currentState)")
 		}
 	}
 	
@@ -48,6 +50,8 @@ class ScannerStateMachine {
 				handleInitialState(nextChar)
 			case .LiteralState:
 				handleLiteralState(nextChar)
+			case .LetterState:
+				handleLetterState(nextChar)
 			case _:
 				break
 			}
@@ -79,6 +83,16 @@ class ScannerStateMachine {
 			currentState = .InitialState
 		} else {
 			currentState = .ErrorState(description: "Fuck! Illegal after literal!")
+		}
+	}
+	
+	func handleLetterState(currentChar: Character) {
+		if currentChar.isLetter() || currentChar.isLiteral() {
+			return // identifier / keyword continues
+		}
+		if currentChar.isTerminator() || currentChar.isSymbol() {
+			print("End of identifier / keyword reached")
+			currentState = .InitialState
 		}
 	}
 }
