@@ -8,20 +8,9 @@
 
 import Foundation
 
-class Token {
-	var location: (startPos: Int, endPos: Int)
-	var terminal: Terminal
-	
-	init(location: (startPos: Int, endPos: Int), terminal: Terminal) {
-		self.location = location
-		self.terminal = terminal
-	}
-}
-
 class ScannerStateMachine {
 	
 	var contentChars: [Character]? = nil
-	var location: (startPos: Int, endPos: Int) = (startPos: 0, endPos: 0)
 	
 	var currentState: ScannerState = .InitialState {
 		didSet {
@@ -94,57 +83,6 @@ class ScannerStateMachine {
 			print("End of identifier / keyword reached")
 			currentState = .InitialState
 		}
-	}
-}
-
-extension Character {
-	
-	// in the literal context this
-	// we call it differently
-	func isTerminator() -> Bool {
-		return isWhitespace()
-	}
-	
-	func isWhitespace() -> Bool {
-		return (
-			(" " == self) ||
-			("\t" == self) ||
-			("\n" == self)
-		)
-	}
-	
-	func isLiteral() -> Bool {
-		return ("0" <= self && self <= "9")
-	}
-	
-	func isLetter() -> Bool {
-		return (
-			("A" <= self && self <= "Z") ||
-			("a" <= self && self <= "z")
-		)
-	}
-	
-	func isSymbol() -> Bool {
-		var isMatch = false
-		switch self {
-		case "(": isMatch = true
-		case ")": isMatch = true
-		case "{": isMatch = true
-		case "}": isMatch = true
-		case ",": isMatch = true
-		case ":": isMatch = true
-		case ";": isMatch = true
-		case "=": isMatch = true
-		case "*": isMatch = true
-		case "+": isMatch = true
-		case "-": isMatch = true
-		case "/": isMatch = true
-		case "<": isMatch = true
-		case ">": isMatch = true
-		case ".": isMatch = true
-		case _: break;
-		}
-		return isMatch
 	}
 }
 

@@ -10,9 +10,9 @@ import Foundation
 
 print("IML Compiler 👻")
 
-var terminal = Terminal.COMMENT
+var terminal = Terminal.IDENT
 print(terminal)
-print(terminal.rawValue)
+print(terminal)
 
 
 var scanner: ScannerStateMachine = ScannerStateMachine()
