@@ -1,59 +1,61 @@
-//
-//  characterExtension.swift
-//  Compiler
-//
-//  Created by Livio Bieri on 06/10/15.
-//  Copyright © 2015 Livio Bieri. All rights reserved.
-//
-
 import Foundation
 
 extension Character {
 	
-	// in the literal context this
-	// we call it differently
-	func isTerminator() -> Bool {
-		return isWhitespace()
+	enum Kind {
+		case Skippable
+		case Literal
+		case Letter
+		case Symbol
+		case Other
 	}
 	
-	func isWhitespace() -> Bool {
+	func kind() -> Kind {
+		if isSkipable() { return Kind.Skippable }
+		if isLiteral() { return Kind.Literal }
+		if isLetter() { return Kind.Letter }
+		if isSymbol() { return Kind.Symbol }
+		return Kind.Other
+	}
+	
+	private func isSkipable() -> Bool {
 		return (
 			(" " == self) ||
-				("\t" == self) ||
-				("\n" == self)
+			("\t" == self) ||
+			("\n" == self)
 		)
 	}
 	
-	func isLiteral() -> Bool {
+	private func isLiteral() -> Bool {
 		return ("0" <= self && self <= "9")
 	}
 	
-	func isLetter() -> Bool {
+	private func isLetter() -> Bool {
 		return (
 			("A" <= self && self <= "Z") ||
-				("a" <= self && self <= "z")
+			("a" <= self && self <= "z")
 		)
 	}
 	
-	func isSymbol() -> Bool {
+	private func isSymbol() -> Bool {
 		var isMatch = false
 		switch self {
-		case "(": isMatch = true
-		case ")": isMatch = true
-		case "{": isMatch = true
-		case "}": isMatch = true
-		case ",": isMatch = true
-		case ":": isMatch = true
-		case ";": isMatch = true
-		case "=": isMatch = true
-		case "*": isMatch = true
-		case "+": isMatch = true
-		case "-": isMatch = true
-		case "/": isMatch = true
-		case "<": isMatch = true
-		case ">": isMatch = true
+		case "(": fallthrough
+		case ")": fallthrough
+		case "{": fallthrough
+		case "}": fallthrough
+		case ",": fallthrough
+		case ":": fallthrough
+		case ";": fallthrough
+		case "=": fallthrough
+		case "*": fallthrough
+		case "+": fallthrough
+		case "-": fallthrough
+		case "/": fallthrough
+		case "<": fallthrough
+		case ">": fallthrough
 		case ".": isMatch = true
-		case _: break;
+		case _: isMatch = false;
 		}
 		return isMatch
 	}

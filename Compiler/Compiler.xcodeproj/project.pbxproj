@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA50BF6A1BC70FCB0029603E /* keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50BF691BC70FCB0029603E /* keyword.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C51BC1C6D300A18641 /* scanner.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC142C81BC1C7CF00A18641 /* token.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C71BC1C7CF00A18641 /* token.swift */; settings = {ASSET_TAGS = (); }; };
 		BAC142CD1BC4206500A18641 /* characterExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142CC1BC4206500A18641 /* characterExtension.swift */; settings = {ASSET_TAGS = (); }; };
@@ -27,6 +28,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		BA50BF691BC70FCB0029603E /* keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keyword.swift; sourceTree = "<group>"; };
 		BAC142C51BC1C6D300A18641 /* scanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = scanner.swift; sourceTree = "<group>"; };
 		BAC142C71BC1C7CF00A18641 /* token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = token.swift; sourceTree = "<group>"; };
 		BAC142CC1BC4206500A18641 /* characterExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = characterExtension.swift; sourceTree = "<group>"; };
@@ -46,6 +48,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA50BF6C1BC71F1F0029603E /* scanner */ = {
+			isa = PBXGroup;
+			children = (
+				BAC142C51BC1C6D300A18641 /* scanner.swift */,
+				BAC142C71BC1C7CF00A18641 /* token.swift */,
+				BAC142CE1BC54D9400A18641 /* terminal.swift */,
+				BA50BF691BC70FCB0029603E /* keyword.swift */,
+			);
+			name = scanner;
+			sourceTree = "<group>";
+		};
 		BAC142CB1BC4205000A18641 /* helper */ = {
 			isa = PBXGroup;
 			children = (
@@ -74,10 +87,8 @@
 			isa = PBXGroup;
 			children = (
 				BAC142CB1BC4205000A18641 /* helper */,
+				BA50BF6C1BC71F1F0029603E /* scanner */,
 				BAF324601BBC71190039CB43 /* main.swift */,
-				BAC142C51BC1C6D300A18641 /* scanner.swift */,
-				BAC142C71BC1C7CF00A18641 /* token.swift */,
-				BAC142CE1BC54D9400A18641 /* terminal.swift */,
 			);
 			path = Compiler;
 			sourceTree = "<group>";
@@ -143,6 +154,7 @@
 				BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */,
 				BAF324611BBC71190039CB43 /* main.swift in Sources */,
 				BAC142CD1BC4206500A18641 /* characterExtension.swift in Sources */,
+				BA50BF6A1BC70FCB0029603E /* keyword.swift in Sources */,
 				BAC142C81BC1C7CF00A18641 /* token.swift in Sources */,
 				BAC142CF1BC54D9400A18641 /* terminal.swift in Sources */,
 			);

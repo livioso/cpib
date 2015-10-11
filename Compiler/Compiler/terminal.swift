@@ -1,28 +1,24 @@
-//
-//  terminal.swift
-//  Compiler
-//
-//  Created by Livio Bieri on 30/09/15.
-//  Copyright (c) 2015 Livio Bieri. All rights reserved.
-//
-
 import Foundation
 
 public enum Terminal {
+	case TYPE // BOOL, INT32, DECIMAL
+	case RELOPR // LT, GT, etc.
+	case ADDOPR // PLUS, MINUS
+	case MULTOPR // TIMES, DIV
+	case BOOLOPR // NOT, AND, OR
+	case CHANGEMODE // VAR, CONST
+	case FLOWMODE // IN, INOUT, OUT
+	case MECHMODE // REF, COPY
+	case BOOL
 	case LPARENT
 	case RPARENT
 	case COMMA
 	case SEMICOLON
 	case COLON
 	case BECOMES
-	case MULTOPR
-	case ADDOPR
-	case RELOPR
-	case BOOLOPR
-	case TYPE
+	case PROGRAM
 	case CALL
-	case CHANGEMODE
-	case MECHMODE
+	case PROC
 	case DO
 	case ELSE
 	case ENDFUN
@@ -34,12 +30,8 @@ public enum Terminal {
 	case FUN
 	case GLOBAL
 	case IF
-	case FLOWMODE
 	case INIT
 	case LOCAL
-	case NOT
-	case PROC
-	case PROGRAM
 	case RETURNS
 	case SKIP
 	case THEN

@@ -1,34 +1,20 @@
-//
-//  main.swift
-//  Compiler
-//
-//  Created by Livio Bieri on 30/09/15.
-//  Copyright (c) 2015 Livio Bieri. All rights reserved.
-//
-
 import Foundation
 
-print("IML Compiler 👻")
+func main() {
+	print("🔴 IML-S Compiler 🐵🙈")
+	
+	var scanner: Scanner = Scanner()
+	scanner.debugContent =
+		"hello = 1 \n" +
+		"a = hellof \n" +
+		"\n\n\n\n" +
+		"trolo = 888890009"
+	print("🔴 Scanner.scan()")
+	scanner.scan("")
+	
+}
 
-var terminal = Terminal.IDENT
-print(terminal)
-print(terminal)
-
-
-var scanner: ScannerStateMachine = ScannerStateMachine()
-var characters: [Character] = Array("a = 921".characters)
-scanner.scan(characters)
-
-var c: Character = "a"
-print(" isLiteral \(c.isLiteral())")
-c = "Z"
-print(" isLiteral \(c.isLiteral())")
-c = ";"
-print(" isLiteral \(c.isLiteral())")
-c = "."
-print(" isLiteral \(c.isLiteral())")
+main()
 
 
-
-//scanner.scan("~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/Compiler/TestSources/test-01.iml")
 

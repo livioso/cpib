@@ -1,27 +1,31 @@
-//
-//  token.swift
-//  Compiler
-//
-//  Created by Livio Bieri on 04/10/15.
-//  Copyright © 2015 Livio Bieri. All rights reserved.
-//
-
 import Foundation
 
 struct Token {
 	var terminal: Terminal
-	var attribute: Attribute? // maybe, optional
-	var lineNumber: Int
+	var attribute: Attribute?
+	var lineNumber: Int?
+	
+	init(terminal: Terminal, lineNumber: Int? = nil, attribute: Attribute? = nil) {
+		self.terminal = terminal
+		self.attribute = attribute
+		self.lineNumber = lineNumber
+	}
 	
 	enum Attribute {
+		// Types
 		case Integer(Int)
 		case Decimal(Float)
 		case Boolean(Bool)
 		case Ident(String)
+		// Modes
 		case FlowMode(FlowModeType)
 		case ChangeMode(ChangeModeType)
 		case MechMode(MechModeType)
-		case Operator(OperatorType)
+		// Operators
+		case AddOperator(AddOprType)
+		case MultOperator(MultOprType)
+		case RelOperator(RelOprType)
+		case BoolOperator(BoolOprType)
 	}
 	
 	
@@ -39,9 +43,19 @@ struct Token {
 		case COPY, REF
 	}
 	
-	enum OperatorType {
-		case TIMES, DIV, MOD, PLUS, MINUS
+	enum MultOprType {
+		case TIMES, DIV, MOD
+	}
+	
+	enum AddOprType {
+		case PLUS, MINUS
+	}
+
+	enum RelOprType {
 		case LT, GT, LE, GE, EQ, NE
+	}
+	
+	enum BoolOprType {
 		case NOT, AND, OR
 	}
 }
