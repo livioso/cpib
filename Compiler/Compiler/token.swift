@@ -55,6 +55,6 @@ struct Token {
 	}
 	
 	enum BoolOprType {
-		case NOT, AND, OR
+		case NOT, AND, OR, CAND, COR
 	}
 }

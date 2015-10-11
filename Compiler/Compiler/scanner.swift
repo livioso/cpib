@@ -100,7 +100,8 @@ class Scanner: KeywordProvider {
 	private func newIdentifierToken() {
 		let identifier = buildTokenFrom(currentTokenRange)
 		
-		if let keywordToken = matchKeyword(identifier) {
+		if var keywordToken = matchKeyword(identifier) {
+			keywordToken.lineNumber = currentLine.number;
 			print("✅ New keyword token: \(identifier)")
 			tokenlist.append(keywordToken)
 		} else {
@@ -116,12 +117,13 @@ class Scanner: KeywordProvider {
 	private func newSymbolToken() {
 		let symbol = buildTokenFrom(currentTokenRange)
 		
-		let token = Token(
-			terminal: Terminal.MULTOPR,
-			lineNumber: currentLine.number)
-		
-		print("✅ New symbol token: \(symbol)")
-		tokenlist.append(token)
+		if var keywordToken = matchKeyword(symbol) {
+			keywordToken.lineNumber = currentLine.number;
+			print("✅ New keyword token: \(symbol)")
+			tokenlist.append(keywordToken)
+		} else {
+			currentState = .ErrorState(description: "❌ Unrecogizable symbol \(symbol)" )
+		}
 	}
 	
 	
@@ -138,8 +140,8 @@ class Scanner: KeywordProvider {
 		case (.LiteralState, .InitialState): newLiteralToken()
 		case (.IdentState, .InitialState): newIdentifierToken()
 		case (.SymbolState, .InitialState): newSymbolToken()
-		case (_, .ErrorState): break
-		case _: break
+		case (_, .ErrorState): break // TODO: Fixme -> Throw exception or so.
+		case (_, _): break
 		}
 		
 		// update the end index for 
@@ -164,7 +166,7 @@ class Scanner: KeywordProvider {
 			case .Symbol: currentState = .SymbolState // symbol starts
 			case .Skippable: currentState = .InitialState // still nothing
 			case .Other: currentState =
-				.ErrorState(description: "❌ Unsupported Character: \(currentLine.number)")
+				.ErrorState(description: " Unsupported Character: \(currentLine.number)")
 			}
 		} else {
 			currentState = .IdleState // end of line
@@ -207,7 +209,7 @@ class Scanner: KeywordProvider {
 			case .Letter: currentState = .InitialState // symbol ends
 			case .Skippable: currentState = .InitialState // symbol ends
 			case .Other: currentState =
-				.ErrorState(description: "❌ pUnsupported Character: \(currentLine.number)")
+				.ErrorState(description: "❌ Unsupported Character: \(currentLine.number)")
 			}
 		} else {
 			currentState = .InitialState
@@ -220,7 +222,7 @@ class Scanner: KeywordProvider {
 		currentTokenRange = Range(start: 0, end: 0)
 		currentLine = Line(
 			content: newLineContent,
-			number: currentLine.number)
+			number: (currentLine.number + 1))
 	}
 	
 	private func processNewLine() {

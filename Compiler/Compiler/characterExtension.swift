@@ -54,8 +54,10 @@ extension Character {
 		case "/": fallthrough
 		case "<": fallthrough
 		case ">": fallthrough
+		case "&": fallthrough
+		case "|": fallthrough
 		case ".": isMatch = true
-		case _: isMatch = false;
+		case _: isMatch = false
 		}
 		return isMatch
 	}
