@@ -10,7 +10,6 @@ class KeywordProvider {
 			"mod": Token(terminal: Terminal.MULTOPR),
 			"bool": Token(terminal: Terminal.TYPE),
 			"int32": Token(terminal: Terminal.TYPE),
-			"decimal": Token(terminal: Terminal.TYPE),
 			"call": Token(terminal: Terminal.CALL),
 			"const": Token(terminal: Terminal.CHANGEMODE),
 			"var": Token(terminal: Terminal.CHANGEMODE),
