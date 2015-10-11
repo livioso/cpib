@@ -1,6 +1,6 @@
 import Foundation
 
-class Scanner {
+class Scanner: KeywordProvider {
 	
 	enum ScannerState {
 		case IdleState // just waiting
@@ -85,29 +85,43 @@ class Scanner {
 	private func newLiteralToken() {
 		let literal = buildTokenFrom(currentTokenRange)
 		
-		print("✅ Literal Range" +
-			"<\(currentTokenRange.startIndex)," +
-			"\(currentTokenRange.endIndex)>: \(literal)")
+		let token = Token(
+			terminal: Terminal.LITERAL,
+			lineNumber: currentLine.number,
+			attribute: Token.Attribute.Integer(Int(literal)!))
+
+		print("✅ New literal token: \(literal)")
+		tokenlist.append(token)
 		
+		// be ready for the next token
 		currentTokenRange.startIndex = currentTokenRange.endIndex
 	}
 	
 	private func newIdentifierToken() {
 		let identifier = buildTokenFrom(currentTokenRange)
 		
-		print("✅ Identifier Range" +
-			"<\(currentTokenRange.startIndex)," +
-			"\(currentTokenRange.endIndex)>: \(identifier)")
-		currentTokenRange.startIndex = currentTokenRange.endIndex
+		if let keywordToken = matchKeyword(identifier) {
+			print("✅ New keyword token: \(identifier)")
+			tokenlist.append(keywordToken)
+		} else {
+			let token = Token(
+				terminal: Terminal.IDENT,
+				lineNumber: currentLine.number,
+				attribute: Token.Attribute.Ident(identifier))
+			print("✅ New identifier token: \(identifier)")
+			tokenlist.append(token)
+		}
 	}
 	
 	private func newSymbolToken() {
 		let symbol = buildTokenFrom(currentTokenRange)
 		
-		print("✅ Symbol Range" +
-			"<\(currentTokenRange.startIndex)," +
-			"\(currentTokenRange.endIndex)>: \(symbol)")
-		currentTokenRange.startIndex = currentTokenRange.endIndex
+		let token = Token(
+			terminal: Terminal.MULTOPR,
+			lineNumber: currentLine.number)
+		
+		print("✅ New symbol token: \(symbol)")
+		tokenlist.append(token)
 	}
 	
 	

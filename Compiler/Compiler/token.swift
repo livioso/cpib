@@ -14,7 +14,6 @@ struct Token {
 	enum Attribute {
 		// Types
 		case Integer(Int)
-		case Decimal(Float)
 		case Boolean(Bool)
 		case Ident(String)
 		// Modes

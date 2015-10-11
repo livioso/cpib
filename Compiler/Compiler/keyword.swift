@@ -2,7 +2,7 @@ import Foundation
 
 class KeywordProvider {
 	
-	var keywords = [String: Token]()
+	private var keywords = [String: Token]()
 	
 	init() {
 		keywords = [
@@ -45,7 +45,7 @@ class KeywordProvider {
 		]
 	}
 	
-	func isKeyword(possibleKeyword: String) -> Token? {
+	func matchKeyword(possibleKeyword: String) -> Token? {
 		return keywords[possibleKeyword]
 	}
 }
