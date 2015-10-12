@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BA50BF6A1BC70FCB0029603E /* keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50BF691BC70FCB0029603E /* keyword.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C51BC1C6D300A18641 /* scanner.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC142C81BC1C7CF00A18641 /* token.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C71BC1C7CF00A18641 /* token.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC142CD1BC4206500A18641 /* characterExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142CC1BC4206500A18641 /* characterExtension.swift */; settings = {ASSET_TAGS = (); }; };
-		BAC142CF1BC54D9400A18641 /* terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142CE1BC54D9400A18641 /* terminal.swift */; settings = {ASSET_TAGS = (); }; };
+		BA50BF6A1BC70FCB0029603E /* keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA50BF691BC70FCB0029603E /* keyword.swift */; };
+		BAC142C61BC1C6D300A18641 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C51BC1C6D300A18641 /* scanner.swift */; };
+		BAC142C81BC1C7CF00A18641 /* token.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142C71BC1C7CF00A18641 /* token.swift */; };
+		BAC142CD1BC4206500A18641 /* characterExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142CC1BC4206500A18641 /* characterExtension.swift */; };
+		BAC142CF1BC54D9400A18641 /* terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAC142CE1BC54D9400A18641 /* terminal.swift */; };
 		BAF324611BBC71190039CB43 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324601BBC71190039CB43 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -190,9 +190,12 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_SHORT_ENUMS = NO;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
@@ -227,8 +230,11 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_SHORT_ENUMS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_PEDANTIC = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;

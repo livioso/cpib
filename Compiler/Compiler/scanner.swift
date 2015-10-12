@@ -62,7 +62,12 @@ class Scanner: KeywordProvider {
 				processNewLine()
 			}
 		}
-		print("✅ Scan finished: Tokenlist: \(tokenlist)")
+		
+		print("\n✅ Scan finished: Tokenlist is:")
+		for token in tokenlist {
+			print("🔘\(token.terminal)\n➡️\(token.attribute)")
+		}
+		
 		return tokenlist
 	}
 	
