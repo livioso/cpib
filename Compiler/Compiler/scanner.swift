@@ -54,6 +54,8 @@ class Scanner: KeywordProvider {
 	// Scanner Scan Functions
 	///////////////////////////////////////////////////////////
 	
+	// Reads the file line wise and returns the tokenlist
+	// for the token list
 	func scan (fromPath: String) -> [Token]? {
 		tokenlist = [] // reset old tokenlist
 		if let lines = getContentByLine(fromPath) {

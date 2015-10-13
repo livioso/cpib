@@ -13,8 +13,8 @@ extension Character {
 	func kind() -> Kind {
 		if isSkipable() { return Kind.Skippable }
 		if isLiteral() { return Kind.Literal }
-		if isLetter() { return Kind.Letter }
 		if isSymbol() { return Kind.Symbol }
+		if isLetter() { return Kind.Letter }
 		return Kind.Other
 	}
 	

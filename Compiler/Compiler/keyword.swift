@@ -10,10 +10,6 @@ class KeywordProvider {
 			"bool": Token(terminal: Terminal.TYPE),
 			"int32": Token(terminal: Terminal.TYPE),
 			"call": Token(terminal: Terminal.CALL),
-			"const": Token(terminal: Terminal.CHANGEMODE),
-			"var": Token(terminal: Terminal.CHANGEMODE),
-			"copy": Token(terminal: Terminal.MECHMODE),
-			"ref": Token(terminal: Terminal.MECHMODE),
 			"do": Token(terminal: Terminal.DO),
 			"else": Token(terminal: Terminal.ELSE),
 			"endfun": Token(terminal: Terminal.ENDFUN),
@@ -24,9 +20,6 @@ class KeywordProvider {
 			"fun": Token(terminal: Terminal.FUN),
 			"global": Token(terminal: Terminal.GLOBAL),
 			"if": Token(terminal: Terminal.IF),
-			"in": Token(terminal: Terminal.FLOWMODE),
-			"inout": Token(terminal: Terminal.FLOWMODE),
-			"out": Token(terminal: Terminal.FLOWMODE),
 			"init": Token(terminal: Terminal.INIT),
 			"local": Token(terminal: Terminal.LOCAL),
 			"not": Token(terminal: Terminal.BOOLOPR,
@@ -45,6 +38,20 @@ class KeywordProvider {
 				attribute: Token.Attribute.MultOperator(Token.MultOprType.DIV)),
 			"mod": Token(terminal: Terminal.MULTOPR,
 				attribute: Token.Attribute.MultOperator(Token.MultOprType.MOD)),
+			"const": Token(terminal: Terminal.CHANGEMODE,
+				attribute: Token.Attribute.ChangeMode(Token.ChangeModeType.CONST)),
+			"var": Token(terminal: Terminal.CHANGEMODE,
+				attribute: Token.Attribute.ChangeMode(Token.ChangeModeType.VAR)),
+			"copy": Token(terminal: Terminal.MECHMODE,
+				attribute: Token.Attribute.MechMode(Token.MechModeType.COPY)),
+			"ref": Token(terminal: Terminal.MECHMODE,
+				attribute: Token.Attribute.MechMode(Token.MechModeType.REF)),
+			"in": Token(terminal: Terminal.FLOWMODE,
+				attribute: Token.Attribute.FlowMode(Token.FlowModeType.IN)),
+			"inout": Token(terminal: Terminal.FLOWMODE,
+				attribute: Token.Attribute.FlowMode(Token.FlowModeType.INOUT)),
+			"out": Token(terminal: Terminal.FLOWMODE,
+				attribute: Token.Attribute.FlowMode(Token.FlowModeType.OUT)),
 			
 			// relevant for <Symbols>
 			"(": Token(terminal: Terminal.LPARENT),
@@ -77,6 +84,7 @@ class KeywordProvider {
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LE)),
 			"<": Token(terminal: Terminal.RELOPR,
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LT)),
+			":=": Token(terminal: Terminal.BECOMES)
 		]
 	}
 	
