@@ -4,7 +4,7 @@ public enum Terminal {
 	case TYPE // BOOL, INT32
 	case RELOPR // LT, GT, etc.
 	case ADDOPR // PLUS, MINUS
-	case MULTOPR // TIMES, DIV
+	case MULTOPR // TIMES, DIV_E, MOD_E
 	case BOOLOPR // NOT, AND, OR
 	case CHANGEMODE // VAR, CONST
 	case FLOWMODE // IN, INOUT, OUT
@@ -37,4 +37,8 @@ public enum Terminal {
 	case THEN
 	case WHILE
 	case IDENT
+    case DEBUGIN
+    case DEBUGOUT
+    case NOTOPR
+    
 }
