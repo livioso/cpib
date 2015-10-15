@@ -91,17 +91,23 @@ class Scanner: KeywordProvider {
 	
 	private func newLiteralToken() {
 		let literal = buildTokenFrom(currentTokenRange)
-		
-		let token = Token(
-			terminal: Terminal.LITERAL,
-			lineNumber: currentLine.number,
-			attribute: Token.Attribute.Integer(Int(literal)!))
+        
+        //check if Int is not out of Int64 range
+        let checkInt = Double.init(literal)
+        if checkInt != nil && checkInt > Double.init(integerLiteral: INT64_MAX) {
+            currentState = .ErrorState(description: "❌ Int64 out of Range: \(currentLine.number)")
+        } else {
+            let token = Token(
+                terminal: Terminal.LITERAL,
+                lineNumber: currentLine.number,
+                attribute: Token.Attribute.Integer(Int(literal)!))
 
-		print("✅ New literal token: \(literal)")
-		tokenlist.append(token)
+            print("✅ New literal token: \(literal)")
+            tokenlist.append(token)
 		
-		// be ready for the next token
-		currentTokenRange.startIndex = currentTokenRange.endIndex
+            // be ready for the next token
+            currentTokenRange.startIndex = currentTokenRange.endIndex
+        }
 	}
 	
 	private func newIdentifierToken() {
