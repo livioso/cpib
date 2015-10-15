@@ -10,8 +10,8 @@ public enum Terminal {
 	case FLOWMODE // IN, INOUT, OUT
 	case MECHMODE // REF, COPY
 	case BOOL
-	case LPARENT
-	case RPARENT
+	case LPAREN
+	case RPAREN
 	case COMMA
 	case SEMICOLON
 	case COLON

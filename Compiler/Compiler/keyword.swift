@@ -54,8 +54,8 @@ class KeywordProvider {
 				attribute: Token.Attribute.FlowMode(Token.FlowModeType.OUT)),
 			
 			// relevant for <Symbols>
-			"(": Token(terminal: Terminal.LPARENT),
-			")": Token(terminal: Terminal.RPARENT),
+			"(": Token(terminal: Terminal.LPAREN),
+			")": Token(terminal: Terminal.RPAREN),
 			",": Token(terminal: Terminal.COMMA),
 			";": Token(terminal: Terminal.SEMICOLON),
 			"+": Token(terminal: Terminal.ADDOPR,
