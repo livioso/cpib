@@ -43,7 +43,7 @@ struct Token {
 	}
 	
 	enum MultOprType {
-		case TIMES, DIV, MOD
+		case TIMES, DIV_E, MOD_E
 	}
 	
 	enum AddOprType {
