@@ -86,6 +86,14 @@ class Scanner: KeywordProvider {
 			start: currentLine.content.startIndex.advancedBy(toTokenStart),
 			end: currentLine.content.endIndex.advancedBy(-fromTokenEnd))
 		
+		// Rewind iterator by one so we don't miss cases where
+		// there is no <whitespace> <tab> or so to seperate it:
+		// for example: (a:2) or divide():
+		//
+		//	-> I have no idea how do do this :-/
+		//     something along the lines of.
+		// currentLine.iterator.previous()
+		
 		return currentLine.content.substringWithRange(tokenRange)
 	}
 	
@@ -194,6 +202,8 @@ class Scanner: KeywordProvider {
 			switch(next.kind()) {
 			case .Literal: currentState = .LiteralState // literal continues
 			case .Skippable: currentState = .InitialState // literal ends
+			case .Symbol: currentState = .InitialState // literal ends
+			case .Letter: currentState = .InitialState // literal ends
 			case _: currentState =
 				.ErrorState(description: "❌ Literal not properly finished: \(currentLine.number)")
 			}
