@@ -150,9 +150,12 @@ class Scanner: KeywordProvider {
 		// we have reached the end of a token and come back
 		// to the .InitialState => create the new token. :)
 		switch (from, to) {
-		case (.LiteralState, .InitialState): newLiteralToken()
-		case (.IdentState, .InitialState): newIdentifierToken()
-		case (.SymbolState, .InitialState): newSymbolToken()
+		case (.SymbolState, .SymbolState): fallthrough
+		case (.IdentState, .IdentState): fallthrough
+		case (.LiteralState, .LiteralState): break
+		case (.LiteralState, _): newLiteralToken()
+		case (.IdentState, _): newIdentifierToken()
+		case (.SymbolState, _): newSymbolToken()
 		case (_, .ErrorState): break // TODO: Fixme -> Throw exception or so.
 		case (_, _): break
 		}
