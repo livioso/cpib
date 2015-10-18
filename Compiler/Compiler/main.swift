@@ -5,7 +5,7 @@ func main() {
 	if let sourcePath = Process.arguments.last {
 		let scanner: Scanner = Scanner()
 		print("🔴 Scanner.scan(\(sourcePath))")
-		scanner.debugContent = "1=a*aaaaa)"
+		scanner.debugContent = "1=a*aaaaa) 1 = a * aaaaa )"
 		scanner.scan(sourcePath)
 	} else {
 		print("Missing Parameter <source.iml>")

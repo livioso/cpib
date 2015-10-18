@@ -28,6 +28,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2F2A5A041BD2D033008EE1B5 /* TestSources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestSources; sourceTree = "<group>"; };
 		BA50BF691BC70FCB0029603E /* keyword.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = keyword.swift; sourceTree = "<group>"; };
 		BAC142C51BC1C6D300A18641 /* scanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = scanner.swift; sourceTree = "<group>"; };
 		BAC142C71BC1C7CF00A18641 /* token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = token.swift; sourceTree = "<group>"; };
@@ -70,6 +71,7 @@
 		BAF324541BBC71190039CB43 = {
 			isa = PBXGroup;
 			children = (
+				2F2A5A041BD2D033008EE1B5 /* TestSources */,
 				BAF3245F1BBC71190039CB43 /* Compiler */,
 				BAF3245E1BBC71190039CB43 /* Products */,
 			);

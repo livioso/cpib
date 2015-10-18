@@ -12,12 +12,21 @@ class Scanner: KeywordProvider {
 	}
 	
 	struct Line {
+        enum IteratorState {
+            case Idle
+            case Normal
+        }
 		var number: Int = 0
-		var iterator: IndexingGenerator<String.CharacterView>
+        var iteratorState: IteratorState
+        var iterator: IndexingGenerator<String.CharacterView>
+        var previousIterator: IndexingGenerator<String.CharacterView>
+        var previousChar:Character? = nil
 		var content: String = "" {
 			didSet {
 				// rebuild the iterator when the content changes
 				self.iterator = self.content.characters.generate()
+                self.previousIterator = self.content.characters.generate()
+                self.iteratorState = .Idle
 			}
 		}
 		
@@ -25,7 +34,22 @@ class Scanner: KeywordProvider {
 			self.content = content
 			self.number = number
 			self.iterator = self.content.characters.generate()
+            self.previousIterator = self.content.characters.generate()
+            self.iteratorState = .Idle
 		}
+        
+        mutating func next() -> Character?{
+            switch(iteratorState){
+            case .Normal: self.previousChar = previousIterator.next()
+            case .Idle: self.iteratorState = .Normal
+            }
+            return self.iterator.next()
+        }
+        
+        mutating func back(){
+            self.iterator = previousIterator.generate()
+            self.iteratorState = .Idle
+        }
 	}
 	
 	// the current token range "under construction" once an entire
@@ -93,7 +117,13 @@ class Scanner: KeywordProvider {
 		//	-> I have no idea how do do this :-/
 		//     something along the lines of.
 		// currentLine.iterator.previous()
-		
+        /*if let previous = currentLine.previousChar {
+            switch (previous.kind()){
+            case .Skippable: break
+            case _: currentLine.back()
+            }
+        }*/
+        
 		return currentLine.content.substringWithRange(tokenRange)
 	}
 	
@@ -182,7 +212,7 @@ class Scanner: KeywordProvider {
 	}
 	
 	private func initialStateHandler() {
-		if let next = currentLine.iterator.next() {
+		if let next = currentLine.next() {
 			currentTokenRange.startIndex = currentTokenRange.endIndex
 			switch(next.kind()) {
 			case .Literal: currentState = .LiteralState // literal starts
@@ -198,7 +228,7 @@ class Scanner: KeywordProvider {
 	}
 	
 	private func literalStateHandler() {
-		if let next = currentLine.iterator.next() {
+		if let next = currentLine.next() {
 			switch(next.kind()) {
 			case .Literal: currentState = .LiteralState // literal continues
 			case .Skippable: currentState = .InitialState // literal ends
@@ -213,7 +243,7 @@ class Scanner: KeywordProvider {
 	}
 	
 	private func identStateHandler() {
-		if let next = currentLine.iterator.next() {
+		if let next = currentLine.next() {
 			switch(next.kind()) {
 			case .Literal: currentState = .IdentState // identifier continues
 			case .Letter: currentState = .IdentState // identifier continues
@@ -228,7 +258,7 @@ class Scanner: KeywordProvider {
 	}
 	
 	private func symbolStateHandler() {
-		if let next = currentLine.iterator.next() {
+		if let next = currentLine.next() {
 			switch(next.kind()) {
 			case .Symbol: currentState = .SymbolState // symbol continues
 			case .Literal: currentState = .InitialState // symbol ends
@@ -252,7 +282,7 @@ class Scanner: KeywordProvider {
 	}
 	
 	private func processNewLine() {
-		if let next = currentLine.iterator.next() {
+		if let next = currentLine.next() {
 			switch next.kind() {
 			case .Letter: currentState = .IdentState
 			case .Literal: currentState = .LiteralState
