@@ -12,43 +12,37 @@ class Scanner: KeywordProvider {
 	}
 	
 	struct Line {
-        enum IteratorState {
-            case Idle
-            case Normal
-        }
 		var number: Int = 0
-        var iteratorState: IteratorState
-        var iterator: IndexingGenerator<String.CharacterView>
-        var previousIterator: IndexingGenerator<String.CharacterView>
-        var previousChar:Character? = nil
+        var index: String.CharacterView.Index
 		var content: String = "" {
 			didSet {
-				// rebuild the iterator when the content changes
-				self.iterator = self.content.characters.generate()
-                self.previousIterator = self.content.characters.generate()
-                self.iteratorState = .Idle
+				// reset index when the content changes
+                index = content.startIndex
 			}
 		}
 		
 		init(content: String, number: Int) {
 			self.content = content
 			self.number = number
-			self.iterator = self.content.characters.generate()
-            self.previousIterator = self.content.characters.generate()
-            self.iteratorState = .Idle
+            self.index = self.content.startIndex
 		}
         
         mutating func next() -> Character?{
-            switch(iteratorState){
-            case .Normal: self.previousChar = previousIterator.next()
-            case .Idle: self.iteratorState = .Normal
+            if(index == content.characters.endIndex) {
+                return nil
             }
-            return self.iterator.next()
+            let i = index
+            index = index.successor()
+            return content[i];
         }
-        
         mutating func back(){
-            self.iterator = previousIterator.generate()
-            self.iteratorState = .Idle
+            if(index != content.characters.startIndex) {index = index.predecessor()}
+        }
+        func previous() -> Character?{
+            if(index >= content.characters.startIndex) {return nil}
+            else {
+                return content[index]
+            }
         }
 	}
 	
@@ -117,12 +111,15 @@ class Scanner: KeywordProvider {
 		//	-> I have no idea how do do this :-/
 		//     something along the lines of.
 		// currentLine.iterator.previous()
-        /*if let previous = currentLine.previousChar {
+        if let previous = currentLine.previous() {
             switch (previous.kind()){
             case .Skippable: break
-            case _: currentLine.back()
+            case _:
+                currentLine.back()
+                currentTokenRange.endIndex--
+                currentTokenRange.startIndex--
             }
-        }*/
+        }
         
 		return currentLine.content.substringWithRange(tokenRange)
 	}
