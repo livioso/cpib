@@ -48,7 +48,7 @@ class Scanner: KeywordProvider {
 	
 	// the current token range "under construction" once an entire
 	// token is found this is reset to its initial value (0, 0)
-	var currentTokenRange: Range = Range(start: 0, end: 0)
+	var currentTokenRange: Range<Int> = Range<Int>(start: 0, end: 0)
 	
 	// the current line (we read the file line wise)
 	var currentLine: Line = Line(content: "", number: 0)
