@@ -4,7 +4,13 @@
 #### Beschreibung der Erweiterung
 Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen:
 
-`record example(var x: int32, var u: boolean)`
+Eine **Definition** sieht wie folgt aus:
+
+- `record example(var x: int32, var u: boolean);`
+
+Der **Zugriff** ist wie folgt möglich:
+
+- `example.x = 1;`
 
 - Die Felder können vom Datentyp `boolean` oder `int32` sein.
 
@@ -41,13 +47,16 @@ endprogram
 
 #### Compilezeit Uberprüfungen
 
+##### Definition des Record in `global`
+Die Definition eines Records muss im `global` vorgenommen werden.
+
 ##### Eindeutigkeit des Record Identifier
 Die Definition eines Records muss eindeutig sein:
 
 ``` javascript
-record vector(var x: int32, var y: int32)
+record vector(var x: int32, var y: int32);
 ...
-record vector(var x: int32, var y: int32, var z: int32)
+record vector(var x: int32, var y: int32, var z: int32);
        ^^^^^^
 ```
 
@@ -55,15 +64,34 @@ record vector(var x: int32, var y: int32, var z: int32)
 Die Definition eines Record Felder muss eindeutig sein:
 
 ``` javascript
-record vector(var x: int32, var x: int32)
+record vector(var x: int32, var x: int32);
                                 ^
 ```
 
 ##### Operationen auf Record möglich?
 
-##### Typenchecking (bool assign to integer or such)
+``` javascript
+record vector(var x: int32, var x: int32);
+                                ^
+```
+
+##### Typenchecking (`bool`, `int32`)
+``` javascript
+record point(var x: int32, var y: int32);
+var position: point;
+
+position.x = true;
+             ^^^^                        
+```
 
 ##### Zugriff auf undefiniert Felder
+``` javascript
+record point(var x: int32, var y: int32)
+var position: point;
+
+position.z = 42;
+         ^  
+```
 
 
 #### Kontext und Typeinschränkung
