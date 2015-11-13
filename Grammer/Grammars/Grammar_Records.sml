@@ -129,15 +129,15 @@ val string_of_nonterm =
   fn expression                               => "expression"
    | factor                                   => "factor"
    | declarations                             => "declarations"
-   | declaration	                          => "declaration"
+   | declaration	                            => "declaration"
    | repeatingOptionalDeclarations            => "repeatingOptionalDeclarations"
    | recordDeclaration                        => "recordDeclaration"
-   | recordFieldList	                      => "recordFieldList"
+   | recordFieldList	                        => "recordFieldList"
    | optionalCHANGEMODE                       => "optionalCHANGEMODE"
    | optionalMECHMODE                         => "optionalMECHMODE"
    | storageDeclaration                       => "storageDeclaration"
    | procedureDeclaration                     => "procedureDeclaration"
-   | functionDeclaration				      => "functionDeclaration"
+   | functionDeclaration				              => "functionDeclaration"
    | program                                  => "program"
    | blockCmd                                 => "blockCmd"
    | cmd                                      => "cmd"
@@ -181,8 +181,10 @@ val productions =
 [
 (program,
 	[[T PROGRAM, T IDENT, N optionalGlobalDeclarations, T DO, N blockCmd, T ENDPROGRAM]]),
+
 (blockCmd,
 	[[N cmd, N repeatingOptionalCmds]]),
+
 (cmd,
 	[[T SKIP],
 	 [N expression, T BECOMES, N expression],
@@ -191,109 +193,148 @@ val productions =
 	 [T CALL, T IDENT, N expressionList],
 	 [T DEBUGIN, N expression],
 	 [T DEBUGOUT, N expression]]),
+
 (repeatingOptionalCmds,
 	[[],
 	 [T SEMICOLON, N cmd, N repeatingOptionalCmds]]),
+
 (declaration,
 	[[N storageDeclaration],
 	 [N functionDeclaration],
 	 [N procedureDeclaration],
 	 [N recordDeclaration]]),
+
 (storageDeclaration,
 	[[ N optionalCHANGEMODE, N typedIdent ]]),
+
 (recordFieldDeclaration,
 	[[ N optionalCHANGEMODE, N typedIdent ]]),
+
 (optionalCHANGEMODE,
 	[[],
 	 [T CHANGEMODE]]),
+
 (optionalMECHMODE,
 	[[],
 	 [T MECHMODE]]),
+
 (typedIdent,
 	[[T IDENT, T COLON, N typeDeclaration]]),
+
 (typeDeclaration,
 	[[T TYPE],
 	 [T IDENT]]),
+
 (functionDeclaration,
 	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
+
 (procedureDeclaration,
 	[[T PROC, T IDENT, N parameterList, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDPROC]]),
+
 (optionalGlobalDeclarations,
 	[[],
 	 [T GLOBAL, N declarations]]),
+
 (declarations,
 	[[N declaration, N repeatingOptionalDeclarations]]),
+
 (repeatingOptionalDeclarations,
 	[[],
 	 [T SEMICOLON, N declaration, N repeatingOptionalDeclarations]]),
+
 (optionalLocalStorageDeclarations,
 	[[],
 	 [T LOCAL, N storageDeclaration, N repeatingOptionalStorageDeclarations]]),
+
 (repeatingOptionalStorageDeclarations,
 	[[],
 	 [T SEMICOLON, N storageDeclaration, N repeatingOptionalStorageDeclarations]]),
+
 (parameterList,
 	[[T LPAREN, N optionalParameters, T RPAREN]]),
+
 (optionalParameters,
 	[[],
 	 [N parameter, N repeatingOptionalParameters]]),
+
 (parameter,
 	[[N optionalMECHMODE, N storageDeclaration]]),
+
 (repeatingOptionalParameters,
 	[[],
 	 [T COMMA, N parameter, N repeatingOptionalParameters]]),
+
 (recordDeclaration,
 	[[T RECORD, T IDENT, N recordFieldList]]),
+
 (recordFieldList,
 	[[T LPAREN, N storageDeclaration, N repeatingOptionalRecordFieldDeclarations, T RPAREN]]),
+
 (repeatingOptionalRecordFieldDeclarations,
 	[[],
 	 [T SEMICOLON, N recordFieldDeclaration, N repeatingOptionalRecordFieldDeclarations]]),
+
 (expressionList,
 	[[T LPAREN, N optionalExpressions, T RPAREN]]),
+
 (optionalExpressions,
 	[[],
 	 [N expression, N repeatingOptionalExpressions]]),
+
 (expression,
     [[N term1, N repBOOLOPRterm1]]),
+
 (repeatingOptionalExpressions,
 	[[],
 	 [T COMMA, N expression, N repeatingOptionalExpressions]]),
+
 (repBOOLOPRterm1,
 	[[],
 	 [T BOOLOPR, N term1, N repBOOLOPRterm1]]),
+
 (term1,
 	[[N term2, N repRELOPRterm2]]),
+
 (repRELOPRterm2,
 	[[],
 	 [T RELOPR, N term2, N repRELOPRterm2]]),
+
 (term2,
 	[[N term3, N repADDOPRterm3]]),
+
 (repADDOPRterm3,
     [[T ADDOPR, N term3, N repADDOPRterm3],
      []]),
+
 (term3,
 	[[N term4, N repMULTOPRterm4]]),
+
 (repMULTOPRterm4,
     [[],
 	 [T MULTOPR, N term4, N repMULTOPRterm4]]),
+
 (term4,
     [[N factor, N repDOTOPRfactor]]),
+
 (repDOTOPRfactor,
 	[[],
 	 [T DOTOPR, N factor, N repDOTOPRfactor]]),
+
 (factor,
     [[T LITERAL],
 	 [T IDENT, N optionalIdent],
 	 [N monadicOperator, N factor],
      [T LPAREN, N expression, T RPAREN]]),
+
 (optionalIdent,
 	[[],
 	 [T INIT],
 	 [N expressionList]]),
+
 (monadicOperator,
 	[[T NOT],
 	 [T ADDOPR]])
+
 ]
 
 val S = program
