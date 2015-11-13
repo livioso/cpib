@@ -19,7 +19,7 @@ Then you need to navigate to the folder where your grammar skript is
 
 After that you can use your grammar skript
 
-    $ use „Grammar_Skript_Name.sml";
+    $ use "Grammar_Skript_Name.sml";
 
 ###FixFoxi usage
 
@@ -50,3 +50,5 @@ This shows you the FIRST table of your Grammar. It also works with NULLABLE and 
 
 This generates the parstable. Empty lines represents the ε of your parsetable
 
+**End:**  
+To stop the application press `Ctrl + D`
