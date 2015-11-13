@@ -10,7 +10,6 @@ datatype term
   | PROGRAM
   | DO
   | ENDPROGRAM
-  | FLOWMODE
   | MECHMODE
   | CHANGEMODE
   | COMMA
@@ -52,7 +51,6 @@ val string_of_term =
    | PROGRAM    => "PROGRAM"
    | DO         => "DO"
    | ENDPROGRAM => "ENDPROGRAM"
-   | FLOWMODE   => "FLOWMODE"
    | MECHMODE   => "MECHMODE"
    | CHANGEMODE => "CHANGEMODE"
    | COMMA      => "COMMA"
@@ -91,26 +89,16 @@ datatype nonterm
   | recordDeclaration
   | recordFieldList
   | optionalCHANGEMODE
-  | optionalFLOWMODE
   | optionalMECHMODE
   | storageDeclaration
   | procedureDeclaration
   | functionDeclaration
-  | optionalGlobalImports
-  | globalImport
-  | repeatingOptionalGlobalImports
   | program
-  | progamParameterList
-  | optionalProgramParameters
   | blockCmd
   | cmd
   | repeatingOptionalCmds
-  | optionalGlobalInits
-  | idents
-  | repeatingOptionalIdents
   | typedIdent
   | typeDeclaration
-  | repeatingOptionalProgramParameters
   | optionalGlobalDeclarations
   | globalDeclaration
   | repeatingOptionalGlobalDeclarations
@@ -146,26 +134,16 @@ val string_of_nonterm =
    | recordDeclaration                        => "recordDeclaration"
    | recordFieldList	                      => "recordFieldList"
    | optionalCHANGEMODE                       => "optionalCHANGEMODE"
-   | optionalFLOWMODE                         => "optionalFLOWMODE"
    | optionalMECHMODE                         => "optionalMECHMODE"
    | storageDeclaration                       => "storageDeclaration"
    | procedureDeclaration                     => "procedureDeclaration"
    | functionDeclaration				      => "functionDeclaration"
-   | optionalGlobalImports                    => "optionalGlobalImports"
-   | globalImport                             => "globalImport"
-   | repeatingOptionalGlobalImports           => "repeatingOptionalGlobalImports"
    | program                                  => "program"
-   | progamParameterList                      => "progamParameterList"
-   | optionalProgramParameters                => "optionalProgramParameters"
    | blockCmd                                 => "blockCmd"
    | cmd                                      => "cmd"
    | repeatingOptionalCmds                    => "repeatingOptionalCmds"
-   | optionalGlobalInits                      => "optionalGlobalInits"
-   | idents                                   => "idents"
-   | repeatingOptionalIdents                  => "repeatingOptionalIdents"
    | typedIdent                               => "typedIdent"
    | typeDeclaration                          => "typeDeclaration"
-   | repeatingOptionalProgramParameters       => "repeatingOptionalProgramParameters"
    | optionalGlobalDeclarations               => "optionalGlobalDeclarations"
    | globalDeclaration                        => "globalDeclaration"
    | repeatingOptionalGlobalDeclarations      => "repeatingOptionalGlobalDeclarations"
@@ -202,7 +180,7 @@ in
 val productions =
 [
 (program,
-	[[T PROGRAM, T IDENT, N progamParameterList, N optionalGlobalDeclarations, T DO, N blockCmd, T ENDPROGRAM]]),
+	[[T PROGRAM, T IDENT, N optionalGlobalDeclarations, T DO, N blockCmd, T ENDPROGRAM]]),
 (blockCmd,
 	[[N cmd, N repeatingOptionalCmds]]),
 (cmd,
@@ -210,17 +188,9 @@ val productions =
 	 [N expression, T BECOMES, N expression],
 	 [T IF, N expression, T THEN, N blockCmd, T ELSE, N blockCmd, T ENDIF],
 	 [T WHILE, N expression, T DO, N blockCmd, T ENDWHILE],
-	 [T CALL, T IDENT, N expressionList, N optionalGlobalInits],
+	 [T CALL, T IDENT, N expressionList],
 	 [T DEBUGIN, N expression],
 	 [T DEBUGOUT, N expression]]),
-(optionalGlobalInits,
-	[[],
-	 [T INIT, N idents]]),
-(idents,
-	[[T IDENT, N repeatingOptionalIdents]]),
-(repeatingOptionalIdents,
-	[[],
-	 [T COMMA, T IDENT, N idents]]),
 (repeatingOptionalCmds,
 	[[],
 	 [T SEMICOLON, N cmd, N repeatingOptionalCmds]]),
@@ -236,9 +206,6 @@ val productions =
 (optionalCHANGEMODE,
 	[[],
 	 [T CHANGEMODE]]),
-(optionalFLOWMODE,
-	[[],
-	 [T FLOWMODE]]),
 (optionalMECHMODE,
 	[[],
 	 [T MECHMODE]]),
@@ -248,25 +215,9 @@ val productions =
 	[[T TYPE],
 	 [T IDENT]]),
 (functionDeclaration,
-	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalGlobalImports, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
+	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
 (procedureDeclaration,
-	[[T PROC, T IDENT, N parameterList, N optionalGlobalImports, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDPROC]]),
-(optionalGlobalImports,
-	[[],
-	 [T GLOBAL, N globalImport, N repeatingOptionalGlobalImports]]),
-(globalImport,
-	[[N optionalFLOWMODE, N optionalCHANGEMODE, T IDENT]]),
-(repeatingOptionalGlobalImports,
-	[[],
-	 [T COMMA, N globalImport, N repeatingOptionalGlobalImports]]),
-(progamParameterList,
-	[[T LPAREN, N optionalProgramParameters, T RPAREN]]),
-(optionalProgramParameters,
-	[[],
-	 [N optionalFLOWMODE, N optionalCHANGEMODE, N typedIdent, N repeatingOptionalProgramParameters]]),
-(repeatingOptionalProgramParameters,
-	[[],
-	 [T COMMA, N optionalFLOWMODE, N optionalCHANGEMODE, N typedIdent, N repeatingOptionalProgramParameters]]),
+	[[T PROC, T IDENT, N parameterList, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDPROC]]),
 (optionalGlobalDeclarations,
 	[[],
 	 [T GLOBAL, N declarations]]),
@@ -287,7 +238,7 @@ val productions =
 	[[],
 	 [N parameter, N repeatingOptionalParameters]]),
 (parameter,
-	[[N optionalFLOWMODE, N optionalMECHMODE, N storageDeclaration]]),
+	[[N optionalMECHMODE, N storageDeclaration]]),
 (repeatingOptionalParameters,
 	[[],
 	 [T COMMA, N parameter, N repeatingOptionalParameters]]),
