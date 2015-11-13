@@ -6,33 +6,29 @@ datatype term
   | RPAREN
   | TYPE
   | COMMA
-  | CHANGEMODE
 
 val string_of_term =
-  fn RECORD    => "RECORD"
-   | IDENT     => "IDENT"
-   | LPAREN    => "LPAREN"
-   | COLON     => "COLON"
-   | RPAREN    => "RPAREN"
-   | TYPE      => "TYPE"
-   | COMMA     => "COMMA"
-   | CHANGEMODE => "CHANGEMODE"
+  fn RECORD     => "RECORD"
+   | IDENT      => "IDENT"
+   | LPAREN     => "LPAREN"
+   | COLON      => "COLON"
+   | RPAREN     => "RPAREN"
+   | TYPE       => "TYPE"
+   | COMMA      => "COMMA"
 
 datatype nonterm
   = recordDeclaration
-  | recordList
+  | recordFieldList
   | recordFields
   | recordField
   | optionalRecordFields
-  | optionalCHANGEMODE
 
 val string_of_nonterm =
   fn recordDeclaration    => "recordDeclaration"
-   | recordList           => "recordList"
+   | recordFieldList      => "recordFieldList"
    | recordFields         => "recordFields"
    | recordField          => "recordField"
    | optionalRecordFields => "optionalRecordFields"
-   | optionalCHANGEMODE   => "optionalCHANGEMODE"
 
 val string_of_gramsym = (string_of_term, string_of_nonterm)
 
@@ -43,16 +39,16 @@ in
 val productions =
 [
 (*
-    recordDeclaration   ::= optionalCHANGEMODE IDENT COLON RECORD
-    recordList          ::= LPAREN recordFields RPAREN
+    recordDeclaration   ::= IDENT COLON RECORD recordFieldList
+    recordFieldList     ::= LPAREN recordFields RPAREN
     recordFields        ::= recordField optionalRecordField
     recordField         ::= IDENT COLON TYPE
     optionalRecordField ::= COMMA recordField (optionalRecordField)*
     optionalCHANGEMODE  ::= CHANGEMODE*
 *)
 (recordDeclaration,
-    [[N optionalCHANGEMODE, T IDENT, T COLON, T RECORD, N recordList]]),
-(recordList,
+    [[T IDENT, T COLON, T RECORD, N recordFieldList]]),
+(recordFieldList,
     [[T LPAREN, N recordFields, T RPAREN]]),
 (recordFields,
     [[N recordField, N optionalRecordFields]]),
@@ -60,10 +56,7 @@ val productions =
     [[T IDENT, T COLON, T TYPE]]),
 (optionalRecordFields,
     [[],
-     [T COMMA, N recordField, N optionalRecordFields]]),
-(optionalCHANGEMODE,
-    [[],
-     [T CHANGEMODE]])
+     [T COMMA, N recordField, N optionalRecordFields]])
 ]
 
 val S = recordDeclaration

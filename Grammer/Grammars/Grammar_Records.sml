@@ -86,7 +86,6 @@ datatype nonterm
   | declarations
   | declaration
   | repeatingOptionalDeclarations
-  | recordDeclaration
   | recordFieldList
   | optionalCHANGEMODE
   | optionalMECHMODE
@@ -121,8 +120,10 @@ datatype nonterm
   | optionalParameters
   | parameter
   | repeatingOptionalParameters
-  | recordFieldDeclaration
-  | repeatingOptionalRecordFieldDeclarations
+  | recordFields
+  | recordField
+  | optionalRecordFields
+
 
 val string_of_nonterm =
   fn expression                               => "expression"
@@ -130,7 +131,6 @@ val string_of_nonterm =
    | declarations                             => "declarations"
    | declaration	                            => "declaration"
    | repeatingOptionalDeclarations            => "repeatingOptionalDeclarations"
-   | recordDeclaration                        => "recordDeclaration"
    | recordFieldList	                        => "recordFieldList"
    | optionalCHANGEMODE                       => "optionalCHANGEMODE"
    | optionalMECHMODE                         => "optionalMECHMODE"
@@ -165,8 +165,9 @@ val string_of_nonterm =
    | optionalParameters                       => "optionalParameters"
    | parameter                                => "parameter"
    | repeatingOptionalParameters              => "repeatingOptionalParameters"
-   | recordFieldDeclaration                   => "recordFieldDeclaration"
-   | repeatingOptionalRecordFieldDeclarations => "repeatingOptionalRecordFieldDeclarations"
+   | recordFields         => "recordFields"
+   | recordField          => "recordField"
+   | optionalRecordFields => "optionalRecordFields"
       
 
 val string_of_gramsym = (string_of_term, string_of_nonterm)
@@ -199,13 +200,9 @@ val productions =
 (declaration,
 	[[N storageDeclaration],
 	 [N functionDeclaration],
-	 [N procedureDeclaration],
-	 [N recordDeclaration]]),
+	 [N procedureDeclaration]]),
 
 (storageDeclaration,
-	[[ N optionalCHANGEMODE, N typedIdent ]]),
-
-(recordFieldDeclaration,
 	[[ N optionalCHANGEMODE, N typedIdent ]]),
 
 (optionalCHANGEMODE,
@@ -221,7 +218,8 @@ val productions =
 
 (typeDeclaration,
 	[[T TYPE],
-	 [T IDENT]]),
+	 [T IDENT],
+   [T RECORD, N recordFieldList]]),
 
 (functionDeclaration,
 	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
@@ -262,15 +260,18 @@ val productions =
 	[[],
 	 [T COMMA, N parameter, N repeatingOptionalParameters]]),
 
-(recordDeclaration,
-	[[T RECORD, T IDENT, N recordFieldList]]),
-
 (recordFieldList,
-	[[T LPAREN, N storageDeclaration, N repeatingOptionalRecordFieldDeclarations, T RPAREN]]),
+	[[T LPAREN, N recordFields, T RPAREN]]),
 
-(repeatingOptionalRecordFieldDeclarations,
-	[[],
-	 [T SEMICOLON, N recordFieldDeclaration, N repeatingOptionalRecordFieldDeclarations]]),
+(recordFields,
+	[[N recordField, N optionalRecordFields]]),
+
+(recordField,
+  [[T IDENT, T COLON, T TYPE]]),
+
+(optionalRecordFields,
+  [[],
+   [T COMMA, N recordField, N optionalRecordFields]]),
 
 (expressionList,
 	[[T LPAREN, N optionalExpressions, T RPAREN]]),
