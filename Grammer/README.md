@@ -19,7 +19,7 @@ Then you need to navigate to the folder where your grammar skript is
 
 After that you can use your grammar skript
 
-    $ use „Grammar_Skript_Name.sml";
+    $ use "Grammar_Skript_Name.sml";
 
 ###FixFoxi usage
 
