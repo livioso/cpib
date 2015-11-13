@@ -114,7 +114,6 @@ datatype nonterm
   | repMULTOPRterm4
   | repDOTOPRfactor
   | optionalIdent
-  | monadicOperator
   | expressionList
   | optionalExpressions
   | repeatingOptionalExpressions
@@ -159,7 +158,6 @@ val string_of_nonterm =
    | repMULTOPRterm4                          => "repMULTOPRterm4"
    | repDOTOPRfactor                          => "repDOTOPRfactor"
    | optionalIdent                            => "optionalIdent"
-   | monadicOperator                          => "monadicOperator"
    | expressionList                           => "expressionList"
    | optionalExpressions                      => "optionalExpressions"
    | repeatingOptionalExpressions             => "repeatingOptionalExpressions"
@@ -323,17 +321,12 @@ val productions =
 (factor,
     [[T LITERAL],
 	 [T IDENT, N optionalIdent],
-	 [N monadicOperator, N factor],
      [T LPAREN, N expression, T RPAREN]]),
 
 (optionalIdent,
 	[[],
 	 [T INIT],
-	 [N expressionList]]),
-
-(monadicOperator,
-	[[T NOT],
-	 [T ADDOPR]])
+	 [N expressionList]])
 
 ]
 
