@@ -50,3 +50,5 @@ This shows you the FIRST table of your Grammar. It also works with NULLABLE and 
 
 This generates the parstable. Empty lines represents the ε of your parsetable
 
+**End:**  
+To stop the application press `Ctrl + D`
