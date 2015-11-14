@@ -219,75 +219,93 @@ v1(x init := 42, y init := 42, z init := 42)
 - Unsere Implementation orientiert sich an der Pascal Implementation.
 - Wir fanden eine einfache Initialisierung wichtig *(in einer Zeile).*
 
+\pagebreak
+
 ## Lexikalische und Grammatikalische Syntax
-Unser Ziel ist es, das Record ähnlich wie die anderen Variabeln in IML zu behandeln. Daher wird die Initialisierung eines Records analog zur Initialisierung der Standardvariabeln stattfinden.
+- Unser Ziel ist es, das Record ähnlich wie die anderen Variabeln in IML zu behandeln. 
+- Daher wird die Initialisierung eines Records analog zur Initialisierung der Standardvariabeln stattfinden.
 
 Die Grundgrammatik-Idee eines Records für die Initialisierung:
 
-```javascript
-recordDeclaration   ::=optional CHANGEMOD IDENT COLON RECORD recordFieldList
+```
+Im Folgenden gilt:  Esp = Epsilon
+```
+
+```haskell
+recordDeclaration   ::= optional CHANGEMOD IDENT COLON
+                        RECORD recordFieldList
 recordFieldList     ::= LPAREN recordFields RPAREN
 recordFields        ::= recordField optionalRecordField
 recordField         ::= IDENT COLON TYPE
-optionalRecordField ::= COMMA recordField optionalRecordField | ε
-optionalCHANGEMODE  ::= CHANGEMODE | ε
+optionalRecordField ::= COMMA recordField 
+                        optionalRecordField | Eps
+optionalCHANGEMODE  ::= CHANGEMODE | Eps
 ```
 
-Um nun ein Record in der Grammatik mit dem Rest unserer Programmiersprache zu verwenden, müssen wir die Produktion `recordDeclaration` anders angehen, da wir sonst einen Konflikt mit der Produktion `storageDeclaration`erhalten.
+*Um nun ein Record in der Grammatik mit dem Rest unserer Programmiersprache zu verwenden, müssen wir die Produktion `recordDeclaration` anders angehen, da wir sonst einen Konflikt mit der Produktion `storageDeclaration`erhalten.*
 
 Initialisierung eingebunden in `storageDeclaration`:
 
-```javascript
+```haskell
 storageDeclaration  ::= optionalCHANGEMOD typeIdent
 typeIdent           ::= IDENT COLON typeDeclaration
 typeDeclaration     ::= TYPE | RECORD recordFieldList
 recordFieldList     ::= LPAREN recordFields RPAREN
 recordFields        ::= recordField optionalRecordField
 recordField         ::= IDENT COLON TYPE
-optionalRecordField ::= COMMA recordField optionalRecordField | ε
-optionalCHANGEMODE  ::= CHANGEMODE | ε
+optionalRecordField ::= COMMA recordField 
+                        optionalRecordField | Eps
+optionalCHANGEMODE  ::= CHANGEMODE | Eps
 ```
-`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie sind jedoch kein eigener TYPE und haben einen eigenen RECORD Token.
+*`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie sind jedoch kein eigener TYPE und haben einen eigenen RECORD Token.*
 
-Nun möchten wir die Records in einer einzigen Zeile initialisieren, um Zugriffe auf undefined values von einem Record zu vermeiden.
+*Nun möchten wir die Records in einer einzigen Zeile initialisieren, um Zugriffe auf undefined values von einem Record zu vermeiden.*
+
 Die Grammatik würde etwa so aussehen:
 
 ```javascript
 recordInit         ::= IDENT LPAREN recordInit RPAREN
-recordInit         ::= IDENT INIT BECOMES LITERAL optinalRecordInit
-optionalRecordInit ::= COMMA recordInit | ε
+recordInit         ::= IDENT INIT BECOMES 
+                       LITERAL optinalRecordInit
+optionalRecordInit ::= COMMA recordInit | Eps
 ```
 
-Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.
+*Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.*
 
 ```javascript
-recordInitialisation     ::= IDENT LPAREN recordInitialisationList RPAREN
+recordInitialisation     ::= IDENT LPAREN 
+                             recordInitialisationList RPAREN
 recordInitialisationList ::= recordInit optionalRecordInit
 recordInit               ::= IDENT INIT BECOMES factor
-optionalRecordInit       ::= COMMA recordInit optionalRecordInit | ε
+optionalRecordInit       ::= COMMA recordInit 
+                             optionalRecordInit | Eps
 ```
 
-Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.
+*Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.*
 
 ```javascript
 expression                   ::= term1 BOOLOPRterm1
-BOOLOPRterm1                 ::= BOOLOPR term1 BOOLOPRterm1 | ε
+BOOLOPRterm1                 ::= BOOLOPR term1 BOOLOPRterm1 | Eps
 term1                        ::= term 2 RELOPRterm2
-RELOPRterm2                  ::= RELOPR term2 RELOPRterm2 | ε
+RELOPRterm2                  ::= RELOPR term2 RELOPRterm2 | Eps
 term2                        ::= term3 ADDOPRterm3
-ADDOPRterm3                  ::= ADDOPR term3 ADDOPRterm3 | ε
+ADDOPRterm3                  ::= ADDOPR term3 ADDOPRterm3 | Eps
 term3                        ::= term4 MULTOPRterm4
-MULTOPRterm4                 ::= MULTOPR term4 MULTOPRterm4 | ε
+MULTOPRterm4                 ::= MULTOPR term4 MULTOPRterm4 | Eps
 term4                        ::= factor DOTOPRfactor
-DOTOPRfactor                 ::= DOTOPR factor | ε
-factor                       ::= LITERAL | IDENT optionalIInitFuncSpec | LPAREN expression RPAREN
-optionalIInitFuncSpec        ::= INIT | expressionList | ε
+DOTOPRfactor                 ::= DOTOPR factor | Eps
+factor                       ::= LITERAL 
+                                 | IDENT optionalIInitFuncSpec  
+                                 | LPAREN expression RPAREN
+optionalIInitFuncSpec        ::= INIT | expressionList | Eps
 expressionList               ::= LPAREN optionalExpressions RPAREN
-optionalExpressions          ::= expression repeatingOptionalExpressions | ε
-repeatingOptionalExpressions ::= COMMA expression repeatingOptionalExpressions | ε
+optionalExpressions          ::= expression 
+                                 repeatingOptionalExpressions | Eps
+repeatingOptionalExpressions ::= COMMA expression 
+                                 repeatingOptionalExpressions | Eps
 ```
 
-Eine eher unwichtige Frage, die wir haben, ist die Verwendung von `COMMA`oder `SEMICOLON` für die Trennung der einzelnen Felder in einem Record, da Kommas bei anderen Programmiersprachen üblich sind, hingegen Semicolon sonst in IML auch als "und" zwischen zwei Commands interpretiert wird.
+\pagebreak
 
 ## Sonstiges
 
