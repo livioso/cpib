@@ -1,12 +1,13 @@
 ## Records in IML
-### Compilerbau HS 2015, Team BB
-**Zwischenbericht**  
-*Team: Livio Bieri, Raphael Brunner*
+**Compilerbau HS 2015, Team BB**   
+*Team: Livio Bieri, Raphael Brunner*  
 
-#### Abstract
+***Zwischenbericht 1***
+
+### Abstract
 Zwischenbericht im Modul Compilerbau. Das Dokument beschreibt die Erweiterung **Records in IML** die wir im Rahmen des Moduls vornehmen.
 
-#### Beschreibung der Erweiterung
+### Beschreibung der Erweiterung
 Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen. Ein Record soll dabei als neuer Datentyp zur Verfügung stehen. Er soll beliebig viele Felder beinhalten kann. Felder können vom Datentyp Integer oder Boolean sein. Definierte Records sind im ganzen Programm verfügbar *(in global zu definieren).*
 
 Eine **Deklaration** in IML sieht wie folgt aus:
@@ -19,7 +20,9 @@ Der **Zugriff** ist wie folgt möglich:
 
 - Die Felder können vom Datentyp `boolean` oder `int64` sein. *Nested Records sind nicht möglich.*
 
-#### Beispiel
+\pagebreak
+
+### Beispiel
 ```javascript
 program prog
 global
@@ -43,9 +46,9 @@ do
 endprogram
 ```
 
-#### Funktionalität und Typeinschränkung
+## Funktionalität und Typeinschränkung
 
-##### Deklaration des Record in `global`
+### Deklaration des Record in `global`
 Die Deklaration eines Records muss im `global` vorgenommen werden:
 
 ``` javascript
@@ -57,7 +60,7 @@ do
 ...
 ```
 
-##### Eindeutigkeit des Record Identifier
+### Eindeutigkeit des Record Identifier
 Die Deklaration (der *Identifier*) eines Records muss eindeutig sein:
 
 ``` javascript
@@ -66,14 +69,13 @@ const position: record(z: int64, u: int64) // Fehler
       ^^^^^^^^
 ```
 
-##### Eindeutigkeit der Record Felder Identifier
+### Eindeutigkeit der Record Felder Identifier
 Die Deklaration eines Record Felds muss eindeutig sein:
 
 ``` javascript
 var position: record(x: int64, x: int64) // Fehler
                                ^
 ```
-
 *Felder Eindeutigkeit muss aber _nur innerhalb_ eines Records gegeben sein:*
 
 ``` javascript
@@ -81,7 +83,9 @@ var positionXY: record(x: int64, y: int64);
 var positionXYZ: record(x: int64, y: int64, z: int64)                                 
 ```
 
-##### Typenchecking (`bool`, `int64`)
+### Typenchecking (`bool`, `int64`)
+Der zugewiesene Wert muss vom Typ sein, der in der Deklaration angegeben wurde (`bool` oder `int64`):
+
 ``` javascript
 var point: record(x: int64, y: int64);
 
@@ -89,7 +93,9 @@ point.x := true; // Fehler
            ^^^^                        
 ```
 
-##### Zugriff auf undefiniert Felder
+### Zugriff auf undefiniert Felder
+Der Zugriff auf Felder die nicht definiert wurden ist nicht möglich:
+
 ``` javascript
 var point: record(x: int64, y: int64);
 
@@ -97,7 +103,9 @@ point.z = 42; // Fehler
       ^  
 ```
 
-##### Unterstützung von `CHANGEMODE` in Records
+\pagebreak
+
+### Unterstützung von `CHANGEMODE` in Records
 Records unterstützen `CHANGEMODE` (`var`, `const`):
 
 - `CHANGEMODE` ist optional.
@@ -120,7 +128,7 @@ point: record(const x: int64, y: int64) // Fehler
               ^^^^^
 ```
 
-##### Operationen auf Records:
+### Operationen auf Records:
 Records selbst haben _keine Operationen_. *Folgendes ist also nicht möglich / wird nicht unterstützt:*
 
 ``` javascript
@@ -132,10 +140,12 @@ pointZero = pointZero + pointOne // Fehler
                       ^
 ```
 
-#### Vergleich mit anderen Sprachen
-Wir haben uns unterschiedliche Lösungsansätze angeschaut. Dazu haben wir uns vor allem angeschaut, was andere Sprachen konkret machen: 
+\pagebreak
 
-##### Haskell
+## Vergleich mit anderen Sprachen
+*Wir haben uns unterschiedliche Lösungsansätze angeschaut. Dazu haben wir uns vor allem angeschaut, was andere Sprachen konkret machen:*
+
+### Haskell
 
 Deklaration:
 
@@ -150,7 +160,7 @@ Initialisierung:
 v1 = vector 5 6 7
 ```
 
-##### Pascal
+### Pascal
 Deklaration:
 
 ```pascal
@@ -170,7 +180,7 @@ begin
 end ;
 ```
 
-##### C
+### C
 Deklaration:
 
 ```c
@@ -189,7 +199,8 @@ v1.x = 42;
 v1.y = 50;
 v1.z = 20;
 ```
-##### IML
+
+### IML
 Deklaration:
 
 ```javascript
@@ -208,12 +219,12 @@ v1(x init := 42, y init := 42, z init := 42)
 - Unsere Implementation orientiert sich an der Pascal Implementation.
 - Wir fanden eine einfache Initialisierung wichtig *(in einer Zeile).*
 
-#### Lexikalische und Grammatikalische Syntax
+## Lexikalische und Grammatikalische Syntax
 ```javascript
 !!!
 ```
 
-#### Sonstiges
+## Sonstiges
 
 - Sourcecode & Dokumentation: https://github.com/livioso/cpib
 - Arbeitsteilung: Wir haben die Arbeiten wie folgt im Team verteilt. *Bieri: Scanner, Zwischenbericht* / *Brunner: Grammatik (SML), Zwischenbericht*. 
