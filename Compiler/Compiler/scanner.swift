@@ -82,6 +82,7 @@ class Scanner: KeywordProvider {
 				processNewLine()
 			}
 		}
+        tokenlist.append(Token(terminal: Terminal.SENTINEL))
 		
 		print("\n✅ Scan finished: Tokenlist is:")
 		for token in tokenlist {
