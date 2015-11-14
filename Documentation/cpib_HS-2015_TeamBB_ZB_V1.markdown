@@ -261,7 +261,10 @@ optionalRecordInit ::= COMMA recordInit | ε
 Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.
 
 ```javascript
-//undefined so far
+recordInitialisation     ::= IDENT LPAREN recordInitialisationList RPAREN
+recordInitialisationList ::= recordInit optionalRecordInit
+recordInit               ::= IDENT INIT BECOMES factor
+optionalRecordInit       ::= COMMA recordInit optionalRecordInit | ε
 ```
 
 Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.
