@@ -8,7 +8,7 @@
 Zwischenbericht im Modul Compilerbau. Das Dokument beschreibt die Erweiterung **Records in IML** die wir im Rahmen des Moduls vornehmen.
 
 ### Beschreibung der Erweiterung
-Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen. Ein Record soll dabei als neuer Datentyp zur Verfügung stehen. Er soll beliebig viele Felder beinhalten kann. Felder können vom Datentyp Integer oder Boolean sein. Definierte Records sind im ganzen Programm verfügbar *(in global zu definieren).*
+Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen. Ein Record soll dabei als neuer Datentyp zur Verfügung stehen. Er soll beliebig viele Felder beinhalten können. Felder können vom Datentyp Integer oder Boolean sein. Definierte Records sind im ganzen Programm verfügbar *(in global zu definieren).*
 
 Eine **Deklaration** in IML sieht wie folgt aus:
 
@@ -93,8 +93,8 @@ point.x := true; // Fehler
            ^^^^                        
 ```
 
-### Zugriff auf undefiniert Felder
-Der Zugriff auf Felder die nicht definiert wurden ist nicht möglich:
+### Zugriff auf undefinierte Felder
+Der Zugriff auf Felder, die nicht definiert wurden, ist nicht möglich:
 
 ``` javascript
 var point: record(x: int64, y: int64);
@@ -109,7 +109,7 @@ point.z = 42; // Fehler
 Records unterstützen `CHANGEMODE` (`var`, `const`):
 
 - `CHANGEMODE` ist optional.
-- Falls nicht angegeben wird `var` verwendet.
+- Falls nicht angegeben, wird `var` verwendet.
 
 ``` javascript
 point: record(x: int64, y: int64)
@@ -220,9 +220,50 @@ v1(x init := 42, y init := 42, z init := 42)
 - Wir fanden eine einfache Initialisierung wichtig *(in einer Zeile).*
 
 ## Lexikalische und Grammatikalische Syntax
+Unser Ziel ist es, das Record ähnlich wie die anderen Variabeln in IML zu behandeln. Daher wird die Initialisierung eines Records analog zur Initialisierung der Standardvariabeln stattfinden.
+
+Die Grundgrammatik-Idee eines Records für die Initialisierung:
+
 ```javascript
-!!!
+recordDeclaration   ::=optional CHANGEMOD IDENT COLON RECORD recordFieldList
+recordFieldList     ::= LPAREN recordFields RPAREN
+recordFields        ::= recordField optionalRecordField
+recordField         ::= IDENT COLON TYPE
+optionalRecordField ::= COMMA recordField optionalRecordField | ε
+optionalCHANGEMODE  ::= CHANGEMODE | ε
 ```
+
+Um nun ein Record in der Grammatik mit dem Rest unserer Programmiersprache zu verwenden, müssen wir die Produktion `recordDeclaration` anders angehen, da wir sonst einen Konflikt mit der Produktion `storageDeclaration`erhalten.
+
+Initialisierung eingebunden in `storageDeclaration`:
+
+```javascript
+storageDeclaration ::= optionalCHANGEMOD typeIdent
+typeIdent          ::= IDENT COLON typeDeclaration
+typeDeclaration    ::= TYPE | RECORD recordFieldList
+recordFieldList     ::= LPAREN recordFields RPAREN
+recordFields        ::= recordField optionalRecordField
+recordField         ::= IDENT COLON TYPE
+optionalRecordField ::= COMMA recordField optionalRecordField | ε
+optionalCHANGEMODE  ::= CHANGEMODE | ε
+```
+`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie sind jedoch kein eigener TYPE und haben einen eigenen RECORD Token.
+
+Nun möchten wir die Records in einer einzigen Zeile initialisieren, um Zugriffe auf undefined values von einem Record zu vermeiden.
+Die Grammatik würde etwa so aussehen:
+
+```javascript
+recordInit         ::= IDENT LPAREN recordInit RPAREN
+recordInit         ::= IDENT INIT BECOMES LITERAL optinalRecordInit
+optionalRecordInit ::= COMMA recordInit | ε
+```
+
+Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.
+
+Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.
+Aber auch dafür haben wir bisher noch keine geeignete Grammatikidee.
+
+Eine eher unwichtige Frage, die wir haben, ist die Verwendung von `COMMA`oder `SEMICOLON` für die Trennung der einzelnen Felder in einem Record, da Kommas bei anderen Programmiersprachen üblich sind, hingegen Semicolon sonst in IML auch als "und" zwischen zwei Commands interpretiert wird.
 
 ## Sonstiges
 
