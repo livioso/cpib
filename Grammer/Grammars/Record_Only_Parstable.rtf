@@ -1,31 +1,21 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
 {\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
 {\colortbl;\red255\green255\blue255;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\paperw11900\paperh16840\margl1440\margr1440\vieww13700\viewh7740\viewkind0
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
-\f0\fs22 \cf0 \CocoaLigature0 <recordDeclaration>\
-  terminal IDENT\
-    <optionalCHANGEMODE> IDENT COLON RECORD <recordList>\
-  terminal CHANGEMODE\
-    <optionalCHANGEMODE> IDENT COLON RECORD <recordList>\
-<recordList>\
-  terminal LPAREN\
-    LPAREN <recordFields> RPAREN\
-<recordFields>\
-  terminal IDENT\
-    <recordField> <optionalRecordFields>\
-<recordField>\
-  terminal IDENT\
-    IDENT COLON TYPE\
-<optionalRecordFields>\
-  terminal RPAREN\
-    \
-  terminal COMMA\
-    COMMA <recordField> <optionalRecordFields>\
-<optionalCHANGEMODE>\
-  terminal IDENT\
-    \
-  terminal CHANGEMODE\
-    CHANGEMODE\
-}
+\f0\fs22 \cf0 \CocoaLigature0 expression                   ::= term1 repBOOLOPRterm1\
+repBOOLOPRterm1              ::= BOOLOPR term1 repBOOLOPRterm1 | \uc0\u949 \
+term1                        ::= term 2 repRELOPRterm2\
+repRELOPRterm2               ::= RELOPR term2 repRELOPRterm2 | \uc0\u949 \
+term2                        ::= term3 repADDOPRterm3\
+repADDOPRterm3               ::= ADDOPR term3 repADDOPRterm3 | \uc0\u949 \
+term3                        ::= term4 repMULTOPRterm4\
+repMULTOPRterm4              ::= MULTOPR term4 repMULTOPRterm4 | \uc0\u949 \
+term4                        ::= factor repDOTOPRfactor\
+repDOTOPRfactor              ::= DOTOPR factor repDOTOPRfactor | \uc0\u949 \
+factor                       ::= LITERAL | IDENT optionalIdent | LPAREN expression RPAREN\
+optionalIdent                ::= INIT | expressionList | \uc0\u949 \
+expressionList               ::= LPAREN optionalExpressions RPAREN\
+optionalExpressions          ::= expression repeatingOptionalExpressions | \uc0\u949 \
+repeatingOptionalExpressions ::= COMMA expression repeatingOptionalExpressions | \uc0\u949 }

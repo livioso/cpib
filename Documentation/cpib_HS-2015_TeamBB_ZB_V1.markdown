@@ -260,8 +260,29 @@ optionalRecordInit ::= COMMA recordInit | ε
 
 Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.
 
+```javascript
+//undefined so far
+```
+
 Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.
-Aber auch dafür haben wir bisher noch keine geeignete Grammatikidee.
+
+```javascript
+expression                   ::= term1 BOOLOPRterm1
+BOOLOPRterm1                 ::= BOOLOPR term1 BOOLOPRterm1 | ε
+term1                        ::= term 2 RELOPRterm2
+RELOPRterm2                  ::= RELOPR term2 RELOPRterm2 | ε
+term2                        ::= term3 ADDOPRterm3
+ADDOPRterm3                  ::= ADDOPR term3 ADDOPRterm3 | ε
+term3                        ::= term4 MULTOPRterm4
+MULTOPRterm4                 ::= MULTOPR term4 MULTOPRterm4 | ε
+term4                        ::= factor DOTOPRfactor
+DOTOPRfactor                 ::= DOTOPR factor | ε
+factor                       ::= LITERAL | IDENT optionalIInitFuncSpec | LPAREN expression RPAREN
+optionalIInitFuncSpec        ::= INIT | expressionList | ε
+expressionList               ::= LPAREN optionalExpressions RPAREN
+optionalExpressions          ::= expression repeatingOptionalExpressions | ε
+repeatingOptionalExpressions ::= COMMA expression repeatingOptionalExpressions | ε
+``
 
 Eine eher unwichtige Frage, die wir haben, ist die Verwendung von `COMMA`oder `SEMICOLON` für die Trennung der einzelnen Felder in einem Record, da Kommas bei anderen Programmiersprachen üblich sind, hingegen Semicolon sonst in IML auch als "und" zwischen zwei Commands interpretiert wird.
 
