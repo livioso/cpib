@@ -282,7 +282,7 @@ optionalIInitFuncSpec        ::= INIT | expressionList | ε
 expressionList               ::= LPAREN optionalExpressions RPAREN
 optionalExpressions          ::= expression repeatingOptionalExpressions | ε
 repeatingOptionalExpressions ::= COMMA expression repeatingOptionalExpressions | ε
-``
+```
 
 Eine eher unwichtige Frage, die wir haben, ist die Verwendung von `COMMA`oder `SEMICOLON` für die Trennung der einzelnen Felder in einem Record, da Kommas bei anderen Programmiersprachen üblich sind, hingegen Semicolon sonst in IML auch als "und" zwischen zwei Commands interpretiert wird.
 
