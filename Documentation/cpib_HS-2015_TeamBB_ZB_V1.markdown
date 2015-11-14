@@ -238,9 +238,9 @@ Um nun ein Record in der Grammatik mit dem Rest unserer Programmiersprache zu ve
 Initialisierung eingebunden in `storageDeclaration`:
 
 ```javascript
-storageDeclaration ::= optionalCHANGEMOD typeIdent
-typeIdent          ::= IDENT COLON typeDeclaration
-typeDeclaration    ::= TYPE | RECORD recordFieldList
+storageDeclaration  ::= optionalCHANGEMOD typeIdent
+typeIdent           ::= IDENT COLON typeDeclaration
+typeDeclaration     ::= TYPE | RECORD recordFieldList
 recordFieldList     ::= LPAREN recordFields RPAREN
 recordFields        ::= recordField optionalRecordField
 recordField         ::= IDENT COLON TYPE
