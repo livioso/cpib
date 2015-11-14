@@ -86,7 +86,10 @@ class Scanner: KeywordProvider {
 		
 		print("\n✅ Scan finished: Tokenlist is:")
 		for token in tokenlist {
-			print("🔘\(token.terminal)\n➡️\(token.attribute)")
+			print("🔘\(token.terminal)")
+            if let attr = token.attribute {
+                print("➡️\(attr)")
+            }
 		}
 		
 		return tokenlist

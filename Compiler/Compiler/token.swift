@@ -13,6 +13,7 @@ struct Token {
 	
 	enum Attribute {
 		// Types
+        case Type(TypeIdentifier)
 		case Integer(Int)
 		case Boolean(Bool)
 		case Ident(String)
@@ -30,6 +31,9 @@ struct Token {
 	
 	// extra types for Attribute such as
 	// FlowMode or ChangeMode etc.
+    enum TypeIdentifier {
+        case BOOLEAN, INT64, INT32
+    }
 	enum FlowModeType {
 		case IN, OUT, INOUT
 	}

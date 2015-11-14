@@ -1,7 +1,7 @@
 import Foundation
 
 public enum Terminal {
-	case TYPE // BOOL, INT32
+	case TYPE // BOOL, INT32, INT64
 	case RELOPR // LT, GT, etc.
 	case ADDOPR // PLUS, MINUS
 	case MULTOPR // TIMES, DIV_E, MOD_E
