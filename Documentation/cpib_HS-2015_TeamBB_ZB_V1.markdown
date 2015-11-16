@@ -150,8 +150,8 @@ pointZero = pointZero + pointOne // Fehler
 Deklaration:
 
 ```haskell
-data vector = vector ( 
-	x..Int,	y..Int,	z..Int)
+data vector = vector { 
+	x::Int,	y::Int,	z::Int}
 ```
 
 Initialisierung:
