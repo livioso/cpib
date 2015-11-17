@@ -286,7 +286,7 @@ optionalRecordInit       ::= COMMA recordInit
 ```javascript
 expression                   ::= term1 BOOLOPRterm1
 BOOLOPRterm1                 ::= BOOLOPR term1 BOOLOPRterm1 | Eps
-term1                        ::= term 2 RELOPRterm2
+term1                        ::= term2 RELOPRterm2
 RELOPRterm2                  ::= RELOPR term2 RELOPRterm2 | Eps
 term2                        ::= term3 ADDOPRterm3
 ADDOPRterm3                  ::= ADDOPR term3 ADDOPRterm3 | Eps
