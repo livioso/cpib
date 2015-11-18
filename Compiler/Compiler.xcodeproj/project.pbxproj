@@ -13,6 +13,7 @@
 		BA1C8A471BFCF98F00D226A4 /* scanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A431BFCF98F00D226A4 /* scanner.swift */; };
 		BA1C8A481BFCF98F00D226A4 /* terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A441BFCF98F00D226A4 /* terminal.swift */; };
 		BA1C8A491BFCF98F00D226A4 /* token.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A451BFCF98F00D226A4 /* token.swift */; };
+		BA1C8A4B1BFD01C500D226A4 /* conctree.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A4A1BFD01C500D226A4 /* conctree.swift */; };
 		BAF324611BBC71190039CB43 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAF324601BBC71190039CB43 /* main.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 		BA1C8A431BFCF98F00D226A4 /* scanner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = scanner.swift; sourceTree = "<group>"; };
 		BA1C8A441BFCF98F00D226A4 /* terminal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = terminal.swift; sourceTree = "<group>"; };
 		BA1C8A451BFCF98F00D226A4 /* token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = token.swift; sourceTree = "<group>"; };
+		BA1C8A4A1BFD01C500D226A4 /* conctree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = conctree.swift; path = parser/conctree.swift; sourceTree = "<group>"; };
 		BAF3245D1BBC71190039CB43 /* Compiler */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Compiler; sourceTree = BUILT_PRODUCTS_DIR; };
 		BAF324601BBC71190039CB43 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				BA1C8A3C1BFCF91300D226A4 /* parser.swift */,
+				BA1C8A4A1BFD01C500D226A4 /* conctree.swift */,
 			);
 			name = parser;
 			sourceTree = "<group>";
@@ -169,6 +172,7 @@
 				BA1C8A461BFCF98F00D226A4 /* keyword.swift in Sources */,
 				BAF324611BBC71190039CB43 /* main.swift in Sources */,
 				BA1C8A491BFCF98F00D226A4 /* token.swift in Sources */,
+				BA1C8A4B1BFD01C500D226A4 /* conctree.swift in Sources */,
 				BA1C8A401BFCF97400D226A4 /* characterExtension.swift in Sources */,
 				BA1C8A481BFCF98F00D226A4 /* terminal.swift in Sources */,
 			);
