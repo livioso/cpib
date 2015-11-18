@@ -101,7 +101,8 @@ class Scanner: KeywordProvider {
 	
 	private func buildTokenFrom(aRange: Range<Int>) -> String {
 		// end position must be given as negative advanceBy(-n)!
-		let fromTokenEnd = currentLine.content.characters.count - aRange.endIndex
+		let currentLineLength = currentLine.content.characters.count
+		let fromTokenEnd = currentLineLength - aRange.endIndex
 		let toTokenStart = aRange.startIndex
 		
 		let tokenRange: Range<String.Index> = Range(
@@ -111,20 +112,8 @@ class Scanner: KeywordProvider {
 		// Rewind iterator by one so we don't miss cases where
 		// there is no <whitespace> <tab> or so to seperate it:
 		// for example: (a:2) or divide():
-		//
-		//	-> I have no idea how do do this :-/
-		//     something along the lines of.
-		// currentLine.iterator.previous()
-        if let previous = currentLine.previous() {
-            switch (previous.kind()){
-            case .Skippable: break
-            case _:
-                currentLine.back()
-                currentTokenRange.endIndex--
-                currentTokenRange.startIndex--
-            }
-        }
-        
+		currentLine.back()
+		
 		return currentLine.content.substringWithRange(tokenRange)
 	}
 	
@@ -195,13 +184,18 @@ class Scanner: KeywordProvider {
 		case (.LiteralState, _): newLiteralToken()
 		case (.IdentState, _): newIdentifierToken()
 		case (.SymbolState, _): newSymbolToken()
-		case (_, .ErrorState): break // TODO: Fixme -> Throw exception or so.
+		case (_, .ErrorState): break
 		case (_, _): break
 		}
 		
-		// update the end index for 
-		// the next transition ahead
-		currentTokenRange.endIndex++
+		// only increment endIndex when we did not
+		// add a new token
+		switch (from, to) {
+		case (.LiteralState, .InitialState): fallthrough
+		case (.IdentState, .InitialState): fallthrough
+		case (.SymbolState, .InitialState): break
+		case (_, _): currentTokenRange.endIndex++
+		}
 		
 		switch to {
 		case .IdentState: identStateHandler()
@@ -278,7 +272,10 @@ class Scanner: KeywordProvider {
 		currentState = .IdleState
 		currentTokenRange = Range(start: 0, end: 0)
 		currentLine = Line(
-			content: newLineContent,
+			// append whitespace to make further
+			// end of line / range checking unnecessary
+			// in buildTokenFrom().
+			content: newLineContent + " ",
 			number: (currentLine.number + 1))
 	}
 	
