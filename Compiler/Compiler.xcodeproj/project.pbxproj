@@ -49,6 +49,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BA1C8A3B1BFC893900D226A4 /* parser */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = parser;
+			sourceTree = "<group>";
+		};
 		BA50BF6C1BC71F1F0029603E /* scanner */ = {
 			isa = PBXGroup;
 			children = (
@@ -88,6 +95,7 @@
 		BAF3245F1BBC71190039CB43 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
+				BA1C8A3B1BFC893900D226A4 /* parser */,
 				BAC142CB1BC4205000A18641 /* helper */,
 				BA50BF6C1BC71F1F0029603E /* scanner */,
 				BAF324601BBC71190039CB43 /* main.swift */,

@@ -42,5 +42,4 @@ public enum Terminal {
     case NOTOPR
     case RECORD
     case SENTINEL
-    
 }
