@@ -4,7 +4,6 @@ datatype term
   | LPAREN
   | MULTOPR
   | RPAREN
-  | RECORD
   | COLON
   | SEMICOLON
   | PROGRAM
@@ -45,7 +44,6 @@ val string_of_term =
    | LPAREN     => "LPAREN"
    | MULTOPR    => "MULTOPR"
    | RPAREN     => "RPAREN"
-   | RECORD     => "RECORD"
    | COLON      => "COLON"
    | SEMICOLON  => "SEMICOLON"
    | PROGRAM    => "PROGRAM"
@@ -104,14 +102,14 @@ datatype nonterm
   | optionalLocalStorageDeclarations
   | repeatingOptionalStorageDeclarations
   | term1
-  | repBOOLOPRterm1
+  | BOOLOPRterm1
   | term2
-  | repRELOPRterm2
+  | RELOPRterm2
   | term3
-  | repADDOPRterm3
+  | ADDOPRterm3
   | term4
-  | repMULTOPRterm4
-  | repDOTOPRfactor
+  | MULTOPRterm4
+  | DOTOPRfactor
   | optionalIdent
   | expressionList
   | optionalExpressions
@@ -122,7 +120,8 @@ datatype nonterm
   | repeatingOptionalParameters
   | recordFields
   | recordField
-  | optionalRecordFields
+  | repRecordFields
+  | optRecordDeclaration
 
 
 val string_of_nonterm =
@@ -149,14 +148,14 @@ val string_of_nonterm =
    | optionalLocalStorageDeclarations         => "optionalLocalStorageDeclarations"
    | repeatingOptionalStorageDeclarations     => "repeatingOptionalStorageDeclarations"
    | term1                                    => "term1"
-   | repBOOLOPRterm1                          => "repBOOLOPRterm1"
+   | BOOLOPRterm1                             => "BOOLOPRterm1"
    | term2                                    => "term2"
-   | repRELOPRterm2                           => "repRELOPRterm2"
+   | RELOPRterm2                              => "RELOPRterm2"
    | term3                                    => "term3"
-   | repADDOPRterm3                           => "repADDOPRterm3"
+   | ADDOPRterm3                              => "ADDOPRterm3"
    | term4                                    => "term4"
-   | repMULTOPRterm4                          => "repMULTOPRterm4"
-   | repDOTOPRfactor                          => "repDOTOPRfactor"
+   | MULTOPRterm4                             => "MULTOPRterm4"
+   | DOTOPRfactor                             => "DOTOPRfactor"
    | optionalIdent                            => "optionalIdent"
    | expressionList                           => "expressionList"
    | optionalExpressions                      => "optionalExpressions"
@@ -165,9 +164,10 @@ val string_of_nonterm =
    | optionalParameters                       => "optionalParameters"
    | parameter                                => "parameter"
    | repeatingOptionalParameters              => "repeatingOptionalParameters"
-   | recordFields         => "recordFields"
-   | recordField          => "recordField"
-   | optionalRecordFields => "optionalRecordFields"
+   | recordFields                             => "recordFields"
+   | recordField                              => "recordField"
+   | repRecordFields                     => "repRecordFields"
+   | optRecordDeclaration                     => "optRecordDeclaration"
       
 
 val string_of_gramsym = (string_of_term, string_of_nonterm)
@@ -217,9 +217,11 @@ val productions =
 	[[T IDENT, T COLON, N typeDeclaration]]),
 
 (typeDeclaration,
-	[[T TYPE],
-	 [T IDENT],
-   [T RECORD, N recordFieldList]]),
+	[[T TYPE, N optRecordDeclaration]]),
+
+(optRecordDeclaration,
+  [[],
+   [N recordFieldList]]),
 
 (functionDeclaration,
 	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
@@ -264,14 +266,14 @@ val productions =
 	[[T LPAREN, N recordFields, T RPAREN]]),
 
 (recordFields,
-	[[N recordField, N optionalRecordFields]]),
+	[[N recordField, N repRecordFields]]),
 
 (recordField,
-  [[T IDENT, T COLON, T TYPE]]),
+  [[N expression]]),
 
-(optionalRecordFields,
+(repRecordFields,
   [[],
-   [T COMMA, N recordField, N optionalRecordFields]]),
+   [T COMMA, N recordField, N repRecordFields]]),
 
 (expressionList,
 	[[T LPAREN, N optionalExpressions, T RPAREN]]),
@@ -281,43 +283,43 @@ val productions =
 	 [N expression, N repeatingOptionalExpressions]]),
 
 (expression,
-    [[N term1, N repBOOLOPRterm1]]),
+    [[N term1, N BOOLOPRterm1]]),
 
 (repeatingOptionalExpressions,
 	[[],
 	 [T COMMA, N expression, N repeatingOptionalExpressions]]),
 
-(repBOOLOPRterm1,
+(BOOLOPRterm1,
 	[[],
-	 [T BOOLOPR, N term1, N repBOOLOPRterm1]]),
+	 [T BOOLOPR, N term1]]),
 
 (term1,
-	[[N term2, N repRELOPRterm2]]),
+	[[N term2, N RELOPRterm2]]),
 
-(repRELOPRterm2,
+(RELOPRterm2,
 	[[],
-	 [T RELOPR, N term2, N repRELOPRterm2]]),
+	 [T RELOPR, N term2, N RELOPRterm2]]),
 
 (term2,
-	[[N term3, N repADDOPRterm3]]),
+	[[N term3, N ADDOPRterm3]]),
 
-(repADDOPRterm3,
-    [[T ADDOPR, N term3, N repADDOPRterm3],
+(ADDOPRterm3,
+    [[T ADDOPR, N term3, N ADDOPRterm3],
      []]),
 
 (term3,
-	[[N term4, N repMULTOPRterm4]]),
+	[[N term4, N MULTOPRterm4]]),
 
-(repMULTOPRterm4,
+(MULTOPRterm4,
     [[],
-	 [T MULTOPR, N term4, N repMULTOPRterm4]]),
+	 [T MULTOPR, N term4, N MULTOPRterm4]]),
 
 (term4,
-    [[N factor, N repDOTOPRfactor]]),
+    [[N factor, N DOTOPRfactor]]),
 
-(repDOTOPRfactor,
-	[[],
-	 [T DOTOPR, N factor, N repDOTOPRfactor]]),
+(DOTOPRfactor,
+    [[],
+     [T DOTOPR, T IDENT]]),
 
 (factor,
     [[T LITERAL],
