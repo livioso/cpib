@@ -40,6 +40,5 @@ public enum Terminal {
     case DEBUGIN
     case DEBUGOUT
     case NOTOPR
-    case RECORD
     case SENTINEL
 }
