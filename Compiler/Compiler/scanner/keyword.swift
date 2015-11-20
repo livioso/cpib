@@ -91,7 +91,8 @@ class KeywordProvider {
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LE)),
 			"<": Token(terminal: Terminal.RELOPR,
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LT)),
-			":=": Token(terminal: Terminal.BECOMES)
+			":=": Token(terminal: Terminal.BECOMES),
+            ".": Token(terminal: Terminal.DOTOPR)
 		]
 	}
 	

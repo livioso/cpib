@@ -166,7 +166,7 @@ val string_of_nonterm =
    | repeatingOptionalParameters              => "repeatingOptionalParameters"
    | recordFields                             => "recordFields"
    | recordField                              => "recordField"
-   | repRecordFields                     => "repRecordFields"
+   | repRecordFields                          => "repRecordFields"
    | optRecordDeclaration                     => "optRecordDeclaration"
       
 
