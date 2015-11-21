@@ -1,6 +1,10 @@
 import Foundation
 
 class Parser {
+    
+    enum ParseError : ErrorType {
+        case WrongTerminal
+    }
 	
 	var tokenlist: [Token]
 	var token: Token
@@ -12,7 +16,7 @@ class Parser {
 		self.terminal = terminal
 	}
 	
-	func consume(expectedTerminal: Terminal) -> Token {
+	func consume(expectedTerminal: Terminal) throws -> Token {
 		
 		if terminal == expectedTerminal {
 			let consumedToken = token
@@ -24,25 +28,24 @@ class Parser {
 			
 		} else {
 			print("PError: expected \(expectedTerminal) found: \(terminal): \(token.lineNumber)")
+            throw ParseError.WrongTerminal
 		}
-		
-		return Token(terminal: Terminal.SENTINEL) // that's not ideal :-/
 	}
 	
 	func parse() -> ConcTree.Program {
 		let prog = program()
-		consume(Terminal.SENTINEL)
+		try! consume(Terminal.SENTINEL)
 		return prog
 	}
 	
 	func program() -> ConcTree.Program {
 		print("program ::= PROGRAM IDENT optionalGlobalDeclarations DO blockCmd ENDPROGRAM")
-		consume(Terminal.PROGRAM)
-		let ident = consume(Terminal.IDENT)
+		try! consume(Terminal.PROGRAM)
+		let ident = try! consume(Terminal.IDENT)
 		let optGlobalDeclarations = optionalGlobalDeclarations()
-		consume(Terminal.DO)
+		try! consume(Terminal.DO)
 		let blockCmd = blockCommand()
-		consume(Terminal.ENDPROGRAM)
+		try! consume(Terminal.ENDPROGRAM)
 		return ConcTree.Program(
 			ident: ident, optionalGlobalDeclarations: optGlobalDeclarations!, blockCmd: blockCmd);
 	}
@@ -50,7 +53,7 @@ class Parser {
 	func optionalGlobalDeclarations() -> ConcTree.OptionalGlobalDeclarations? {
 		if (terminal == Terminal.GLOBAL) {
 			print("optionalGlobalDeclarations ::= GLOBAL declarations")
-			consume(Terminal.GLOBAL)
+			try! consume(Terminal.GLOBAL)
 			return ConcTree.OptionalGlobalDeclarations(declartions: declarations())
 		} else {
 			print("optionalGlobalDeclarations ::= epsilon")
