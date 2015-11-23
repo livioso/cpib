@@ -269,7 +269,7 @@ val productions =
 	[[N recordField, N repRecordFields]]),
 
 (recordField,
-  [[N expression]]),
+  [[N cmd]]),
 
 (repRecordFields,
   [[],
