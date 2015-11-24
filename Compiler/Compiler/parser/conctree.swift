@@ -34,8 +34,10 @@ class ConcTree {
 	
 	class OptionalGlobalDeclarations: ASTConvertible {
 		
-		init(declartions: Declarations) {
-			
+		var declarations: Declarations
+		
+		init(declarations: Declarations) {
+			self.declarations = declarations
 		}
 		
 		var description: String {
@@ -62,6 +64,15 @@ class ConcTree {
 	
 	class Declarations: ASTConvertible {
 		
+		var declaration: Declaration
+		var repeatingOptionalDelcarations: RepeatingOptionalDelcarations?
+		
+		init(declaration: Declaration,
+			repeatingOptionalDelcarations: RepeatingOptionalDelcarations?) {
+				self.declaration = declaration
+				self.repeatingOptionalDelcarations = repeatingOptionalDelcarations
+		}
+		
 		var description: String {
 			return "OptionalGlobalDeclarations"
 		}
@@ -81,5 +92,62 @@ class ConcTree {
 		func toAbstract() {
 			
 		}
+	}
+	
+	
+	class Declaration: ASTConvertible {
+		
+		var declaration: Declaration
+		
+		init(declaration: Declaration) {
+			self.declaration = declaration
+		}
+		
+		var description: String {
+			return "Declaration"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class RepeatingOptionalDelcarations: ASTConvertible {
+		
+		var description: String {
+			return "RepeatingOptionalDelcarations"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class StorageDeclaraction: Declaration {
+		
+		init() {
+			
+		}
+		
+	}
+	
+	
+	class FunctionDeclaraction: Declaration {
+		
+		init() {
+			
+		}
+		
+	}
+	
+	
+	class ProcedureDeclaraction: Declaration {
+		
+		init() {
+			
+		}
+		
 	}
 }

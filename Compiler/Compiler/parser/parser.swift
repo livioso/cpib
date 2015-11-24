@@ -47,30 +47,59 @@ class Parser {
 		let blockCmd = blockCommand()
 		try! consume(Terminal.ENDPROGRAM)
 		return ConcTree.Program(
-			ident: ident, optionalGlobalDeclarations: optGlobalDeclarations!, blockCmd: blockCmd);
+			ident: ident, optionalGlobalDeclarations: optGlobalDeclarations, blockCmd: blockCmd);
 	}
 	
-	func optionalGlobalDeclarations() -> ConcTree.OptionalGlobalDeclarations? {
-		if (terminal == Terminal.GLOBAL) {
-			print("optionalGlobalDeclarations ::= GLOBAL declarations")
-			try! consume(Terminal.GLOBAL)
-			return ConcTree.OptionalGlobalDeclarations(declartions: declarations())
-		} else {
-			print("optionalGlobalDeclarations ::= epsilon")
-			return nil
+	func declaration() throws -> ConcTree.Declaration {
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			return (ConcTree.Declaration(declaration: storageDeclaraction()))
+		case Terminal.FUN:
+			return (ConcTree.Declaration(declaration: functionDeclaration()))
+		case Terminal.PROC:
+			return (ConcTree.Declaration(declaration: procedureDeclaration()))
+		case _: throw ParseError.WrongTerminal
 		}
+	}
+	
+	func repeatingOptionalDelcarations() -> ConcTree.RepeatingOptionalDelcarations? {
+		return nil
 	}
 	
 	func declarations() -> ConcTree.Declarations {
 		print("declarations ::= declaration repeatingOptionalDeclarations")
-		// ConcTree.Declaration declaration = declaration();
-		// ConcTree.RepeatingOptionalDeclarations repeatingOptionalDeclarations = repeatingOptionalDeclarations();
-		// return new ConcTree.Declarations(declaration, repeatingOptionalDeclarations);
-		return ConcTree.Declarations()
+		
+		return ConcTree.Declarations(
+			declaration: try! declaration(),
+			repeatingOptionalDelcarations: repeatingOptionalDelcarations())
 	}
 	
 	func blockCommand() -> ConcTree.BlockCommand {
 		return ConcTree.BlockCommand()
 	}
-
+	
+	func optionalGlobalDeclarations() -> ConcTree.OptionalGlobalDeclarations? {
+		switch(terminal) {
+		case Terminal.GLOBAL:
+			print("optionalGlobalDeclarations ::= GLOBAL declarations")
+			try! consume(Terminal.GLOBAL)
+			return ConcTree.OptionalGlobalDeclarations(declarations: declarations())
+		case _:
+			print("optionalGlobalDeclarations ::= epsilon")
+			return nil // ε
+		}
+	}
+	
+	func storageDeclaraction() -> ConcTree.StorageDeclaraction {
+		return ConcTree.StorageDeclaraction()
+	}
+		
+	func functionDeclaration() -> ConcTree.FunctionDeclaraction {
+		return ConcTree.FunctionDeclaraction()
+	}
+		
+	func procedureDeclaration() -> ConcTree.ProcedureDeclaraction {
+		return ConcTree.ProcedureDeclaraction()
+	}
 }
