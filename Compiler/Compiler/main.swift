@@ -11,7 +11,7 @@ func main() {
 		var debugContent = ""
 		debugContent += "program main\n"
 		debugContent += "global\n"
-		debugContent += "var\n"
+		debugContent += "fun yolo( ) returns var fib : int32 \n"
 		debugContent += "do\n"
 		
 		scanner.debugContent = debugContent

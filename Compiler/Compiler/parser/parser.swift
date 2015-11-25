@@ -36,45 +36,69 @@ class Parser {
 	}
 	
 	func parse() -> ConcTree.Program {
-		let prog = program()
+		let prog = try! program()
 		try! consume(Terminal.SENTINEL)
 		return prog
 	}
 	
-	func program() -> ConcTree.Program {
-		print("program ::= PROGRAM IDENT optionalGlobalDeclarations DO blockCmd ENDPROGRAM")
-		try! consume(Terminal.PROGRAM)
-		let ident = try! consume(Terminal.IDENT)
-		let optGlobalDeclarations = optionalGlobalDeclarations()
-		try! consume(Terminal.DO)
-		let blockCmd = blockCommand()
-		try! consume(Terminal.ENDPROGRAM)
-		return ConcTree.Program(
-			ident: ident, optionalGlobalDeclarations: optGlobalDeclarations, blockCmd: blockCmd);
-	}
 	
-	func blockCommand() -> ConcTree.BlockCommand {
-		return ConcTree.BlockCommand()
-	}
+	// Production Functions
+	// Terminals can be found <terminals.swift>
 	
-	func optionalGlobalDeclarations() -> ConcTree.OptionalGlobalDeclarations? {
+	func program() throws -> ConcTree.Program {
 		switch(terminal) {
-		case Terminal.GLOBAL:
-			print("optionalGlobalDeclarations ::= GLOBAL declarations")
-			try! consume(Terminal.GLOBAL)
-			return ConcTree.OptionalGlobalDeclarations(declarations: declarations())
+		case Terminal.PROGRAM:
+			print("program ::= PROGRAM IDENT optionalGlobalDeclarations DO blockCmd ENDPROGRAM")
+			try! consume(Terminal.PROGRAM)
+			let ident = try! consume(Terminal.IDENT)
+			let optGlobalDeclarations = try! optionalGlobalDeclarations()
+			try! consume(Terminal.DO)
+			let blockCmd = blockCommand()
+			try! consume(Terminal.ENDPROGRAM)
+			return ConcTree.Program(
+				ident: ident,
+				optionalGlobalDeclarations: optGlobalDeclarations,
+				blockCmd: blockCmd);
 		case _:
-			print("optionalGlobalDeclarations ::= epsilon")
-			return nil // ε
+			throw ParseError.WrongTerminal
 		}
 	}
 	
-	func declarations() -> ConcTree.Declarations {
-		print("declarations ::= declaration repeatingOptionalDeclarations")
-		
-		return ConcTree.Declarations(
-			declaration: try! declaration(),
-			repeatingOptionalDelcarations: repeatingOptionalDelcarations())
+	func blockCommand() -> ConcTree.BlockCommand {
+		// todo: continue here
+		return ConcTree.BlockCommand()
+	}
+	
+	func optionalGlobalDeclarations() throws -> ConcTree.OptionalGlobalDeclarations? {
+		switch(terminal) {
+		case Terminal.DO:
+			print("optionalGlobalDeclarations ::= ε")
+			return nil // ε
+		case Terminal.GLOBAL:
+			print("optionalGlobalDeclarations ::= GLOBAL declarations")
+			try! consume(Terminal.GLOBAL)
+			let decls = try! declarations()
+			return ConcTree.OptionalGlobalDeclarations(declarations: decls)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func declarations() throws -> ConcTree.Declarations {
+		switch(terminal) {
+		case Terminal.PROC: fallthrough
+		case Terminal.FUN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			print("declarations ::= declaration repeatingOptionalDeclarations")
+			let decl = try! declaration()
+			let repeatingOptDeclaration = repeatingOptionalDelcarations()
+			return ConcTree.Declarations(
+				declaration: decl,
+				repeatingOptionalDelcarations: repeatingOptDeclaration)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func declaration() throws -> ConcTree.Declaration {
@@ -82,56 +106,121 @@ class Parser {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:
 			print("declaration ::= storageDeclaration")
-			return storageDeclaraction()
+			return try! storageDeclaraction()
 		case Terminal.FUN:
 			print("declaration ::= functionDeclaration")
-			return functionDeclaration()
+			return try! functionDeclaration()
 		case Terminal.PROC:
 			print("declaration ::= procedureDeclaration")
 			return procedureDeclaration()
-		case _: throw ParseError.WrongTerminal
+		case _:
+			throw ParseError.WrongTerminal
 		}
 	}
 	
 	func repeatingOptionalDelcarations() -> ConcTree.RepeatingOptionalDelcarations? {
-		/*System.out.println("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration optionalGlobalImports optionalLocalStorageDeclarations DO blockCmd ENDFUN");
-		consume(Terminals.FUN);
-		Ident ident = (Ident) consume(Terminals.IDENT);
-		ConcTree.ParameterList parameterList = parameterList();
-		consume(Terminals.RETURNS);
-		ConcTree.StorageDeclaration storeDecl = storageDeclaration();
-		ConcTree.OptionalGlobalImports optionalGlobalImports = optionalGlobalImports();
-		ConcTree.OptionalLocalStorageDeclarations optionalLocalStorageDeclarations = optionalLocalStorageDeclarations();
-		consume(Terminals.DO);
-		ConcTree.BlockCmd blockCmd = blockCmd();
-		consume(Terminals.ENDFUN);
-		return new ConcTree.FunctionDeclaration(ident, parameterList, storeDecl, optionalGlobalImports, optionalLocalStorageDeclarations, blockCmd);*/
+		// todo: continue here
 		return nil
 	}
 	
-	func storageDeclaraction() -> ConcTree.StorageDeclaraction {
-		return ConcTree.StorageDeclaraction()
+	func storageDeclaraction() throws -> ConcTree.StorageDeclaraction {
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			print("storageDeclaraction ::= optionalChangeMode typedIdent")
+			let optChangeMode = optionalChangeMode()
+			let typedIdentifier = typedIdent()
+			return ConcTree.StorageDeclaraction(
+				optionalChangeMode: optChangeMode,
+				typedIdent: typedIdentifier)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
-		
-	func functionDeclaration() -> ConcTree.FunctionDeclaraction {
-		print("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration")
-		try! consume(Terminal.FUN)
-		let ident = try! consume(Terminal.IDENT)
-		let paramList = try! parameterList()
-		return ConcTree.FunctionDeclaraction(ident: ident, parameterList: paramList)
+	
+	func optionalChangeMode() -> ConcTree.OptionalChangeMode? {
+		// todo: continue here
+		return nil
+	}
+	
+	func typedIdent() -> ConcTree.TypedIdent {
+		// todo: continue here
+		return ConcTree.TypedIdent()
+	}
+	
+	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
+		switch(terminal) {
+		case Terminal.DO:
+			print("optionalLocalStorageDeclaraction ::= ε")
+			return nil // ε
+		case Terminal.LOCAL:
+			print("optionalLocalStorageDeclaraction ::= LOCAL")
+			try! consume(Terminal.LOCAL)
+			let storageDecl = try! storageDeclaraction()
+			return ConcTree.OptionalLocalStorageDeclaractions(
+				storageDeclaraction: storageDecl)
+		case _: throw ParseError.WrongTerminal
+		}
+	}
+	
+	func functionDeclaration() throws -> ConcTree.FunctionDeclaraction {
+		switch(terminal) {
+		case Terminal.FUN:
+			print("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration")
+			try! consume(Terminal.FUN)
+			let ident = try! consume(Terminal.IDENT)
+			let paramList = try! parameterList()
+			try! consume(Terminal.RETURNS)
+			let storageDecl = try! storageDeclaraction()
+			let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
+			try! consume(Terminal.DO)
+			let blockCmd = blockCommand()
+			try! consume(Terminal.ENDFUN)
+			return ConcTree.FunctionDeclaraction(
+				ident: ident,
+				parameterList: paramList,
+				storageDeclaration: storageDecl,
+				optionalStorageDeclarations: optionalLocalStorageDecl,
+				blockCmd: blockCmd)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 		
 	func procedureDeclaration() -> ConcTree.ProcedureDeclaraction {
+		// todo: continue here
 		return ConcTree.ProcedureDeclaraction()
 	}
 	
 	func parameterList() throws -> ConcTree.ParameterList {
 		switch(terminal) {
 		case Terminal.LPAREN:
+			print("parameterList ::= LPAREN optionalParameters RPAREN")
 			try! consume(Terminal.LPAREN)
+			let optParameters = try! optionalParameters()
+			try! consume(Terminal.RPAREN)
+			return ConcTree.ParameterList(
+				optionalParameters: optParameters)
 		case _:
 			throw ParseError.WrongTerminal
 		}
-		return ConcTree.ParameterList()
+	}
+	
+	func optionalParameters() throws -> ConcTree.OptionalParameters? {
+		switch(terminal) {
+		case Terminal.RPAREN:
+			print("optionalParameters ::= ε")
+			return nil // ε
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE: fallthrough
+		case Terminal.MECHMODE:
+			print("optionalParameters ::= parameter repeatingOptionalParameter")
+			// todo: continue here
+			// - Production: parameter()
+			// - Production: repeatingOptionalParameter()
+			return ConcTree.OptionalParameters()
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 }

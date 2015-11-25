@@ -103,6 +103,14 @@ class ConcTree {
 	
 	class StorageDeclaraction: Declaration {
 		
+		let optionalChangeMode: OptionalChangeMode?
+		let typedIdent: TypedIdent
+		
+		init(optionalChangeMode: OptionalChangeMode?, typedIdent: TypedIdent) {
+			self.typedIdent = typedIdent
+			self.optionalChangeMode = optionalChangeMode
+		}
+		
 		override var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -116,10 +124,20 @@ class ConcTree {
 		
 		let ident: Token
 		let parameterList: ParameterList
+		let storageDeclaration: StorageDeclaraction
+		let optionalStorageDeclarations: OptionalLocalStorageDeclaractions?
+		let blockCmd: BlockCommand
 		
-		init(ident: Token, parameterList: ParameterList) {
+		init(ident: Token,
+			parameterList: ParameterList,
+			storageDeclaration: StorageDeclaraction,
+			optionalStorageDeclarations: OptionalLocalStorageDeclaractions?,
+			blockCmd: BlockCommand) {
 			self.ident = ident
 			self.parameterList = parameterList
+			self.storageDeclaration = storageDeclaration
+			self.optionalStorageDeclarations = optionalStorageDeclarations
+			self.blockCmd = blockCmd
 		}
 		
 		override var description: String {
@@ -143,6 +161,63 @@ class ConcTree {
 	}
 	
 	class ParameterList: ASTConvertible {
+		
+		let optionalParameters: OptionalParameters?
+		
+		init(optionalParameters: OptionalParameters?) {
+			self.optionalParameters = optionalParameters
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class OptionalParameters: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class OptionalLocalStorageDeclaractions: ASTConvertible {
+		
+		let storageDeclaraction: StorageDeclaraction
+		
+		init(storageDeclaraction: StorageDeclaraction) {
+			self.storageDeclaraction = storageDeclaraction
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class TypedIdent: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class OptionalChangeMode: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
