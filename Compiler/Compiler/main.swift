@@ -1,23 +1,30 @@
 import Foundation
 
 func main() {
+	
 	print("🔴 IML-S Compiler 🐵🙈")
 	if let sourcePath = Process.arguments.last {
-		let scanner: Scanner = Scanner()
+		
+		let scanner = Scanner()
 		print("🔴 Scanner.scan(\(sourcePath))")
 		
 		var debugContent = ""
-		debugContent = "program main\n"
-		debugContent = "global\n"
-		debugContent = "do\n"
+		debugContent += "program main\n"
+		debugContent += "global\n"
+		debugContent += "var\n"
+		debugContent += "do\n"
 		
+		scanner.debugContent = debugContent
+		let tokenlist = scanner.scan(sourcePath)
 		
+		let parser = Parser(tokenlist: tokenlist)
+		print("🔴 Parser.parse(tokenlist)")
+		parser.parse()
 		
-		scanner.debugContent = "var person: record (x: int64, y: bool)\n person(x init :=true)"
-		scanner.scan(sourcePath)
 	} else {
 		print("Missing Parameter <source.iml>")
 	}
+	
 }
 
 main()

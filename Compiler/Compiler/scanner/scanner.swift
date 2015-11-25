@@ -74,7 +74,8 @@ class Scanner: KeywordProvider {
 	
 	// Reads the file line wise and returns the tokenlist
 	// for the token list
-	func scan (fromPath: String) -> [Token]? {
+	func scan (fromPath: String) -> [Token] {
+		
 		tokenlist = [] // reset old tokenlist
 		if let lines = getContentByLine(fromPath) {
 			for line in lines {
@@ -82,6 +83,8 @@ class Scanner: KeywordProvider {
 				processNewLine()
 			}
 		}
+		
+		// make sure we have at least the SENTINEL
         tokenlist.append(Token(terminal: Terminal.SENTINEL))
 		
 		print("\n✅ Scan finished: Tokenlist is:")

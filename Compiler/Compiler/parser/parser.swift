@@ -10,10 +10,11 @@ class Parser {
 	var token: Token
 	var terminal: Terminal
 	
-	init(tokenlist: [Token], token: Token, terminal: Terminal) {
+	init(tokenlist: [Token]) {
 		self.tokenlist = tokenlist
-		self.token = token
-		self.terminal = terminal
+		// fixme: this is bad. how can we do this better?
+		self.token = Token(terminal: Terminal.PROGRAM)
+		self.terminal = Terminal.PROGRAM
 	}
 	
 	func consume(expectedTerminal: Terminal) throws -> Token {
@@ -21,7 +22,9 @@ class Parser {
 		if terminal == expectedTerminal {
 			let consumedToken = token
 			if terminal != Terminal.SENTINEL {
-				token = tokenlist[0] // tokenlist.next()
+				// go to the next token
+				tokenlist.removeFirst()
+				token = tokenlist[0]
 				terminal = token.terminal
 			}
 			return consumedToken
@@ -50,31 +53,6 @@ class Parser {
 			ident: ident, optionalGlobalDeclarations: optGlobalDeclarations, blockCmd: blockCmd);
 	}
 	
-	func declaration() throws -> ConcTree.Declaration {
-		switch(terminal) {
-		case Terminal.IDENT: fallthrough
-		case Terminal.CHANGEMODE:
-			return (ConcTree.Declaration(declaration: storageDeclaraction()))
-		case Terminal.FUN:
-			return (ConcTree.Declaration(declaration: functionDeclaration()))
-		case Terminal.PROC:
-			return (ConcTree.Declaration(declaration: procedureDeclaration()))
-		case _: throw ParseError.WrongTerminal
-		}
-	}
-	
-	func repeatingOptionalDelcarations() -> ConcTree.RepeatingOptionalDelcarations? {
-		return nil
-	}
-	
-	func declarations() -> ConcTree.Declarations {
-		print("declarations ::= declaration repeatingOptionalDeclarations")
-		
-		return ConcTree.Declarations(
-			declaration: try! declaration(),
-			repeatingOptionalDelcarations: repeatingOptionalDelcarations())
-	}
-	
 	func blockCommand() -> ConcTree.BlockCommand {
 		return ConcTree.BlockCommand()
 	}
@@ -91,15 +69,69 @@ class Parser {
 		}
 	}
 	
+	func declarations() -> ConcTree.Declarations {
+		print("declarations ::= declaration repeatingOptionalDeclarations")
+		
+		return ConcTree.Declarations(
+			declaration: try! declaration(),
+			repeatingOptionalDelcarations: repeatingOptionalDelcarations())
+	}
+	
+	func declaration() throws -> ConcTree.Declaration {
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			print("declaration ::= storageDeclaration")
+			return storageDeclaraction()
+		case Terminal.FUN:
+			print("declaration ::= functionDeclaration")
+			return functionDeclaration()
+		case Terminal.PROC:
+			print("declaration ::= procedureDeclaration")
+			return procedureDeclaration()
+		case _: throw ParseError.WrongTerminal
+		}
+	}
+	
+	func repeatingOptionalDelcarations() -> ConcTree.RepeatingOptionalDelcarations? {
+		/*System.out.println("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration optionalGlobalImports optionalLocalStorageDeclarations DO blockCmd ENDFUN");
+		consume(Terminals.FUN);
+		Ident ident = (Ident) consume(Terminals.IDENT);
+		ConcTree.ParameterList parameterList = parameterList();
+		consume(Terminals.RETURNS);
+		ConcTree.StorageDeclaration storeDecl = storageDeclaration();
+		ConcTree.OptionalGlobalImports optionalGlobalImports = optionalGlobalImports();
+		ConcTree.OptionalLocalStorageDeclarations optionalLocalStorageDeclarations = optionalLocalStorageDeclarations();
+		consume(Terminals.DO);
+		ConcTree.BlockCmd blockCmd = blockCmd();
+		consume(Terminals.ENDFUN);
+		return new ConcTree.FunctionDeclaration(ident, parameterList, storeDecl, optionalGlobalImports, optionalLocalStorageDeclarations, blockCmd);*/
+		return nil
+	}
+	
 	func storageDeclaraction() -> ConcTree.StorageDeclaraction {
 		return ConcTree.StorageDeclaraction()
 	}
 		
 	func functionDeclaration() -> ConcTree.FunctionDeclaraction {
-		return ConcTree.FunctionDeclaraction()
+		print("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration")
+		try! consume(Terminal.FUN)
+		let ident = try! consume(Terminal.IDENT)
+		let paramList = try! parameterList()
+		return ConcTree.FunctionDeclaraction(ident: ident, parameterList: paramList)
 	}
 		
 	func procedureDeclaration() -> ConcTree.ProcedureDeclaraction {
 		return ConcTree.ProcedureDeclaraction()
+	}
+	
+	func parameterList() throws -> ConcTree.ParameterList {
+		switch(terminal) {
+		case Terminal.LPAREN:
+			try! consume(Terminal.LPAREN)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+		return ConcTree.ParameterList()
 	}
 }

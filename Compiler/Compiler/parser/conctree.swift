@@ -31,7 +31,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class OptionalGlobalDeclarations: ASTConvertible {
 		
 		var declarations: Declarations
@@ -48,19 +47,6 @@ class ConcTree {
 			
 		}
 	}
-	
-	
-	class OptionalGlobalDeclarationsEpsilon: ASTConvertible {
-		
-		var description: String {
-			return "OptionalGlobalDeclarations"
-		}
-		
-		func toAbstract() {
-			
-		}
-	}
-	
 	
 	class Declarations: ASTConvertible {
 		
@@ -82,7 +68,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class BlockCommand: ASTConvertible {
 		
 		var description: String {
@@ -94,14 +79,7 @@ class ConcTree {
 		}
 	}
 	
-	
 	class Declaration: ASTConvertible {
-		
-		var declaration: Declaration
-		
-		init(declaration: Declaration) {
-			self.declaration = declaration
-		}
 		
 		var description: String {
 			return "Declaration"
@@ -112,11 +90,10 @@ class ConcTree {
 		}
 	}
 	
-	
 	class RepeatingOptionalDelcarations: ASTConvertible {
 		
 		var description: String {
-			return "RepeatingOptionalDelcarations"
+			return "\(self.dynamicType)"
 		}
 		
 		func toAbstract() {
@@ -124,30 +101,55 @@ class ConcTree {
 		}
 	}
 	
-	
 	class StorageDeclaraction: Declaration {
 		
-		init() {
-			
+		override var description: String {
+			return "\(self.dynamicType)"
 		}
 		
+		override func toAbstract() {
+			
+		}
 	}
-	
 	
 	class FunctionDeclaraction: Declaration {
 		
-		init() {
-			
+		let ident: Token
+		let parameterList: ParameterList
+		
+		init(ident: Token, parameterList: ParameterList) {
+			self.ident = ident
+			self.parameterList = parameterList
 		}
 		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
 	}
-	
 	
 	class ProcedureDeclaraction: Declaration {
 		
-		init() {
-			
+		override var description: String {
+			return "\(self.dynamicType)"
 		}
 		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	class ParameterList: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
 	}
 }
