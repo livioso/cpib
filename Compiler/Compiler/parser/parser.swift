@@ -92,7 +92,7 @@ class Parser {
 		case Terminal.CHANGEMODE:
 			print("declarations ::= declaration repeatingOptionalDeclarations")
 			let decl = try! declaration()
-			let repeatingOptDeclaration = repeatingOptionalDelcarations()
+			let repeatingOptDeclaration = try! repeatingOptionalDelcarations()
 			return ConcTree.Declarations(
 				declaration: decl,
 				repeatingOptionalDelcarations: repeatingOptDeclaration)
@@ -169,10 +169,17 @@ class Parser {
 			print("optionalLocalStorageDeclaraction ::= LOCAL")
 			try! consume(Terminal.LOCAL)
 			let storageDecl = try! storageDeclaraction()
+			let repeatingOptionalStorageDecl = try! repeatingOptionalStorageDeclarations()
 			return ConcTree.OptionalLocalStorageDeclaractions(
-				storageDeclaraction: storageDecl)
+				storageDeclaraction: storageDecl,
+				repeatingOptionalStorageDeclarations: repeatingOptionalStorageDecl)
 		case _: throw ParseError.WrongTerminal
 		}
+	}
+	
+	func repeatingOptionalStorageDeclarations() throws -> ConcTree.RepeatingOptionalStorageDeclarations? {
+		// todo: continue here
+		return nil
 	}
 	
 	func functionDeclaration() throws -> ConcTree.FunctionDeclaraction {

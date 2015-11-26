@@ -141,11 +141,11 @@ class ConcTree {
 			storageDeclaration: StorageDeclaraction,
 			optionalStorageDeclarations: OptionalLocalStorageDeclaractions?,
 			blockCmd: BlockCommand) {
-			self.ident = ident
-			self.parameterList = parameterList
-			self.storageDeclaration = storageDeclaration
-			self.optionalStorageDeclarations = optionalStorageDeclarations
-			self.blockCmd = blockCmd
+				self.ident = ident
+				self.parameterList = parameterList
+				self.storageDeclaration = storageDeclaration
+				self.optionalStorageDeclarations = optionalStorageDeclarations
+				self.blockCmd = blockCmd
 		}
 		
 		override var description: String {
@@ -239,9 +239,12 @@ class ConcTree {
 	class OptionalLocalStorageDeclaractions: ASTConvertible {
 		
 		let storageDeclaraction: StorageDeclaraction
+		let repeatingOptionalStorageDeclarations: RepeatingOptionalStorageDeclarations?
 		
-		init(storageDeclaraction: StorageDeclaraction) {
-			self.storageDeclaraction = storageDeclaraction
+		init(storageDeclaraction: StorageDeclaraction,
+			repeatingOptionalStorageDeclarations: RepeatingOptionalStorageDeclarations?) {
+				self.storageDeclaraction = storageDeclaraction
+				self.repeatingOptionalStorageDeclarations = repeatingOptionalStorageDeclarations
 		}
 		
 		var description: String {
@@ -276,6 +279,17 @@ class ConcTree {
 	}
 	
 	class OptionalMechMode: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class RepeatingOptionalStorageDeclarations: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
