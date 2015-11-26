@@ -334,6 +334,163 @@ class ConcTree {
 		}
 	}
 	
+
+	class CommandSkip: Command {
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class CommandBecomes: Command {
+		
+		let leftHandExpression: Expression
+		let rightHandExpression: Expression
+		
+		init(leftHandExpression: Expression, rightHandExpression: Expression) {
+			self.leftHandExpression = leftHandExpression
+			self.rightHandExpression = rightHandExpression
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	
+	class CommandIfThen: Command {
+		
+		let expression: Expression
+		let blockCommandThen: BlockCommand
+		let blockCommandElse: BlockCommand
+		
+		init(expression: Expression,
+			blockCommandThen: BlockCommand,
+			blockCommandElse: BlockCommand) {
+				self.expression = expression
+				self.blockCommandThen = blockCommandThen
+				self.blockCommandElse = blockCommandElse
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class CommandWhile: Command {
+		
+		let expression: Expression
+		let blockCommand: BlockCommand
+		
+		init(expression: Expression, blockCommand: BlockCommand) {
+			self.expression = expression
+			self.blockCommand = blockCommand
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class CommandDebugin: Command {
+		
+		let expression: Expression
+		
+		init(expression: Expression) {
+			self.expression = expression
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class CommandDebugout: Command {
+		
+		let expression: Expression
+		
+		init(expression: Expression) {
+			self.expression = expression
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class CommandCall: Command {
+		
+		let identifier: Token
+		let expressionList: ExpressionList
+		
+		init(identifier: Token, expressionList: ExpressionList) {
+			self.identifier = identifier
+			self.expressionList = expressionList
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+
+	class Expression: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class ExpressionList: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
 	
 	class RepeatingOptionalCommands: ASTConvertible {
 		

@@ -53,7 +53,7 @@ class Parser {
 			let ident = try! consume(Terminal.IDENT)
 			let optGlobalDeclarations = try! optionalGlobalDeclarations()
 			try! consume(Terminal.DO)
-			let blockCmd = blockCommand()
+			let blockCmd = try! blockCommand()
 			try! consume(Terminal.ENDPROGRAM)
 			return ConcTree.Program(
 				ident: ident,
@@ -75,7 +75,7 @@ class Parser {
 		case Terminal.IDENT: fallthrough
 		case Terminal.LITERAL: fallthrough
 		case Terminal.SKIP:
-			let cmd = command()
+			let cmd = try! command()
 			let repeatingOptionalCmds = repeatingOptionalCommands()
 			return ConcTree.BlockCommand(
 				command: cmd,
@@ -85,9 +85,78 @@ class Parser {
 		}
 	}
 	
-	func command() -> ConcTree.Command {
+	func command() throws -> ConcTree.Command {
+		switch(terminal) {
+		case Terminal.SKIP:
+			print("cmd ::= SKIP")
+			try! consume(Terminal.SKIP)
+			return ConcTree.CommandSkip()
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("cmd ::= expression BECOMES expression")
+			let leftHandExpression = try! expression()
+			try! consume(Terminal.BECOMES)
+			let rightHandExpression = try! expression()
+			return ConcTree.CommandBecomes(
+				leftHandExpression: leftHandExpression,
+				rightHandExpression: rightHandExpression)
+		case Terminal.IF:
+			print("cmd ::= IF expression THEN blockCmd ELSE blockCmd")
+			try! consume(Terminal.IF)
+			let expr = try! expression()
+			try! consume(Terminal.THEN)
+			let blockCmdThen = try! blockCommand()
+			try! consume(Terminal.ELSE)
+			let blockCmdElse = try! blockCommand()
+			try! consume(Terminal.ENDIF)
+			return ConcTree.CommandIfThen(
+				expression: expr,
+				blockCommandThen: blockCmdThen,
+				blockCommandElse: blockCmdElse)
+		case Terminal.WHILE:
+			print("cmd ::= WHILE expression ENDWHILE")
+			try! consume(Terminal.WHILE)
+			let expr = try! expression()
+			try! consume(Terminal.DO)
+			let blockCmd = try! blockCommand()
+			try! consume(Terminal.ENDWHILE)
+			return ConcTree.CommandWhile(
+				expression: expr,
+				blockCommand: blockCmd)
+		case Terminal.CALL:
+			print("cmd ::= CALL IDENT expressionList")
+			try! consume(Terminal.CALL)
+			let ident = try! consume(Terminal.IDENT)
+			let exprList = expressionList()
+			return ConcTree.CommandCall(
+				identifier: ident,
+				expressionList: exprList)
+		case Terminal.DEBUGIN:
+			print("cmd ::= DEBUGIN expression")
+			try! consume(Terminal.DEBUGIN)
+			let expr = try! expression()
+			return ConcTree.CommandDebugin(
+				expression: expr)
+		case Terminal.DEBUGOUT:
+			print("cmd ::= DEBUGOUT expression")
+			try! consume(Terminal.DEBUGOUT)
+			let expr = try! expression()
+			return ConcTree.CommandDebugout(
+				expression: expr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func expression() throws -> ConcTree.Expression {
 		// todo: continue here
-		return ConcTree.Command()
+		return ConcTree.Expression()
+	}
+	
+	func expressionList() -> ConcTree.ExpressionList {
+		// todo: continue here
+		return ConcTree.ExpressionList()
 	}
 	
 	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {
@@ -231,7 +300,7 @@ class Parser {
 			let storageDecl = try! storageDeclaraction()
 			let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
 			try! consume(Terminal.DO)
-			let blockCmd = blockCommand()
+			let blockCmd = try! blockCommand()
 			try! consume(Terminal.ENDFUN)
 			return ConcTree.FunctionDeclaraction(
 				ident: ident,
