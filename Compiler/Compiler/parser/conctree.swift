@@ -322,7 +322,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class Command: ASTConvertible {
 		
 		var description: String {
@@ -334,7 +333,6 @@ class ConcTree {
 		}
 	}
 	
-
 	class CommandSkip: Command {
 		
 		override var description: String {
@@ -345,7 +343,6 @@ class ConcTree {
 			
 		}
 	}
-	
 	
 	class CommandBecomes: Command {
 		
@@ -365,8 +362,6 @@ class ConcTree {
 			
 		}
 	}
-	
-	
 	
 	class CommandIfThen: Command {
 		
@@ -391,7 +386,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class CommandWhile: Command {
 		
 		let expression: Expression
@@ -411,7 +405,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class CommandDebugin: Command {
 		
 		let expression: Expression
@@ -429,7 +422,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class CommandDebugout: Command {
 		
 		let expression: Expression
@@ -446,7 +438,6 @@ class ConcTree {
 			
 		}
 	}
-	
 	
 	class CommandCall: Command {
 		
@@ -467,7 +458,6 @@ class ConcTree {
 		}
 	}
 	
-
 	class Expression: ASTConvertible {
 		
 		var description: String {
@@ -479,7 +469,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class ExpressionList: ASTConvertible {
 		
 		var description: String {
@@ -490,7 +479,6 @@ class ConcTree {
 			
 		}
 	}
-	
 	
 	class RepeatingOptionalCommands: ASTConvertible {
 		
