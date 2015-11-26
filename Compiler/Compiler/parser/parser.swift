@@ -64,9 +64,35 @@ class Parser {
 		}
 	}
 	
-	func blockCommand() -> ConcTree.BlockCommand {
+	func blockCommand() throws -> ConcTree.BlockCommand {
+		switch(terminal) {
+		case Terminal.DEBUGOUT: fallthrough
+		case Terminal.DEBUGIN: fallthrough
+		case Terminal.CALL: fallthrough
+		case Terminal.WHILE: fallthrough
+		case Terminal.IF: fallthrough
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL: fallthrough
+		case Terminal.SKIP:
+			let cmd = command()
+			let repeatingOptionalCmds = repeatingOptionalCommands()
+			return ConcTree.BlockCommand(
+				command: cmd,
+				repeatingOptionalCommands: repeatingOptionalCmds)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func command() -> ConcTree.Command {
 		// todo: continue here
-		return ConcTree.BlockCommand()
+		return ConcTree.Command()
+	}
+	
+	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {
+		// todo: continue here
+		return ConcTree.RepeatingOptionalCommands()
 	}
 	
 	func optionalGlobalDeclarations() throws -> ConcTree.OptionalGlobalDeclarations? {

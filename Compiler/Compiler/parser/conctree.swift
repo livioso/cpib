@@ -70,8 +70,16 @@ class ConcTree {
 	
 	class BlockCommand: ASTConvertible {
 		
+		let command: Command
+		let repeatingOptionalCommands: RepeatingOptionalCommands?
+		
+		init(command: Command, repeatingOptionalCommands: RepeatingOptionalCommands?) {
+			self.command = command
+			self.repeatingOptionalCommands = repeatingOptionalCommands
+		}
+		
 		var description: String {
-			return "BlockCommand"
+			return "\(self.dynamicType)"
 		}
 		
 		func toAbstract() {
@@ -82,7 +90,7 @@ class ConcTree {
 	class Declaration: ASTConvertible {
 		
 		var description: String {
-			return "Declaration"
+			return "\(self.dynamicType)"
 		}
 		
 		func toAbstract() {
@@ -304,6 +312,30 @@ class ConcTree {
 		init(storageDeclaration: StorageDeclaraction) {
 			self.storageDeclaration = storageDeclaration
 		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class Command: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class RepeatingOptionalCommands: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
