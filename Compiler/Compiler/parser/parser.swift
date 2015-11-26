@@ -228,12 +228,28 @@ class Parser {
 	}
 	
 	func parameter() throws -> ConcTree.Parameter {
-		// todo: continue here
-		return ConcTree.Parameter()
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE: fallthrough
+		case Terminal.MECHMODE:
+			print("parameter ::= optionalMECHMODE storageDeclaration")
+			let optMechMode = try! optionalMechMode()
+			let storageDecl = try! storageDeclaraction()
+			return ConcTree.Parameter(
+				optionalMechMode: optMechMode,
+				storageDeclaraction: storageDecl
+			)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func repeatingOptionalParameters() throws -> ConcTree.RepeatingOptionalParameters? {
 		// todo: continue here
-		return nil
+		return ConcTree.RepeatingOptionalParameters()
+	}
+		
+	func optionalMechMode() throws -> ConcTree.OptionalMechMode? {
+		return ConcTree.OptionalMechMode()
 	}
 }

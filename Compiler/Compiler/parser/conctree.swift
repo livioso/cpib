@@ -180,6 +180,14 @@ class ConcTree {
 	
 	class Parameter: ASTConvertible {
 		
+		let optionalMechMode: OptionalMechMode?
+		let storageDeclaraction: StorageDeclaraction
+		
+		init(optionalMechMode: OptionalMechMode?, storageDeclaraction: StorageDeclaraction) {
+			self.optionalMechMode = optionalMechMode
+			self.storageDeclaraction = storageDeclaraction
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -248,8 +256,18 @@ class ConcTree {
 		}
 	}
 	
-	
 	class OptionalChangeMode: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class OptionalMechMode: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
