@@ -118,9 +118,21 @@ class Parser {
 		}
 	}
 	
-	func repeatingOptionalDelcarations() -> ConcTree.RepeatingOptionalDelcarations? {
-		// todo: continue here
-		return nil
+	func repeatingOptionalDelcarations() throws -> ConcTree.RepeatingOptionalDelcarations? {
+		switch(terminal) {
+		case Terminal.DO:
+			print("optionalGlobalDeclarations ::= ε")
+			return nil // ε
+		case Terminal.SEMICOLON:
+			try! consume(Terminal.SEMICOLON)
+			let decl = try! declaration()
+			let repeatingOptDelcarations = try! repeatingOptionalDelcarations()
+			return ConcTree.RepeatingOptionalDelcarations(
+				declaration: decl,
+				repeatingOptionalDelcarations: repeatingOptDelcarations)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func storageDeclaraction() throws -> ConcTree.StorageDeclaraction {

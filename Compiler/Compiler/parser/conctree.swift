@@ -92,6 +92,14 @@ class ConcTree {
 	
 	class RepeatingOptionalDelcarations: ASTConvertible {
 		
+		let declaration: Declaration
+		let repeatingOptionalDelcarations: RepeatingOptionalDelcarations?
+		
+		init(declaration: Declaration, repeatingOptionalDelcarations: RepeatingOptionalDelcarations?) {
+			self.declaration = declaration
+			self.repeatingOptionalDelcarations = repeatingOptionalDelcarations
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
