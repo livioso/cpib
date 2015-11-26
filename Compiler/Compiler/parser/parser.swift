@@ -216,11 +216,24 @@ class Parser {
 		case Terminal.MECHMODE:
 			print("optionalParameters ::= parameter repeatingOptionalParameter")
 			// todo: continue here
-			// - Production: parameter()
-			// - Production: repeatingOptionalParameter()
-			return ConcTree.OptionalParameters()
+			let param = try! parameter()
+			let repeatingOptionalParams = try! repeatingOptionalParameters()
+			return ConcTree.OptionalParameters(
+				parameter: param,
+				repeatingOptionalParameters: repeatingOptionalParams
+			)
 		case _:
 			throw ParseError.WrongTerminal
 		}
+	}
+	
+	func parameter() throws -> ConcTree.Parameter {
+		// todo: continue here
+		return ConcTree.Parameter()
+	}
+	
+	func repeatingOptionalParameters() throws -> ConcTree.RepeatingOptionalParameters? {
+		// todo: continue here
+		return nil
 	}
 }

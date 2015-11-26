@@ -177,7 +177,39 @@ class ConcTree {
 		}
 	}
 	
+	
+	class Parameter: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class RepeatingOptionalParameters: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
 	class OptionalParameters: ASTConvertible {
+		
+		let parameter: Parameter
+		let repeatingOptionalParameters: RepeatingOptionalParameters?
+		
+		init(parameter: Parameter, repeatingOptionalParameters: RepeatingOptionalParameters?) {
+			self.parameter = parameter
+			self.repeatingOptionalParameters = repeatingOptionalParameters
+		}
 		
 		var description: String {
 			return "\(self.dynamicType)"
