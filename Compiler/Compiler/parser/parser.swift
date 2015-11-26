@@ -177,7 +177,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func repeatingOptionalStorageDeclarations() throws -> ConcTree.RepeatingOptionalStorageDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -246,7 +246,6 @@ class Parser {
 		case Terminal.CHANGEMODE: fallthrough
 		case Terminal.MECHMODE:
 			print("optionalParameters ::= parameter repeatingOptionalParameter")
-			// todo: continue here
 			let param = try! parameter()
 			let repeatingOptionalParams = try! repeatingOptionalParameters()
 			return ConcTree.OptionalParameters(
@@ -276,11 +275,25 @@ class Parser {
 	}
 	
 	func repeatingOptionalParameters() throws -> ConcTree.RepeatingOptionalParameters? {
-		// todo: continue here
-		return ConcTree.RepeatingOptionalParameters()
+		switch(terminal) {
+		case Terminal.RPAREN:
+			print("repeatingOptionalParameters ::= ε")
+			return nil // ε
+		case Terminal.COMMA:
+			print("repeatingOptionalParameters ::= COMMA parameter repeatingOptionalParameters")
+			try! consume(Terminal.COMMA)
+			let param = try! parameter()
+			let repeatingOptParameters = try! repeatingOptionalParameters()
+			return ConcTree.RepeatingOptionalParameters(
+				parameter: param,
+				repeatingOptParameters: repeatingOptParameters)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 		
 	func optionalMechMode() throws -> ConcTree.OptionalMechMode? {
+		// todo: continue here
 		return ConcTree.OptionalMechMode()
 	}
 }

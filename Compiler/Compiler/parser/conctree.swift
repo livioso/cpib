@@ -208,6 +208,14 @@ class ConcTree {
 	
 	class RepeatingOptionalParameters: ASTConvertible {
 		
+		let parameter: Parameter
+		let repeatingOptParameters: RepeatingOptionalParameters?
+		
+		init(parameter: Parameter, repeatingOptParameters: RepeatingOptionalParameters?) {
+			self.parameter = parameter
+			self.repeatingOptParameters = repeatingOptParameters
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
