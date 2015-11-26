@@ -173,13 +173,25 @@ class Parser {
 			return ConcTree.OptionalLocalStorageDeclaractions(
 				storageDeclaraction: storageDecl,
 				repeatingOptionalStorageDeclarations: repeatingOptionalStorageDecl)
-		case _: throw ParseError.WrongTerminal
+		case _:
+			throw ParseError.WrongTerminal
 		}
 	}
 	
 	func repeatingOptionalStorageDeclarations() throws -> ConcTree.RepeatingOptionalStorageDeclarations? {
-		// todo: continue here
-		return nil
+		switch(terminal) {
+		case Terminal.DO:
+			print("repeatingOptionalStorageDeclarations ::= ε")
+			return nil // ε
+		case Terminal.SEMICOLON:
+			print("repeatingOptionalStorageDeclarations ::= SEMICOLON storageDeclaration")
+			try! consume(Terminal.SEMICOLON)
+			let storageDecl = try! storageDeclaraction()
+			return ConcTree.RepeatingOptionalStorageDeclarations(
+				storageDeclaration: storageDecl)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func functionDeclaration() throws -> ConcTree.FunctionDeclaraction {

@@ -291,6 +291,12 @@ class ConcTree {
 	
 	class RepeatingOptionalStorageDeclarations: ASTConvertible {
 		
+		let storageDeclaration: StorageDeclaraction
+		
+		init(storageDeclaration: StorageDeclaraction) {
+			self.storageDeclaration = storageDeclaration
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
