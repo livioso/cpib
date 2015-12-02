@@ -274,6 +274,26 @@ class ConcTree {
 	
 	class TypedIdent: ASTConvertible {
 		
+		let identifier: Token.Attribute
+		let typeDeclartion: TypeDeclaration
+		
+		init(identifier: Token.Attribute, typeDeclartion: TypeDeclaration) {
+			self.identifier = identifier
+			self.typeDeclartion = typeDeclartion
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class TypeDeclaration: ASTConvertible {
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}

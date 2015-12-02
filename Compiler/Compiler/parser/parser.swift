@@ -391,7 +391,7 @@ class Parser {
 		case Terminal.CHANGEMODE:
 			print("storageDeclaraction ::= optionalChangeMode typedIdent")
 			let optChangeMode = try! optionalChangeMode()
-			let typedIdentifier = typedIdent()
+			let typedIdentifier = try! typedIdent()
 			return ConcTree.StorageDeclaraction(
 				optionalChangeMode: optChangeMode,
 				typedIdent: typedIdentifier)
@@ -415,9 +415,24 @@ class Parser {
 		}
 	}
 	
-	func typedIdent() -> ConcTree.TypedIdent {
+	func typedIdent() throws -> ConcTree.TypedIdent {
+		switch(terminal) {
+		case Terminal.IDENT:
+			print("typedIdent ::= IDENT COLON typeDeclartion")
+			let identifier = try! consume(Terminal.IDENT).attribute!
+			try! consume(Terminal.COLON)
+			let typeDecl = try! typeDeclartion()
+			return ConcTree.TypedIdent(
+				identifier: identifier,
+				typeDeclartion: typeDecl)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func typeDeclartion() throws -> ConcTree.TypeDeclaration {
 		// todo: continue here
-		return ConcTree.TypedIdent()
+		return ConcTree.TypeDeclaration()
 	}
 	
 	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
