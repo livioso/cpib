@@ -296,6 +296,12 @@ class ConcTree {
 	
 	class OptionalMechMode: ASTConvertible {
 		
+		let mechmode: Token.Attribute
+		
+		init(mechmode: Token.Attribute) {
+			self.mechmode = mechmode
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}

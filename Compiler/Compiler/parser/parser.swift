@@ -388,7 +388,16 @@ class Parser {
 	}
 		
 	func optionalMechMode() throws -> ConcTree.OptionalMechMode? {
-		// todo: continue here
-		return ConcTree.OptionalMechMode()
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			print("optionalMechMode ::= ε")
+			return nil // ε
+		case Terminal.MECHMODE:
+			let mechmode = try! consume(Terminal.MECHMODE).attribute!
+			return ConcTree.OptionalMechMode(mechmode: mechmode)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 }
