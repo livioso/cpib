@@ -2,9 +2,9 @@ import Foundation
 
 class Parser {
     
-    enum ParseError : ErrorType {
-        case WrongTerminal
-    }
+	enum ParseError : ErrorType {
+		case WrongTerminal
+	}
 	
 	var tokenlist: [Token]
 	var token: Token
