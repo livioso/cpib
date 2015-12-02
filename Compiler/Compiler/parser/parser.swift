@@ -225,6 +225,7 @@ class Parser {
 	func expressionList() throws -> ConcTree.ExpressionList {
 		switch(terminal) {
 		case Terminal.LPAREN:
+			print("expressionList ::= LPAREN optionalExpressions RPAREN")
 			try! consume(Terminal.LPAREN)
 			let optExpressions = try! optionalExpressions()
 			try! consume(Terminal.RPAREN)
@@ -236,7 +237,27 @@ class Parser {
 	}
 	
 	func optionalExpressions() throws -> ConcTree.OptionalExpressions? {
-		return ConcTree.OptionalExpressions()
+		switch(terminal) {
+		case Terminal.RPAREN:
+			print("optionalExpressions ::= ε")
+			return nil // ε
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("optionalExpressions ::= expression repeatingOptionalExpressions")
+			let expr = try! expression()
+			let repeatingOptExprs = try! repeatingOptionalExpressions()
+			return ConcTree.OptionalExpressions(
+				expression: expr,
+				repeatingOptionalExpressions: repeatingOptExprs)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func repeatingOptionalExpressions() throws -> ConcTree.RepeatingOptionalExpressions? {
+		// todo: continue here
+		return ConcTree.RepeatingOptionalExpressions()
 	}
 	
 	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {

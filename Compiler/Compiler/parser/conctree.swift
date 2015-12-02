@@ -565,6 +565,25 @@ class ConcTree {
 	
 	class OptionalExpressions: ASTConvertible {
 		
+		let expression: Expression
+		let repeatingOptionalExpressions: RepeatingOptionalExpressions?
+		
+		init(expression: Expression, repeatingOptionalExpressions: RepeatingOptionalExpressions?) {
+			self.expression = expression
+			self.repeatingOptionalExpressions = repeatingOptionalExpressions
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class RepeatingOptionalExpressions: ASTConvertible {
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
