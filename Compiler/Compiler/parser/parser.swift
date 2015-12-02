@@ -76,7 +76,7 @@ class Parser {
 		case Terminal.LITERAL: fallthrough
 		case Terminal.SKIP:
 			let cmd = try! command()
-			let repeatingOptionalCmds = repeatingOptionalCommands()
+			let repeatingOptionalCmds = try! repeatingOptionalCommands()
 			return ConcTree.BlockCommand(
 				command: cmd,
 				repeatingOptionalCommands: repeatingOptionalCmds)
@@ -296,9 +296,27 @@ class Parser {
 		}
 	}
 	
-	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {
-		// todo: continue here
-		return ConcTree.RepeatingOptionalCommands()
+	func repeatingOptionalCommands() throws -> ConcTree.RepeatingOptionalCommands? {
+		switch(terminal) {
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM:
+			print("repeatingOptionalCommands ::= ε")
+			return nil // ε
+		case Terminal.SEMICOLON:
+			print("repeatingOptionalCommands ::= SEMICOLON command repeatingOptionalCommands")
+			try! consume(Terminal.SEMICOLON)
+			let cmd = try! command()
+			let repeatingOptionalCmds = try! repeatingOptionalCommands()
+			return ConcTree.RepeatingOptionalCommands(
+				command: cmd,
+				repeatingOptionalCommands: repeatingOptionalCmds)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func optionalGlobalDeclarations() throws -> ConcTree.OptionalGlobalDeclarations? {

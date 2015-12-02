@@ -467,9 +467,9 @@ class ConcTree {
 	class Expression: ASTConvertible {
 		
 		let term1: Term1
-		let boolOprTerm1: BoolOprTerm1
+		let boolOprTerm1: BoolOprTerm1?
 		
-		init(term1: Term1, boolOprTerm1: BoolOprTerm1) {
+		init(term1: Term1, boolOprTerm1: BoolOprTerm1?) {
 			self.term1 = term1
 			self.boolOprTerm1 = boolOprTerm1
 		}
@@ -610,6 +610,14 @@ class ConcTree {
 	}
 	
 	class RepeatingOptionalCommands: ASTConvertible {
+		
+		let command: Command
+		let repeatingOptionalCommands: RepeatingOptionalCommands?
+		
+		init(command: Command, repeatingOptionalCommands: RepeatingOptionalCommands?) {
+			self.command = command
+			self.repeatingOptionalCommands = repeatingOptionalCommands
+		}
 		
 		var description: String {
 			return "\(self.dynamicType)"
