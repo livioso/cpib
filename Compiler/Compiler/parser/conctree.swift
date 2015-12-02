@@ -497,6 +497,16 @@ class ConcTree {
 	
 	class RelOprTerm2: ASTConvertible {
 		
+		let relOpr: Token.Attribute
+		let term2: Term2
+		let relOprTerm2: RelOprTerm2?
+		
+		init(relOpr: Token.Attribute, term2: Term2, relOprTerm2: RelOprTerm2?) {
+			self.relOpr = relOpr
+			self.term2 = term2
+			self.relOprTerm2 = relOprTerm2
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -510,9 +520,9 @@ class ConcTree {
 	class Term1: ASTConvertible {
 		
 		let term2: Term2
-		let relOprTerm2: RelOprTerm2
+		let relOprTerm2: RelOprTerm2?
 		
-		init(term2: Term2, relOprTerm2: RelOprTerm2) {
+		init(term2: Term2, relOprTerm2: RelOprTerm2?) {
 			self.term2 = term2
 			self.relOprTerm2 = relOprTerm2
 		}

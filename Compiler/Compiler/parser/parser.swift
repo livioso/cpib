@@ -186,9 +186,35 @@ class Parser {
 		return ConcTree.Term2()
 	}
 		
-	func relOprTerm2() throws -> ConcTree.RelOprTerm2 {
-		// todo: continue here
-		return ConcTree.RelOprTerm2()
+	func relOprTerm2() throws -> ConcTree.RelOprTerm2? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES: fallthrough
+		case Terminal.BOOLOPR:
+			print("relOprTerm2 ::= ε")
+			return nil // ε
+		case Terminal.RELOPR:
+			print("relOprTerm2 ::= RELOPR term2 relOprTerm2")
+			let relOperand = try! consume(Terminal.RELOPR).attribute!
+			let termTwo = try! term2()
+			let relOprTermTwo = try! relOprTerm2()
+			return ConcTree.RelOprTerm2(
+				relOpr: relOperand,
+				term2: termTwo,
+				relOprTerm2: relOprTermTwo)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1 {
