@@ -150,8 +150,29 @@ class Parser {
 	}
 	
 	func expression() throws -> ConcTree.Expression {
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("expression ::= term1 boolOprTerm1")
+			let term = try! term1()
+			let boolOprTerm = try! boolOprTerm1()
+			return ConcTree.Expression(
+				term1: term,
+				boolOprTerm1: boolOprTerm)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+
+	func term1() throws -> ConcTree.Term1 {
 		// todo: continue here
-		return ConcTree.Expression()
+		return ConcTree.Term1()
+	}
+	
+	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1 {
+		// todo: continue here
+		return ConcTree.BoolOprTerm1()
 	}
 	
 	func expressionList() -> ConcTree.ExpressionList {
@@ -394,6 +415,7 @@ class Parser {
 			print("optionalMechMode ::= ε")
 			return nil // ε
 		case Terminal.MECHMODE:
+			print("optionalMechMode ::= MECHMODE")
 			let mechmode = try! consume(Terminal.MECHMODE).attribute!
 			return ConcTree.OptionalMechMode(mechmode: mechmode)
 		case _:

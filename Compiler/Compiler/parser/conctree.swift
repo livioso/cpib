@@ -466,6 +466,38 @@ class ConcTree {
 	
 	class Expression: ASTConvertible {
 		
+		let term1: Term1
+		let boolOprTerm1: BoolOprTerm1
+		
+		init(term1: Term1, boolOprTerm1: BoolOprTerm1) {
+			self.term1 = term1
+			self.boolOprTerm1 = boolOprTerm1
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class BoolOprTerm1: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class Term1: ASTConvertible {
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
