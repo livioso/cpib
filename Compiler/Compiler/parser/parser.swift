@@ -155,10 +155,10 @@ class Parser {
 		case Terminal.IDENT: fallthrough
 		case Terminal.LITERAL:
 			print("expression ::= term1 boolOprTerm1")
-			let term = try! term1()
+			let termOne = try! term1()
 			let boolOprTerm = try! boolOprTerm1()
 			return ConcTree.Expression(
-				term1: term,
+				term1: termOne,
 				boolOprTerm1: boolOprTerm)
 		case _:
 			throw ParseError.WrongTerminal
@@ -166,8 +166,29 @@ class Parser {
 	}
 
 	func term1() throws -> ConcTree.Term1 {
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("term1 ::= term2 relOprTerm2")
+			let termTwo = try! term2()
+			let relOprTermTwo = try! relOprTerm2()
+			return ConcTree.Term1(
+				term2: termTwo,
+				relOprTerm2: relOprTermTwo)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+		
+	func term2() throws -> ConcTree.Term2 {
 		// todo: continue here
-		return ConcTree.Term1()
+		return ConcTree.Term2()
+	}
+		
+	func relOprTerm2() throws -> ConcTree.RelOprTerm2 {
+		// todo: continue here
+		return ConcTree.RelOprTerm2()
 	}
 	
 	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1 {

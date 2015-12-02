@@ -495,8 +495,38 @@ class ConcTree {
 		}
 	}
 	
+	class RelOprTerm2: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
 	
 	class Term1: ASTConvertible {
+		
+		let term2: Term2
+		let relOprTerm2: RelOprTerm2
+		
+		init(term2: Term2, relOprTerm2: RelOprTerm2) {
+			self.term2 = term2
+			self.relOprTerm2 = relOprTerm2
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class Term2: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
