@@ -390,7 +390,7 @@ class Parser {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:
 			print("storageDeclaraction ::= optionalChangeMode typedIdent")
-			let optChangeMode = optionalChangeMode()
+			let optChangeMode = try! optionalChangeMode()
 			let typedIdentifier = typedIdent()
 			return ConcTree.StorageDeclaraction(
 				optionalChangeMode: optChangeMode,
@@ -400,9 +400,19 @@ class Parser {
 		}
 	}
 	
-	func optionalChangeMode() -> ConcTree.OptionalChangeMode? {
-		// todo: continue here
-		return nil
+	func optionalChangeMode() throws -> ConcTree.OptionalChangeMode? {
+		switch(terminal) {
+		case Terminal.IDENT:
+			print("optionalChangeMode ::= ε")
+			return nil // ε
+		case Terminal.CHANGEMODE:
+			print("optionalChangeMode ::= MECHMODE")
+			let changeMode = try! consume(Terminal.CHANGEMODE).attribute!
+			return ConcTree.OptionalChangeMode(
+				changeMode: changeMode)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func typedIdent() -> ConcTree.TypedIdent {

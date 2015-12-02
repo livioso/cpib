@@ -285,6 +285,12 @@ class ConcTree {
 	
 	class OptionalChangeMode: ASTConvertible {
 		
+		let changeMode: Token.Attribute
+		
+		init(changeMode: Token.Attribute) {
+			self.changeMode = changeMode
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
