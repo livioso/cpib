@@ -217,9 +217,32 @@ class Parser {
 		}
 	}
 	
-	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1 {
-		// todo: continue here
-		return ConcTree.BoolOprTerm1()
+	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES:
+			print("boolOprTerm1 ::= ε")
+			return nil // ε
+		case Terminal.BOOLOPR:
+			print("boolOprTerm1 ::= BOOLOPR term1")
+			let boolOperand = try! consume(Terminal.BOOLOPR).attribute!
+			let termOne = try! term1()
+			return ConcTree.BoolOprTerm1(
+				boolOpr: boolOperand,
+				term1: termOne)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func expressionList() throws -> ConcTree.ExpressionList {

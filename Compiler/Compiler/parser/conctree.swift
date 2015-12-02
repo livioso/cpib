@@ -485,6 +485,14 @@ class ConcTree {
 	
 	class BoolOprTerm1: ASTConvertible {
 		
+		let boolOpr: Token.Attribute
+		let term1: Term1
+		
+		init(boolOpr: Token.Attribute, term1: Term1) {
+			self.boolOpr = boolOpr
+			self.term1 = term1
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
