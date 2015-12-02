@@ -43,7 +43,7 @@ class Parser {
 	
 	
 	// Production Functions
-	// Terminals can be found <terminals.swift>
+	// Terminals can be found in <terminals.swift>
 	
 	func program() throws -> ConcTree.Program {
 		switch(terminal) {

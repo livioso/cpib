@@ -483,7 +483,6 @@ class ConcTree {
 		}
 	}
 	
-	
 	class BoolOprTerm1: ASTConvertible {
 		
 		var description: String {
@@ -515,7 +514,6 @@ class ConcTree {
 			
 		}
 	}
-	
 	
 	class Term1: ASTConvertible {
 		
