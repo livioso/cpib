@@ -547,6 +547,24 @@ class ConcTree {
 	
 	class ExpressionList: ASTConvertible {
 		
+		let optionalExpressions: OptionalExpressions?
+		
+		init(optionalExpressions: OptionalExpressions?) {
+			self.optionalExpressions = optionalExpressions
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class OptionalExpressions: ASTConvertible {
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}

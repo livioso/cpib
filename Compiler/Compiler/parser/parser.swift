@@ -222,9 +222,21 @@ class Parser {
 		return ConcTree.BoolOprTerm1()
 	}
 	
-	func expressionList() -> ConcTree.ExpressionList {
-		// todo: continue here
-		return ConcTree.ExpressionList()
+	func expressionList() throws -> ConcTree.ExpressionList {
+		switch(terminal) {
+		case Terminal.LPAREN:
+			try! consume(Terminal.LPAREN)
+			let optExpressions = try! optionalExpressions()
+			try! consume(Terminal.RPAREN)
+			return ConcTree.ExpressionList(
+				optionalExpressions: optExpressions)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func optionalExpressions() throws -> ConcTree.OptionalExpressions? {
+		return ConcTree.OptionalExpressions()
 	}
 	
 	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {
