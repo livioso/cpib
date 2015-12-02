@@ -584,6 +584,14 @@ class ConcTree {
 	
 	class RepeatingOptionalExpressions: ASTConvertible {
 		
+		let expression: Expression
+		let repeatingOptionalExpressions: RepeatingOptionalExpressions?
+		
+		init(expression: Expression, repeatingOptionalExpressions: RepeatingOptionalExpressions?) {
+			self.expression = expression
+			self.repeatingOptionalExpressions = repeatingOptionalExpressions
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}

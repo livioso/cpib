@@ -128,7 +128,7 @@ class Parser {
 			print("cmd ::= CALL IDENT expressionList")
 			try! consume(Terminal.CALL)
 			let ident = try! consume(Terminal.IDENT)
-			let exprList = expressionList()
+			let exprList = try! expressionList()
 			return ConcTree.CommandCall(
 				identifier: ident,
 				expressionList: exprList)
@@ -256,8 +256,21 @@ class Parser {
 	}
 	
 	func repeatingOptionalExpressions() throws -> ConcTree.RepeatingOptionalExpressions? {
-		// todo: continue here
-		return ConcTree.RepeatingOptionalExpressions()
+		switch(terminal) {
+		case Terminal.RPAREN:
+			print("repeatingOptionalExpressions ::= ε")
+			return nil // ε
+		case Terminal.COMMA:
+			print("repeatingOptionalExpressions ::= COMMA expression repeatingOptionalExpressions")
+			try! consume(Terminal.COMMA)
+			let expr = try! expression()
+			let repeatingOptExprs = try! repeatingOptionalExpressions()
+			return ConcTree.RepeatingOptionalExpressions(
+				expression: expr,
+				repeatingOptionalExpressions: repeatingOptExprs)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func repeatingOptionalCommands() -> ConcTree.RepeatingOptionalCommands {
