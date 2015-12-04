@@ -187,7 +187,6 @@ class Scanner: KeywordProvider {
 		case (.LiteralState, _): newLiteralToken()
 		case (.IdentState, _): newIdentifierToken()
 		case (.SymbolState, _): newSymbolToken()
-		case (_, .ErrorState): break
 		case (_, _): break
 		}
 		
