@@ -362,7 +362,7 @@ class Parser {
 			return try! functionDeclaration()
 		case Terminal.PROC:
 			print("declaration ::= procedureDeclaration")
-			return procedureDeclaration()
+			return try! procedureDeclaration()
 		case _:
 			throw ParseError.WrongTerminal
 		}
@@ -431,9 +431,42 @@ class Parser {
 	}
 	
 	func typeDeclartion() throws -> ConcTree.TypeDeclaration {
-		// todo: continue here
-		return ConcTree.TypeDeclaration()
+        switch(terminal) {
+        case Terminal.TYPE:
+            print("typeDecl ::=  TYPE optRecordDecl")
+            let type = try! consume(Terminal.TYPE)
+            let optRecDecl = try! optRecordDeclaration();
+            return ConcTree.TypeDeclaration(
+                type: type,
+                optionalRecordDecl: optRecDecl)
+        case _:
+            throw ParseError.WrongTerminal
+        }
 	}
+    
+    func optRecordDeclaration() throws -> ConcTree.OptionalRecordDeclaration? {
+        switch(terminal) {
+        case Terminal.RPAREN: fallthrough
+        case Terminal.COMMA: fallthrough
+        case Terminal.LOCAL: fallthrough
+        case Terminal.DO: fallthrough
+        case Terminal.SEMICOLON:
+            print("optRecordDecl ::= ε")
+            return nil
+        case Terminal.LPAREN:
+            print("optRecordDecl ::= recordFieldList")
+            let recFieldList = try! recordFieldList()
+            return ConcTree.OptionalRecordDeclaration(recordFieldList: recFieldList)
+        case _:
+            throw ParseError.WrongTerminal
+        }
+    }
+    
+    func recordFieldList() throws -> ConcTree.RecordFieldList {
+        //todo: continue here
+        
+        return ConcTree.RecordFieldList()
+    }
 	
 	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
 		switch(terminal) {
@@ -493,9 +526,25 @@ class Parser {
 		}
 	}
 		
-	func procedureDeclaration() -> ConcTree.ProcedureDeclaraction {
-		// todo: continue here
-		return ConcTree.ProcedureDeclaraction()
+	func procedureDeclaration() throws-> ConcTree.ProcedureDeclaration {
+        switch(terminal) {
+        case Terminal.PROC:
+            print("procDecl ::= PROC IDENT parameterList optrionalLocalStorageDeclarations DO blockCmd ENDPROC")
+            try! consume(Terminal.PROC)
+            let ident = try! consume(Terminal.IDENT)
+            let paramList = try! parameterList()
+            let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
+            try! consume(Terminal.DO)
+            let blockCmd = try! blockCommand()
+            try! consume(Terminal.ENDPROC)
+            return ConcTree.ProcedureDeclaration(
+                ident: ident,
+                parameterList: paramList,
+                optionalLocalStorageDeclaractions: optionalLocalStorageDecl,
+                blockCommand: blockCmd)
+        case _:
+            throw ParseError.WrongTerminal
+        }
 	}
 	
 	func parameterList() throws -> ConcTree.ParameterList {
