@@ -463,10 +463,24 @@ class Parser {
     }
     
     func recordFieldList() throws -> ConcTree.RecordFieldList {
-        //todo: continue here
-        
-        return ConcTree.RecordFieldList()
+		switch(terminal) {
+		case Terminal.LPAREN:
+			print("recordFieldList ::= LPAREN recordFields RPAREN")
+			try! consume(Terminal.LPAREN)
+			let recFields = try! recordFields()
+			try! consume(Terminal.RPAREN)
+			return ConcTree.RecordFieldList(
+				recordFields: recFields
+			)
+		case _:
+			throw ParseError.WrongTerminal
+		}
     }
+	
+	func recordFields() throws -> ConcTree.RecordFields {
+		// todo: continue here
+		return ConcTree.RecordFields()
+	}
 	
 	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
 		switch(terminal) {

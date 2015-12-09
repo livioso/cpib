@@ -346,6 +346,12 @@ class ConcTree {
     }
     
     class RecordFieldList: ASTConvertible {
+		
+		let recordFields: RecordFields
+		
+		init(recordFields: RecordFields) {
+			self.recordFields = recordFields
+		}
         
         var description: String {
             return "\(self.dynamicType)"
@@ -355,6 +361,17 @@ class ConcTree {
             
         }
     }
+	
+	class RecordFields: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
 	
 	class OptionalChangeMode: ASTConvertible {
 		
