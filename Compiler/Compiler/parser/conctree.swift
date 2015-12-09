@@ -165,7 +165,22 @@ class ConcTree {
 		}
 	}
 	
-	class ProcedureDeclaraction: Declaration {
+	class ProcedureDeclaration: Declaration {
+        
+        let ident :Token
+        let parameterList : ParameterList
+        let optionalLocalStorageDeclarations : OptionalLocalStorageDeclaractions?
+        let blockCmd : BlockCommand
+        
+        init(ident: Token,
+            parameterList: ParameterList,
+            optionalLocalStorageDeclaractions: OptionalLocalStorageDeclaractions?,
+            blockCommand: BlockCommand){
+                self.ident = ident
+                self.parameterList = parameterList
+                self.optionalLocalStorageDeclarations = optionalLocalStorageDeclaractions
+                self.blockCmd = blockCommand
+        }
 		
 		override var description: String {
 			return "\(self.dynamicType)"
@@ -294,6 +309,16 @@ class ConcTree {
 	
 	class TypeDeclaration: ASTConvertible {
 		
+        let type : Token
+        let optionalRecordDecl : OptionalRecordDeclaration?
+        
+        init(
+            type:Token,
+            optionalRecordDecl: OptionalRecordDeclaration?) {
+                self.type = type;
+                self.optionalRecordDecl = optionalRecordDecl
+        }
+        
 		var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -302,6 +327,34 @@ class ConcTree {
 			
 		}
 	}
+    
+    class OptionalRecordDeclaration: ASTConvertible {
+        
+        let recordFieldList : RecordFieldList?
+        
+        init(recordFieldList: RecordFieldList?) {
+            self.recordFieldList = recordFieldList
+        }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func toAbstract() {
+            
+        }
+    }
+    
+    class RecordFieldList: ASTConvertible {
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func toAbstract() {
+            
+        }
+    }
 	
 	class OptionalChangeMode: ASTConvertible {
 		
