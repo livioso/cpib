@@ -180,12 +180,33 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
-	func term2() throws -> ConcTree.Term2 {
+	
+	func addOperatorTerm3() throws -> ConcTree.AddOperatorTerm3 {
 		// todo: continue here
-		return ConcTree.Term2()
+		return ConcTree.AddOperatorTerm3()
+	}
+	
+	func term3() throws -> ConcTree.Term3 {
+		// todo: continue here
+		return ConcTree.Term3()
 	}
 		
+	func term2() throws -> ConcTree.Term2 {
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("term2 ::= term3 addOperatorTerm3")
+			let term = try! term3()
+			let addOpr = try! addOperatorTerm3()
+			return ConcTree.Term2(
+				term3: term,
+				addOperatorTerm3: addOpr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
 	func relOprTerm2() throws -> ConcTree.RelOprTerm2? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -585,12 +606,12 @@ class Parser {
 		
 	func procedureDeclaration() throws-> ConcTree.ProcedureDeclaration {
         switch(terminal) {
-        case Terminal.PROC:
-            print("procDecl ::= PROC IDENT parameterList optrionalLocalStorageDeclarations DO blockCmd ENDPROC")
-            try! consume(Terminal.PROC)
-            let ident = try! consume(Terminal.IDENT)
-            let paramList = try! parameterList()
-            let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
+		case Terminal.PROC:
+			print("procDecl ::= PROC IDENT parameterList optrionalLocalStorageDeclarations DO blockCmd ENDPROC")
+			try! consume(Terminal.PROC)
+			let ident = try! consume(Terminal.IDENT)
+			let paramList = try! parameterList()
+			let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
             try! consume(Terminal.DO)
             let blockCmd = try! blockCommand()
             try! consume(Terminal.ENDPROC)
