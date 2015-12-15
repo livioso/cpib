@@ -687,9 +687,9 @@ class ConcTree {
 	class Term2: ASTConvertible {
 		
 		let term3: Term3
-		let addOprTerm3: AddOprTerm3
+		let addOprTerm3: AddOprTerm3?
 		
-		init(term3: Term3, addOprTerm3: AddOprTerm3) {
+		init(term3: Term3, addOprTerm3: AddOprTerm3?) {
 			self.term3 = term3
 			self.addOprTerm3 = addOprTerm3
 		}
@@ -702,7 +702,6 @@ class ConcTree {
 			
 		}
 	}
-	
 	
 	class Term3: ASTConvertible {
 		
@@ -723,8 +722,15 @@ class ConcTree {
 		}
 	}
 	
-	
 	class AddOprTerm3: ASTConvertible {
+		
+		let term3: Term3
+		let addOprTerm3: AddOprTerm3?
+		
+		init(term3: Term3, addOprTerm3: AddOprTerm3?) {
+			self.term3 = term3
+			self.addOprTerm3 = addOprTerm3
+		}
 		
 		var description: String {
 			return "\(self.dynamicType)"

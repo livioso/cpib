@@ -181,9 +181,35 @@ class Parser {
 		}
 	}
 	
-	func addOprTerm3() throws -> ConcTree.AddOprTerm3 {
-		// todo: continue here
-		return ConcTree.AddOprTerm3()
+	func addOprTerm3() throws -> ConcTree.AddOprTerm3? {
+		switch(terminal) {
+		case Terminal.ADDOPR:
+			print("addOprTerm3 ::= ADDOPR term3 addOprTerm3")
+			try! consume(Terminal.ADDOPR)
+			let term = try term3()
+			let addOpr = try! addOprTerm3()
+			return ConcTree.AddOprTerm3(
+				term3: term,
+				addOprTerm3: addOpr)
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES: fallthrough
+		case Terminal.BOOLOPR: fallthrough
+		case Terminal.RELOPR:
+			print("addOprTerm3 ::= ε")
+			return nil // ε
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func term3() throws -> ConcTree.Term3 {
