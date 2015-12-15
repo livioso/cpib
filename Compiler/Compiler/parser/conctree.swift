@@ -364,6 +364,38 @@ class ConcTree {
 	
 	class RecordFields: ASTConvertible {
 		
+		let recordField: RecordField
+		let repeatingRecordFields: RepeatingRecordFields?
+		
+		init(recordField: RecordField, repeatingRecordFields: RepeatingRecordFields?) {
+			self.recordField = recordField
+			self.repeatingRecordFields = repeatingRecordFields
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class RecordField: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class RepeatingRecordFields: ASTConvertible {
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
