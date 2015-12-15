@@ -181,14 +181,36 @@ class Parser {
 		}
 	}
 	
-	func addOperatorTerm3() throws -> ConcTree.AddOperatorTerm3 {
+	func addOprTerm3() throws -> ConcTree.AddOprTerm3 {
 		// todo: continue here
-		return ConcTree.AddOperatorTerm3()
+		return ConcTree.AddOprTerm3()
 	}
 	
 	func term3() throws -> ConcTree.Term3 {
-		// todo: continue here
-		return ConcTree.Term3()
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("term3 ::= term4 multOpTerm4")
+			let term = try! term4()
+			let multOpr = try! multOpTerm4()
+			return ConcTree.Term3(
+				term4: term,
+				multOpTerm4: multOpr
+			)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func term4() throws -> ConcTree.Term4 {
+		// todo continue here
+		return ConcTree.Term4()
+	}
+	
+	func multOpTerm4() throws -> ConcTree.MultOprTerm4 {
+		// todo continue here
+		return ConcTree.MultOprTerm4()
 	}
 		
 	func term2() throws -> ConcTree.Term2 {
@@ -198,10 +220,10 @@ class Parser {
 		case Terminal.LITERAL:
 			print("term2 ::= term3 addOperatorTerm3")
 			let term = try! term3()
-			let addOpr = try! addOperatorTerm3()
+			let addOpr = try! addOprTerm3()
 			return ConcTree.Term2(
 				term3: term,
-				addOperatorTerm3: addOpr)
+				addOprTerm3: addOpr)
 		case _:
 			throw ParseError.WrongTerminal
 		}

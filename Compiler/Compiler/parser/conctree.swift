@@ -687,11 +687,11 @@ class ConcTree {
 	class Term2: ASTConvertible {
 		
 		let term3: Term3
-		let addOperatorTerm3: AddOperatorTerm3
+		let addOprTerm3: AddOprTerm3
 		
-		init(term3: Term3, addOperatorTerm3: AddOperatorTerm3) {
+		init(term3: Term3, addOprTerm3: AddOprTerm3) {
 			self.term3 = term3
-			self.addOperatorTerm3 = addOperatorTerm3
+			self.addOprTerm3 = addOprTerm3
 		}
 		
 		var description: String {
@@ -706,6 +706,14 @@ class ConcTree {
 	
 	class Term3: ASTConvertible {
 		
+		let term4: Term4
+		let multOpTerm4: MultOprTerm4
+		
+		init(term4: Term4, multOpTerm4: MultOprTerm4) {
+			self.term4 = term4
+			self.multOpTerm4 = multOpTerm4
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -716,7 +724,29 @@ class ConcTree {
 	}
 	
 	
-	class AddOperatorTerm3: ASTConvertible {
+	class AddOprTerm3: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class Term4: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	class MultOprTerm4: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
