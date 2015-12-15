@@ -601,7 +601,7 @@ class Parser {
                 blockCommand: blockCmd)
         case _:
             throw ParseError.WrongTerminal
-        }
+		}
 	}
 	
 	func parameterList() throws -> ConcTree.ParameterList {
