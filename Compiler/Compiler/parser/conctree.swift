@@ -402,6 +402,14 @@ class ConcTree {
 	
 	class RepeatingRecordFields: ASTConvertible {
 		
+		let recordField: RecordField
+		let repeatingOptionalExpressions: RepeatingOptionalExpressions?
+		
+		init(recordField: RecordField, repeatingOptionalExpressions: RepeatingOptionalExpressions?) {
+			self.recordField = recordField
+			self.repeatingOptionalExpressions = repeatingOptionalExpressions
+		}
+		 
 		var description: String {
 			return "\(self.dynamicType)"
 		}

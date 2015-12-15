@@ -508,9 +508,21 @@ class Parser {
 	}
 		
 	func repeatingRecordFields() throws -> ConcTree.RepeatingRecordFields? {
-		// todo: continue here
-		print("repeatingRecordFields ::= ε")
-		return nil
+		switch(terminal) {
+		case Terminal.RPAREN:
+			print("repeatingRecordFields ::= ε")
+			return nil // ε
+		case Terminal.COMMA:
+			print("repeatingRecordFields ::= recordField repeatingRecordFields")
+			try! consume(Terminal.COMMA)
+			let recField = try! recordField()
+			let repeatingOptExpressions = try! repeatingOptionalExpressions()
+			return ConcTree.RepeatingRecordFields(
+				recordField: recField,
+				repeatingOptionalExpressions: repeatingOptExpressions)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
