@@ -710,7 +710,7 @@ class ConcTree {
 		
 		init(term4: Term4, multOprTerm4: MultOprTerm4?) {
 			self.term4 = term4
-			self.multOpTerm4 = multOprTerm4
+			self.multOprTerm4 = multOprTerm4
 		}
 		
 		var description: String {
@@ -812,9 +812,11 @@ class ConcTree {
 	class FactorIdentifier: Factor {
 		
 		let identifier: Token.Attribute
+		let optionalIdent: OptionalIdentifier?
 		
-		init(identifier: Token.Attribute) {
+		init(identifier: Token.Attribute, optionalIdent: OptionalIdentifier?) {
 			self.identifier = identifier
+			self.optionalIdent = optionalIdent
 		}
 		
 		override var description: String {
@@ -839,6 +841,33 @@ class ConcTree {
 		}
 		
 		override func toAbstract() {
+			
+		}
+	}
+	
+	
+	class OptionalIdentifier: ASTConvertible {
+		
+		// either one or the other
+		// but not both at the same time
+		let initToken: Token?
+		let expressionList: ExpressionList?
+		
+		init(initToken: Token) {
+			self.initToken = initToken
+			self.expressionList = nil
+		}
+		
+		init(expressionList: ExpressionList) {
+			self.initToken = nil
+			self.expressionList = expressionList
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
 			
 		}
 	}

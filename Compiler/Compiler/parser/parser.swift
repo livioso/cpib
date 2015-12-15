@@ -255,8 +255,10 @@ class Parser {
 		case Terminal.IDENT:
 			print("factor ::= IDENT optionalIdent")
 			let identifier = try! consume(Terminal.IDENT).attribute!
+			let optIdent = try! optionalIdentifier()
 			return ConcTree.FactorIdentifier(
-				identifier: identifier)
+				identifier: identifier,
+				optionalIdent: optIdent)
 		case Terminal.LPAREN:
 			print("factor ::= LPAREN expression RPAREN")
 			try! consume(Terminal.LPAREN)
@@ -266,6 +268,42 @@ class Parser {
 				expression: expr)
 		case _:
 			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func optionalIdentifier() throws -> ConcTree.OptionalIdentifier? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES: fallthrough
+		case Terminal.BOOLOPR: fallthrough
+		case Terminal.RELOPR: fallthrough
+		case Terminal.ADDOPR: fallthrough
+		case Terminal.MULTOPR: fallthrough
+		case Terminal.DOTOPR:
+			print("optionalIdentifier ::= ε")
+			return nil // ε
+		case Terminal.INIT:
+			print("optionalIdentifier ::= INIT")
+			let initToken = try! consume(Terminal.INIT)
+			return ConcTree.OptionalIdentifier(
+				initToken: initToken)
+		case Terminal.LPAREN:
+			print("optionalIdentifier ::= expressionList")
+			let exprList = try! expressionList()
+			return ConcTree.OptionalIdentifier(
+				expressionList: exprList)
+		case _:
+				throw ParseError.WrongTerminal
 		}
 	}
 	
@@ -290,6 +328,7 @@ class Parser {
 			print("dotOprFactor ::= ε")
 			return nil // ε
 		case Terminal.DOTOPR:
+			print("dotOprFactor ::= DOTOPR ")
 			// todo: raphi what is the DOTOPR?
 			// does it need to be in the CST?
 			try! consume(Terminal.DOTOPR)
