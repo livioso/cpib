@@ -494,8 +494,17 @@ class Parser {
 	}
 		
 	func recordField() throws -> ConcTree.RecordField {
-		// todo: continue here
-		return ConcTree.RecordField()
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("recordField ::= expression")
+			let expr = try! expression()
+			return ConcTree.RecordField(
+				expression: expr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 		
 	func repeatingRecordFields() throws -> ConcTree.RepeatingRecordFields? {

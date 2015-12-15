@@ -384,6 +384,12 @@ class ConcTree {
 	
 	class RecordField: ASTConvertible {
 		
+		let expression: Expression
+		
+		init(expression: Expression) {
+			self.expression = expression
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
