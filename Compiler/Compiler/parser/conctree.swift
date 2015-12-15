@@ -706,11 +706,11 @@ class ConcTree {
 	class Term3: ASTConvertible {
 		
 		let term4: Term4
-		let multOpTerm4: MultOprTerm4
+		let multOprTerm4: MultOprTerm4?
 		
-		init(term4: Term4, multOpTerm4: MultOprTerm4) {
+		init(term4: Term4, multOprTerm4: MultOprTerm4?) {
 			self.term4 = term4
-			self.multOpTerm4 = multOpTerm4
+			self.multOpTerm4 = multOprTerm4
 		}
 		
 		var description: String {
@@ -761,6 +761,14 @@ class ConcTree {
 	}
 	
 	class MultOprTerm4: ASTConvertible {
+		
+		let term4: Term4
+		let multOprTerm4: MultOprTerm4?
+		
+		init(term4: Term4, multOprTerm4: MultOprTerm4?) {
+			self.term4 = term4
+			self.multOprTerm4 = multOprTerm4
+		}
 		
 		var description: String {
 			return "\(self.dynamicType)"

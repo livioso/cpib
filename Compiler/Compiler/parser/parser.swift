@@ -217,12 +217,12 @@ class Parser {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
 		case Terminal.LITERAL:
-			print("term3 ::= term4 multOpTerm4")
+			print("term3 ::= term4 multOprTerm4")
 			let term = try! term4()
-			let multOpr = try! multOpTerm4()
+			let multOpr = try! multOprTerm4()
 			return ConcTree.Term3(
 				term4: term,
-				multOpTerm4: multOpr
+				multOprTerm4: multOpr
 			)
 		case _:
 			throw ParseError.WrongTerminal
@@ -255,9 +255,35 @@ class Parser {
 		return ConcTree.DotOprFactor()
 	}
 	
-	func multOpTerm4() throws -> ConcTree.MultOprTerm4 {
-		// todo continue here
-		return ConcTree.MultOprTerm4()
+	func multOprTerm4() throws -> ConcTree.MultOprTerm4? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES: fallthrough
+		case Terminal.BOOLOPR: fallthrough
+		case Terminal.RELOPR: fallthrough
+		case Terminal.ADDOPR:
+			print("multOpTerm4 ::= ε")
+			return nil // ε
+		case Terminal.MULTOPR:
+			print("multOpTerm4 ::= term4 multOprTerm4")
+			let term = try! term4()
+			let multOpr = try! multOprTerm4()
+			return ConcTree.MultOprTerm4(
+				term4: term,
+				multOprTerm4: multOpr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 		
 	func term2() throws -> ConcTree.Term2 {
