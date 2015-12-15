@@ -791,6 +791,58 @@ class ConcTree {
 		}
 	}
 	
+	
+	class FactorLiteral: Factor {
+		
+		let literal: Token.Attribute
+		
+		init(literal: Token.Attribute) {
+			self.literal = literal
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	class FactorIdentifier: Factor {
+		
+		let identifier: Token.Attribute
+		
+		init(identifier: Token.Attribute) {
+			self.identifier = identifier
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
+	class FactorExpression: Factor {
+		
+		let expression: Expression
+		
+		init(expression: Expression) {
+			self.expression = expression
+		}
+		
+		override var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		override func toAbstract() {
+			
+		}
+	}
+	
 	class DotOprFactor: ASTConvertible {
 		
 		let identifier: Token.Attribute

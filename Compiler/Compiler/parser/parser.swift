@@ -246,8 +246,27 @@ class Parser {
 	}
 	
 	func factor() throws -> ConcTree.Factor {
-		// todo continue here
-		return ConcTree.Factor()
+		switch(terminal) {
+		case Terminal.LITERAL:
+			print("factor ::= LITERAL")
+			let literal = try! consume(Terminal.LITERAL).attribute!
+			return ConcTree.FactorLiteral(
+				literal: literal)
+		case Terminal.IDENT:
+			print("factor ::= IDENT optionalIdent")
+			let identifier = try! consume(Terminal.IDENT).attribute!
+			return ConcTree.FactorIdentifier(
+				identifier: identifier)
+		case Terminal.LPAREN:
+			print("factor ::= LPAREN expression RPAREN")
+			try! consume(Terminal.LPAREN)
+			let expr = try! expression()
+			try! consume(Terminal.RPAREN)
+			return ConcTree.FactorExpression(
+				expression: expr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func dotOprFactor() throws -> ConcTree.DotOprFactor? {
