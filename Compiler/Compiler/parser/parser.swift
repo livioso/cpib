@@ -230,8 +230,29 @@ class Parser {
 	}
 	
 	func term4() throws -> ConcTree.Term4 {
+		switch(terminal) {
+		case Terminal.LPAREN: fallthrough
+		case Terminal.IDENT: fallthrough
+		case Terminal.LITERAL:
+			print("term4 ::= factor dotOprFactor")
+			let fact = try! factor()
+			let dotOpr = try! dotOprFactor()
+			return ConcTree.Term4(
+				factor: fact,
+				dotOprFactor: dotOpr)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func factor() throws -> ConcTree.Factor {
 		// todo continue here
-		return ConcTree.Term4()
+		return ConcTree.Factor()
+	}
+	
+	func dotOprFactor() throws -> ConcTree.DotOprFactor {
+		// todo continue here
+		return ConcTree.DotOprFactor()
 	}
 	
 	func multOpTerm4() throws -> ConcTree.MultOprTerm4 {

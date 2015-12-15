@@ -743,6 +743,14 @@ class ConcTree {
 	
 	class Term4: ASTConvertible {
 		
+		let factor: Factor
+		let dotOprFactor: DotOprFactor
+		
+		init(factor: Factor, dotOprFactor: DotOprFactor) {
+			self.factor = factor
+			self.dotOprFactor = dotOprFactor
+		}
+		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
@@ -753,6 +761,30 @@ class ConcTree {
 	}
 	
 	class MultOprTerm4: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class Factor: ASTConvertible {
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() {
+			
+		}
+	}
+	
+	
+	class DotOprFactor: ASTConvertible {
 		
 		var description: String {
 			return "\(self.dynamicType)"
