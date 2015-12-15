@@ -744,9 +744,9 @@ class ConcTree {
 	class Term4: ASTConvertible {
 		
 		let factor: Factor
-		let dotOprFactor: DotOprFactor
+		let dotOprFactor: DotOprFactor?
 		
-		init(factor: Factor, dotOprFactor: DotOprFactor) {
+		init(factor: Factor, dotOprFactor: DotOprFactor?) {
 			self.factor = factor
 			self.dotOprFactor = dotOprFactor
 		}
@@ -791,8 +791,13 @@ class ConcTree {
 		}
 	}
 	
-	
 	class DotOprFactor: ASTConvertible {
+		
+		let identifier: Token.Attribute
+		
+		init(identifier: Token.Attribute) {
+			self.identifier = identifier
+		}
 		
 		var description: String {
 			return "\(self.dynamicType)"

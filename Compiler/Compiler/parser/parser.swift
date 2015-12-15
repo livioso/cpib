@@ -250,9 +250,36 @@ class Parser {
 		return ConcTree.Factor()
 	}
 	
-	func dotOprFactor() throws -> ConcTree.DotOprFactor {
-		// todo continue here
-		return ConcTree.DotOprFactor()
+	func dotOprFactor() throws -> ConcTree.DotOprFactor? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.THEN: fallthrough
+		case Terminal.ENDPROC: fallthrough
+		case Terminal.ENDFUN: fallthrough
+		case Terminal.ENDWHILE: fallthrough
+		case Terminal.ENDIF: fallthrough
+		case Terminal.ELSE: fallthrough
+		case Terminal.ENDPROGRAM: fallthrough
+		case Terminal.SEMICOLON: fallthrough
+		case Terminal.BECOMES: fallthrough
+		case Terminal.BOOLOPR: fallthrough
+		case Terminal.RELOPR: fallthrough
+		case Terminal.ADDOPR: fallthrough
+		case Terminal.MULTOPR:
+			print("dotOprFactor ::= ε")
+			return nil // ε
+		case Terminal.DOTOPR:
+			// todo: raphi what is the DOTOPR?
+			// does it need to be in the CST?
+			try! consume(Terminal.DOTOPR)
+			let ident = try! consume(Terminal.IDENT).attribute!
+			return ConcTree.DotOprFactor(
+				identifier: ident)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
 	
 	func multOprTerm4() throws -> ConcTree.MultOprTerm4? {
