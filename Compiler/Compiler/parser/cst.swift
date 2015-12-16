@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ASTConvertible: CustomStringConvertible {
-	func toAbstract() -> Void
+	func toAbstract() -> AST
 }
 
 class CST {
@@ -26,8 +26,12 @@ class CST {
 			"</Program>\n"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			// todo continue here
+			return AST.Program(
+				ident: "todo",
+				declaration: AST.Declaration(),
+				cmd: AST.Cmd())
 		}
 	}
 	
@@ -43,8 +47,9 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			// todo continue here
+			return AST.Declaration()
 		}
 	}
 	
@@ -63,8 +68,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -82,8 +87,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -93,8 +98,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -112,8 +117,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -131,8 +136,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -160,8 +165,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -186,8 +191,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -203,8 +208,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -223,8 +228,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -243,8 +248,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -262,8 +267,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -282,8 +287,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -301,8 +306,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -322,8 +327,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -339,8 +344,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -356,8 +361,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -375,8 +380,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -392,8 +397,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -411,8 +416,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -428,8 +433,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -445,8 +450,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -462,8 +467,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -473,8 +478,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -484,8 +489,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -503,8 +508,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -526,8 +531,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -545,8 +550,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -562,8 +567,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -579,8 +584,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -598,8 +603,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -617,8 +622,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -636,8 +641,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -657,8 +662,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -676,8 +681,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -695,8 +700,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -714,8 +719,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -733,8 +738,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -752,8 +757,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -771,8 +776,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -782,8 +787,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -799,8 +804,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -818,8 +823,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -835,8 +840,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() {
-			
+		override func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -861,8 +866,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -878,8 +883,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -895,8 +900,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -914,8 +919,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -933,8 +938,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 	
@@ -952,8 +957,8 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 		
-		func toAbstract() {
-			
+		func toAbstract() -> AST {
+			return AST.Nothing()
 		}
 	}
 }
