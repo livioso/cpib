@@ -1,15 +1,11 @@
-program intDiv (
-  in const m:int32,
-  in const n:int32,
-  out const q:int32,
-  out const r:int32 )
+program main
 
 global
     proc divide (
-      in copy const m:int32,
-      in copy const n:int32,
-      out ref var q:int32,
-      out ref var r:int32 )
+      copy const m:int32,
+      copy const n:int32,
+      ref var q:int32,
+      ref var r:int32 )
     do
         q init := 0;
         r init := m;
@@ -19,5 +15,5 @@ global
         endwhile
     endproc
 do
-    call divide( m, n, q init, r init )
+    call divide ( m, n, q init, r init )
 endprogram

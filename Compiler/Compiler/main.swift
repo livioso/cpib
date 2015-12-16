@@ -3,28 +3,24 @@ import Foundation
 func main() {
 	
 	print("🔴 IML-S Compiler 🐵🙈")
-	if let sourcePath = Process.arguments.last {
+	if var sourcePath = Process.arguments.last {
 		
-		let scanner = Scanner()
+		// while debugging better use "make test" ;)
+		sourcePath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
+		sourcePath += "Compiler/TestSources/test-01.iml"
+		
 		print("🔴 Scanner.scan(\(sourcePath))")
-		
-		var debugContent = ""
-		debugContent += "program main\n"
-		debugContent += "global\n"
-		debugContent += "fun yolo( ) returns var fib : int32 \n"
-		debugContent += "do\n"
-		
-		scanner.debugContent = debugContent
+		let scanner = Scanner()
 		let tokenlist = scanner.scan(sourcePath)
 		
-		let parser = Parser(tokenlist: tokenlist)
 		print("🔴 Parser.parse(tokenlist)")
-		parser.parse()
+		let parser = Parser(tokenlist: tokenlist)
+		let cst = parser.parse()
+		print(cst)
 		
 	} else {
 		print("Missing Parameter <source.iml>")
 	}
-	
 }
 
 main()
