@@ -7,11 +7,11 @@ class KeywordProvider {
 	init() {
 		keywords = [
 			// relevant for <Identifier>
-            "bool": Token(terminal: Terminal.TYPE,
+			"bool": Token(terminal: Terminal.TYPE,
 				attribute: Token.Attribute.Type(Token.TypeIdentifier.BOOLEAN)),
 			"int32": Token(terminal: Terminal.TYPE,
 				attribute: Token.Attribute.Type(Token.TypeIdentifier.INT32)),
-            "int64": Token(terminal: Terminal.TYPE,
+			"int64": Token(terminal: Terminal.TYPE,
 				attribute: Token.Attribute.Type(Token.TypeIdentifier.INT64)),
 			"call": Token(terminal: Terminal.CALL),
 			"do": Token(terminal: Terminal.DO),
@@ -34,8 +34,8 @@ class KeywordProvider {
 			"skip": Token(terminal: Terminal.SKIP),
 			"then": Token(terminal: Terminal.THEN),
 			"while": Token(terminal: Terminal.WHILE),
-            "record": Token(terminal: Terminal.TYPE,
-                attribute: Token.Attribute.Type(Token.TypeIdentifier.RECORD)),
+			"record": Token(terminal: Terminal.TYPE,
+				attribute: Token.Attribute.Type(Token.TypeIdentifier.RECORD)),
 			"true": Token(terminal: Terminal.LITERAL,
 				attribute: Token.Attribute.Boolean(true)),
 			"false": Token(terminal: Terminal.LITERAL,
@@ -64,7 +64,7 @@ class KeywordProvider {
 			")": Token(terminal: Terminal.RPAREN),
 			",": Token(terminal: Terminal.COMMA),
 			";": Token(terminal: Terminal.SEMICOLON),
-            ":": Token(terminal: Terminal.COLON),
+			":": Token(terminal: Terminal.COLON),
 			"+": Token(terminal: Terminal.ADDOPR,
 				attribute: Token.Attribute.AddOperator(Token.AddOprType.PLUS)),
 			"-": Token(terminal: Terminal.ADDOPR,
@@ -92,7 +92,7 @@ class KeywordProvider {
 			"<": Token(terminal: Terminal.RELOPR,
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LT)),
 			":=": Token(terminal: Terminal.BECOMES),
-            ".": Token(terminal: Terminal.DOTOPR)
+			".": Token(terminal: Terminal.DOTOPR)
 		]
 	}
 	

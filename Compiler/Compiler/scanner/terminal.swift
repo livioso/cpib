@@ -37,9 +37,9 @@ public enum Terminal {
 	case THEN
 	case WHILE
 	case IDENT
-    case DEBUGIN
-    case DEBUGOUT
-    case NOTOPR
-    case DOTOPR
-    case SENTINEL
+	case DEBUGIN
+	case DEBUGOUT
+	case NOTOPR
+	case DOTOPR
+	case SENTINEL
 }

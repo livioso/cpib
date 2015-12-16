@@ -21,8 +21,8 @@ extension Character {
 	private func isSkipable() -> Bool {
 		return (
 			(" " == self) ||
-			("\t" == self) ||
-			("\n" == self)
+				("\t" == self) ||
+				("\n" == self)
 		)
 	}
 	
@@ -33,7 +33,7 @@ extension Character {
 	private func isLetter() -> Bool {
 		return (
 			("A" <= self && self <= "Z") ||
-			("a" <= self && self <= "z")
+				("a" <= self && self <= "z")
 		)
 	}
 	

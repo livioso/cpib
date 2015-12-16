@@ -13,37 +13,37 @@ class Scanner: KeywordProvider {
 	
 	struct Line {
 		var number: Int = 0
-        var index: String.CharacterView.Index
+		var index: String.CharacterView.Index
 		var content: String = "" {
 			didSet {
 				// reset index when the content changes
-                index = content.startIndex
+				index = content.startIndex
 			}
 		}
 		
 		init(content: String, number: Int) {
 			self.content = content
 			self.number = number
-            self.index = self.content.startIndex
+			self.index = self.content.startIndex
 		}
-        
-        mutating func next() -> Character?{
-            if(index == content.characters.endIndex) {
-                return nil
-            }
-            let i = index
-            index = index.successor()
-            return content[i];
-        }
-        mutating func back(){
-            if(index != content.characters.startIndex) {index = index.predecessor()}
-        }
-        func previous() -> Character?{
-            if(index >= content.characters.startIndex) {return nil}
-            else {
-                return content[index]
-            }
-        }
+		
+		mutating func next() -> Character?{
+			if(index == content.characters.endIndex) {
+				return nil
+			}
+			let i = index
+			index = index.successor()
+			return content[i];
+		}
+		mutating func back(){
+			if(index != content.characters.startIndex) {index = index.predecessor()}
+		}
+		func previous() -> Character?{
+			if(index >= content.characters.startIndex) {return nil}
+			else {
+				return content[index]
+			}
+		}
 	}
 	
 	// the current token range "under construction" once an entire
@@ -85,14 +85,14 @@ class Scanner: KeywordProvider {
 		}
 		
 		// make sure we have at least the SENTINEL
-        tokenlist.append(Token(terminal: Terminal.SENTINEL))
+		tokenlist.append(Token(terminal: Terminal.SENTINEL))
 		
 		print("\n✅ Scan finished: Tokenlist is:")
 		for token in tokenlist {
 			print("🔘\(token.terminal)")
-            if let attr = token.attribute {
-                print("➡️\(attr)")
-            }
+			if let attr = token.attribute {
+				print("➡️\(attr)")
+			}
 		}
 		
 		return tokenlist
@@ -122,23 +122,23 @@ class Scanner: KeywordProvider {
 	
 	private func newLiteralToken() {
 		let literal = buildTokenFrom(currentTokenRange)
-        
-        //check if Int is not out of Int64 range
-        let checkInt = Double.init(literal)
-        if checkInt != nil && checkInt > Double.init(integerLiteral: INT64_MAX) {
-            currentState = .ErrorState(description: "❌ Int64 out of Range: \(currentLine.number)")
-        } else {
-            let token = Token(
-                terminal: Terminal.LITERAL,
-                lineNumber: currentLine.number,
-                attribute: Token.Attribute.Integer(Int(literal)!))
-
-            print("✅ New literal token: \(literal)")
-            tokenlist.append(token)
 		
-            // be ready for the next token
-            currentTokenRange.startIndex = currentTokenRange.endIndex
-        }
+		//check if Int is not out of Int64 range
+		let checkInt = Double.init(literal)
+		if checkInt != nil && checkInt > Double.init(integerLiteral: INT64_MAX) {
+			currentState = .ErrorState(description: "❌ Int64 out of Range: \(currentLine.number)")
+		} else {
+			let token = Token(
+				terminal: Terminal.LITERAL,
+				lineNumber: currentLine.number,
+				attribute: Token.Attribute.Integer(Int(literal)!))
+			
+			print("✅ New literal token: \(literal)")
+			tokenlist.append(token)
+			
+			// be ready for the next token
+			currentTokenRange.startIndex = currentTokenRange.endIndex
+		}
 	}
 	
 	private func newIdentifierToken() {

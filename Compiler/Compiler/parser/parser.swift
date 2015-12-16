@@ -1,24 +1,24 @@
 import Foundation
 
 class Parser {
-
+	
 	enum ParseError : ErrorType {
 		case WrongTerminal
 	}
-
+	
 	var tokenlist: [Token]
 	var token: Token
 	var terminal: Terminal
-
+	
 	init(tokenlist: [Token]) {
 		self.tokenlist = tokenlist
 		// fixme: this is bad. how can we do this better?
 		self.token = Token(terminal: Terminal.PROGRAM)
 		self.terminal = Terminal.PROGRAM
 	}
-
+	
 	func consume(expectedTerminal: Terminal) throws -> Token {
-
+		
 		if terminal == expectedTerminal {
 			let consumedToken = token
 			if terminal != Terminal.SENTINEL {
@@ -28,23 +28,23 @@ class Parser {
 				terminal = token.terminal
 			}
 			return consumedToken
-
+			
 		} else {
 			print("PError: expected \(expectedTerminal) found: \(terminal): \(token.lineNumber)")
-            throw ParseError.WrongTerminal
+			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func parse() -> CST.Program {
 		let prog = try! program()
 		try! consume(Terminal.SENTINEL)
 		return prog
 	}
-
-
+	
+	
 	// Production Functions
 	// Terminals can be found in <terminals.swift>
-
+	
 	func program() throws -> CST.Program {
 		switch(terminal) {
 		case Terminal.PROGRAM:
@@ -63,7 +63,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func blockCommand() throws -> CST.BlockCommand {
 		switch(terminal) {
 		case Terminal.DEBUGOUT: fallthrough
@@ -84,7 +84,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func command() throws -> CST.Command {
 		switch(terminal) {
 		case Terminal.SKIP:
@@ -148,7 +148,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func expression() throws -> CST.Expression {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -164,7 +164,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func term1() throws -> CST.Term1 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -180,7 +180,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func addOprTerm3() throws -> CST.AddOprTerm3? {
 		switch(terminal) {
 		case Terminal.ADDOPR:
@@ -211,7 +211,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func term3() throws -> CST.Term3 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -228,7 +228,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func term4() throws -> CST.Term4 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -244,7 +244,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func factor() throws -> CST.Factor {
 		switch(terminal) {
 		case Terminal.LITERAL:
@@ -270,7 +270,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalIdentifier() throws -> CST.OptionalIdentifier? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -303,10 +303,10 @@ class Parser {
 			return CST.OptionalIdentifier(
 				expressionList: exprList)
 		case _:
-				throw ParseError.WrongTerminal
+			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func dotOprFactor() throws -> CST.DotOprFactor? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -339,7 +339,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func multOprTerm4() throws -> CST.MultOprTerm4? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -370,7 +370,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func term2() throws -> CST.Term2 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -386,7 +386,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func relOprTerm2() throws -> CST.RelOprTerm2? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -417,7 +417,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func boolOprTerm1() throws -> CST.BoolOprTerm1? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -445,7 +445,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func expressionList() throws -> CST.ExpressionList {
 		switch(terminal) {
 		case Terminal.LPAREN:
@@ -459,7 +459,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalExpressions() throws -> CST.OptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -478,7 +478,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingOptionalExpressions() throws -> CST.RepeatingOptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -496,7 +496,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingOptionalCommands() throws -> CST.RepeatingOptionalCommands? {
 		switch(terminal) {
 		case Terminal.ENDPROC: fallthrough
@@ -519,7 +519,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalGlobalDeclarations() throws -> CST.OptionalGlobalDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -534,7 +534,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func declarations() throws -> CST.Declarations {
 		switch(terminal) {
 		case Terminal.PROC: fallthrough
@@ -551,7 +551,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func declaration() throws -> CST.Declaration {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -568,7 +568,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingOptionalDelcarations() throws -> CST.RepeatingOptionalDelcarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -585,7 +585,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func storageDeclaraction() throws -> CST.StorageDeclaraction {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -600,7 +600,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalChangeMode() throws -> CST.OptionalChangeMode? {
 		switch(terminal) {
 		case Terminal.IDENT:
@@ -615,7 +615,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func typedIdent() throws -> CST.TypedIdent {
 		switch(terminal) {
 		case Terminal.IDENT:
@@ -630,40 +630,40 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func typeDeclartion() throws -> CST.TypeDeclaration {
-        switch(terminal) {
-        case Terminal.TYPE:
-            print("typeDecl ::=  TYPE optRecordDecl")
-            let type = try! consume(Terminal.TYPE)
-            let optRecDecl = try! optRecordDeclaration();
-            return CST.TypeDeclaration(
-                type: type,
-                optionalRecordDecl: optRecDecl)
-        case _:
-            throw ParseError.WrongTerminal
-        }
+		switch(terminal) {
+		case Terminal.TYPE:
+			print("typeDecl ::=  TYPE optRecordDecl")
+			let type = try! consume(Terminal.TYPE)
+			let optRecDecl = try! optRecordDeclaration();
+			return CST.TypeDeclaration(
+				type: type,
+				optionalRecordDecl: optRecDecl)
+		case _:
+			throw ParseError.WrongTerminal
+		}
 	}
-
-    func optRecordDeclaration() throws -> CST.OptionalRecordDeclaration? {
-        switch(terminal) {
-        case Terminal.RPAREN: fallthrough
-        case Terminal.COMMA: fallthrough
-        case Terminal.LOCAL: fallthrough
-        case Terminal.DO: fallthrough
-        case Terminal.SEMICOLON:
-            print("optRecordDecl ::= ε")
-            return nil
-        case Terminal.LPAREN:
-            print("optRecordDecl ::= recordFieldList")
-            let recFieldList = try! recordFieldList()
-            return CST.OptionalRecordDeclaration(recordFieldList: recFieldList)
-        case _:
-            throw ParseError.WrongTerminal
-        }
-    }
-
-    func recordFieldList() throws -> CST.RecordFieldList {
+	
+	func optRecordDeclaration() throws -> CST.OptionalRecordDeclaration? {
+		switch(terminal) {
+		case Terminal.RPAREN: fallthrough
+		case Terminal.COMMA: fallthrough
+		case Terminal.LOCAL: fallthrough
+		case Terminal.DO: fallthrough
+		case Terminal.SEMICOLON:
+			print("optRecordDecl ::= ε")
+			return nil
+		case Terminal.LPAREN:
+			print("optRecordDecl ::= recordFieldList")
+			let recFieldList = try! recordFieldList()
+			return CST.OptionalRecordDeclaration(recordFieldList: recFieldList)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
+	func recordFieldList() throws -> CST.RecordFieldList {
 		switch(terminal) {
 		case Terminal.LPAREN:
 			print("recordFieldList ::= LPAREN recordFields RPAREN")
@@ -676,8 +676,8 @@ class Parser {
 		case _:
 			throw ParseError.WrongTerminal
 		}
-    }
-
+	}
+	
 	func recordFields() throws -> CST.RecordFields {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -693,7 +693,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func recordField() throws -> CST.RecordField {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -707,7 +707,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingRecordFields() throws -> CST.RepeatingRecordFields? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -725,7 +725,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalLocalStorageDeclaractions() throws -> CST.OptionalLocalStorageDeclaractions? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -743,7 +743,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingOptionalStorageDeclarations() throws -> CST.RepeatingOptionalStorageDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -759,7 +759,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func functionDeclaration() throws -> CST.FunctionDeclaraction {
 		switch(terminal) {
 		case Terminal.FUN:
@@ -783,28 +783,28 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func procedureDeclaration() throws-> CST.ProcedureDeclaration {
-        switch(terminal) {
+		switch(terminal) {
 		case Terminal.PROC:
 			print("procDecl ::= PROC IDENT parameterList optrionalLocalStorageDeclarations DO blockCmd ENDPROC")
 			try! consume(Terminal.PROC)
 			let ident = try! consume(Terminal.IDENT)
 			let paramList = try! parameterList()
 			let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
-            try! consume(Terminal.DO)
-            let blockCmd = try! blockCommand()
-            try! consume(Terminal.ENDPROC)
-            return CST.ProcedureDeclaration(
-                ident: ident,
-                parameterList: paramList,
-                optionalLocalStorageDeclaractions: optionalLocalStorageDecl,
-                blockCommand: blockCmd)
-        case _:
-            throw ParseError.WrongTerminal
+			try! consume(Terminal.DO)
+			let blockCmd = try! blockCommand()
+			try! consume(Terminal.ENDPROC)
+			return CST.ProcedureDeclaration(
+				ident: ident,
+				parameterList: paramList,
+				optionalLocalStorageDeclaractions: optionalLocalStorageDecl,
+				blockCommand: blockCmd)
+		case _:
+			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func parameterList() throws -> CST.ParameterList {
 		switch(terminal) {
 		case Terminal.LPAREN:
@@ -818,7 +818,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalParameters() throws -> CST.OptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -838,7 +838,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func parameter() throws -> CST.Parameter {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -855,7 +855,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func repeatingOptionalParameters() throws -> CST.RepeatingOptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -873,7 +873,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-
+	
 	func optionalMechMode() throws -> CST.OptionalMechMode? {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
