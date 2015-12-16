@@ -35,7 +35,7 @@ class Parser {
 		}
 	}
 
-	func parse() -> ConcTree.Program {
+	func parse() -> CST.Program {
 		let prog = try! program()
 		try! consume(Terminal.SENTINEL)
 		return prog
@@ -45,7 +45,7 @@ class Parser {
 	// Production Functions
 	// Terminals can be found in <terminals.swift>
 
-	func program() throws -> ConcTree.Program {
+	func program() throws -> CST.Program {
 		switch(terminal) {
 		case Terminal.PROGRAM:
 			print("program ::= PROGRAM IDENT optionalGlobalDeclarations DO blockCmd ENDPROGRAM")
@@ -55,7 +55,7 @@ class Parser {
 			try! consume(Terminal.DO)
 			let blockCmd = try! blockCommand()
 			try! consume(Terminal.ENDPROGRAM)
-			return ConcTree.Program(
+			return CST.Program(
 				ident: ident,
 				optionalGlobalDeclarations: optGlobalDeclarations,
 				blockCmd: blockCmd);
@@ -64,7 +64,7 @@ class Parser {
 		}
 	}
 
-	func blockCommand() throws -> ConcTree.BlockCommand {
+	func blockCommand() throws -> CST.BlockCommand {
 		switch(terminal) {
 		case Terminal.DEBUGOUT: fallthrough
 		case Terminal.DEBUGIN: fallthrough
@@ -77,7 +77,7 @@ class Parser {
 		case Terminal.SKIP:
 			let cmd = try! command()
 			let repeatingOptionalCmds = try! repeatingOptionalCommands()
-			return ConcTree.BlockCommand(
+			return CST.BlockCommand(
 				command: cmd,
 				repeatingOptionalCommands: repeatingOptionalCmds)
 		case _:
@@ -85,12 +85,12 @@ class Parser {
 		}
 	}
 
-	func command() throws -> ConcTree.Command {
+	func command() throws -> CST.Command {
 		switch(terminal) {
 		case Terminal.SKIP:
 			print("cmd ::= SKIP")
 			try! consume(Terminal.SKIP)
-			return ConcTree.CommandSkip()
+			return CST.CommandSkip()
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
 		case Terminal.LITERAL:
@@ -98,7 +98,7 @@ class Parser {
 			let leftHandExpression = try! expression()
 			try! consume(Terminal.BECOMES)
 			let rightHandExpression = try! expression()
-			return ConcTree.CommandBecomes(
+			return CST.CommandBecomes(
 				leftHandExpression: leftHandExpression,
 				rightHandExpression: rightHandExpression)
 		case Terminal.IF:
@@ -110,7 +110,7 @@ class Parser {
 			try! consume(Terminal.ELSE)
 			let blockCmdElse = try! blockCommand()
 			try! consume(Terminal.ENDIF)
-			return ConcTree.CommandIfThen(
+			return CST.CommandIfThen(
 				expression: expr,
 				blockCommandThen: blockCmdThen,
 				blockCommandElse: blockCmdElse)
@@ -121,7 +121,7 @@ class Parser {
 			try! consume(Terminal.DO)
 			let blockCmd = try! blockCommand()
 			try! consume(Terminal.ENDWHILE)
-			return ConcTree.CommandWhile(
+			return CST.CommandWhile(
 				expression: expr,
 				blockCommand: blockCmd)
 		case Terminal.CALL:
@@ -129,27 +129,27 @@ class Parser {
 			try! consume(Terminal.CALL)
 			let ident = try! consume(Terminal.IDENT)
 			let exprList = try! expressionList()
-			return ConcTree.CommandCall(
+			return CST.CommandCall(
 				identifier: ident,
 				expressionList: exprList)
 		case Terminal.DEBUGIN:
 			print("cmd ::= DEBUGIN expression")
 			try! consume(Terminal.DEBUGIN)
 			let expr = try! expression()
-			return ConcTree.CommandDebugin(
+			return CST.CommandDebugin(
 				expression: expr)
 		case Terminal.DEBUGOUT:
 			print("cmd ::= DEBUGOUT expression")
 			try! consume(Terminal.DEBUGOUT)
 			let expr = try! expression()
-			return ConcTree.CommandDebugout(
+			return CST.CommandDebugout(
 				expression: expr)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func expression() throws -> ConcTree.Expression {
+	func expression() throws -> CST.Expression {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -157,7 +157,7 @@ class Parser {
 			print("expression ::= term1 boolOprTerm1")
 			let termOne = try! term1()
 			let boolOprTerm = try! boolOprTerm1()
-			return ConcTree.Expression(
+			return CST.Expression(
 				term1: termOne,
 				boolOprTerm1: boolOprTerm)
 		case _:
@@ -165,7 +165,7 @@ class Parser {
 		}
 	}
 
-	func term1() throws -> ConcTree.Term1 {
+	func term1() throws -> CST.Term1 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -173,7 +173,7 @@ class Parser {
 			print("term1 ::= term2 relOprTerm2")
 			let termTwo = try! term2()
 			let relOprTermTwo = try! relOprTerm2()
-			return ConcTree.Term1(
+			return CST.Term1(
 				term2: termTwo,
 				relOprTerm2: relOprTermTwo)
 		case _:
@@ -181,14 +181,14 @@ class Parser {
 		}
 	}
 
-	func addOprTerm3() throws -> ConcTree.AddOprTerm3? {
+	func addOprTerm3() throws -> CST.AddOprTerm3? {
 		switch(terminal) {
 		case Terminal.ADDOPR:
 			print("addOprTerm3 ::= ADDOPR term3 addOprTerm3")
 			try! consume(Terminal.ADDOPR)
 			let term = try term3()
 			let addOpr = try! addOprTerm3()
-			return ConcTree.AddOprTerm3(
+			return CST.AddOprTerm3(
 				term3: term,
 				addOprTerm3: addOpr)
 		case Terminal.RPAREN: fallthrough
@@ -212,7 +212,7 @@ class Parser {
 		}
 	}
 
-	func term3() throws -> ConcTree.Term3 {
+	func term3() throws -> CST.Term3 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -220,7 +220,7 @@ class Parser {
 			print("term3 ::= term4 multOprTerm4")
 			let term = try! term4()
 			let multOpr = try! multOprTerm4()
-			return ConcTree.Term3(
+			return CST.Term3(
 				term4: term,
 				multOprTerm4: multOpr
 			)
@@ -229,7 +229,7 @@ class Parser {
 		}
 	}
 
-	func term4() throws -> ConcTree.Term4 {
+	func term4() throws -> CST.Term4 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -237,7 +237,7 @@ class Parser {
 			print("term4 ::= factor dotOprFactor")
 			let fact = try! factor()
 			let dotOpr = try! dotOprFactor()
-			return ConcTree.Term4(
+			return CST.Term4(
 				factor: fact,
 				dotOprFactor: dotOpr)
 		case _:
@@ -245,18 +245,18 @@ class Parser {
 		}
 	}
 
-	func factor() throws -> ConcTree.Factor {
+	func factor() throws -> CST.Factor {
 		switch(terminal) {
 		case Terminal.LITERAL:
 			print("factor ::= LITERAL")
 			let literal = try! consume(Terminal.LITERAL).attribute!
-			return ConcTree.FactorLiteral(
+			return CST.FactorLiteral(
 				literal: literal)
 		case Terminal.IDENT:
 			print("factor ::= IDENT optionalIdent")
 			let identifier = try! consume(Terminal.IDENT).attribute!
 			let optIdent = try! optionalIdentifier()
-			return ConcTree.FactorIdentifier(
+			return CST.FactorIdentifier(
 				identifier: identifier,
 				optionalIdent: optIdent)
 		case Terminal.LPAREN:
@@ -264,14 +264,14 @@ class Parser {
 			try! consume(Terminal.LPAREN)
 			let expr = try! expression()
 			try! consume(Terminal.RPAREN)
-			return ConcTree.FactorExpression(
+			return CST.FactorExpression(
 				expression: expr)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func optionalIdentifier() throws -> ConcTree.OptionalIdentifier? {
+	func optionalIdentifier() throws -> CST.OptionalIdentifier? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
 		case Terminal.COMMA: fallthrough
@@ -295,19 +295,19 @@ class Parser {
 		case Terminal.INIT:
 			print("optionalIdentifier ::= INIT")
 			let initToken = try! consume(Terminal.INIT)
-			return ConcTree.OptionalIdentifier(
+			return CST.OptionalIdentifier(
 				initToken: initToken)
 		case Terminal.LPAREN:
 			print("optionalIdentifier ::= expressionList")
 			let exprList = try! expressionList()
-			return ConcTree.OptionalIdentifier(
+			return CST.OptionalIdentifier(
 				expressionList: exprList)
 		case _:
 				throw ParseError.WrongTerminal
 		}
 	}
 
-	func dotOprFactor() throws -> ConcTree.DotOprFactor? {
+	func dotOprFactor() throws -> CST.DotOprFactor? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
 		case Terminal.COMMA: fallthrough
@@ -333,14 +333,14 @@ class Parser {
 			// does it need to be in the CST?
 			try! consume(Terminal.DOTOPR)
 			let ident = try! consume(Terminal.IDENT).attribute!
-			return ConcTree.DotOprFactor(
+			return CST.DotOprFactor(
 				identifier: ident)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func multOprTerm4() throws -> ConcTree.MultOprTerm4? {
+	func multOprTerm4() throws -> CST.MultOprTerm4? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
 		case Terminal.COMMA: fallthrough
@@ -363,7 +363,7 @@ class Parser {
 			print("multOpTerm4 ::= term4 multOprTerm4")
 			let term = try! term4()
 			let multOpr = try! multOprTerm4()
-			return ConcTree.MultOprTerm4(
+			return CST.MultOprTerm4(
 				term4: term,
 				multOprTerm4: multOpr)
 		case _:
@@ -371,7 +371,7 @@ class Parser {
 		}
 	}
 
-	func term2() throws -> ConcTree.Term2 {
+	func term2() throws -> CST.Term2 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -379,7 +379,7 @@ class Parser {
 			print("term2 ::= term3 addOperatorTerm3")
 			let term = try! term3()
 			let addOpr = try! addOprTerm3()
-			return ConcTree.Term2(
+			return CST.Term2(
 				term3: term,
 				addOprTerm3: addOpr)
 		case _:
@@ -387,7 +387,7 @@ class Parser {
 		}
 	}
 
-	func relOprTerm2() throws -> ConcTree.RelOprTerm2? {
+	func relOprTerm2() throws -> CST.RelOprTerm2? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
 		case Terminal.COMMA: fallthrough
@@ -409,7 +409,7 @@ class Parser {
 			let relOperand = try! consume(Terminal.RELOPR).attribute!
 			let termTwo = try! term2()
 			let relOprTermTwo = try! relOprTerm2()
-			return ConcTree.RelOprTerm2(
+			return CST.RelOprTerm2(
 				relOpr: relOperand,
 				term2: termTwo,
 				relOprTerm2: relOprTermTwo)
@@ -418,7 +418,7 @@ class Parser {
 		}
 	}
 
-	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1? {
+	func boolOprTerm1() throws -> CST.BoolOprTerm1? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
 		case Terminal.COMMA: fallthrough
@@ -438,7 +438,7 @@ class Parser {
 			print("boolOprTerm1 ::= BOOLOPR term1")
 			let boolOperand = try! consume(Terminal.BOOLOPR).attribute!
 			let termOne = try! term1()
-			return ConcTree.BoolOprTerm1(
+			return CST.BoolOprTerm1(
 				boolOpr: boolOperand,
 				term1: termOne)
 		case _:
@@ -446,21 +446,21 @@ class Parser {
 		}
 	}
 
-	func expressionList() throws -> ConcTree.ExpressionList {
+	func expressionList() throws -> CST.ExpressionList {
 		switch(terminal) {
 		case Terminal.LPAREN:
 			print("expressionList ::= LPAREN optionalExpressions RPAREN")
 			try! consume(Terminal.LPAREN)
 			let optExpressions = try! optionalExpressions()
 			try! consume(Terminal.RPAREN)
-			return ConcTree.ExpressionList(
+			return CST.ExpressionList(
 				optionalExpressions: optExpressions)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func optionalExpressions() throws -> ConcTree.OptionalExpressions? {
+	func optionalExpressions() throws -> CST.OptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
 			print("optionalExpressions ::= ε")
@@ -471,7 +471,7 @@ class Parser {
 			print("optionalExpressions ::= expression repeatingOptionalExpressions")
 			let expr = try! expression()
 			let repeatingOptExprs = try! repeatingOptionalExpressions()
-			return ConcTree.OptionalExpressions(
+			return CST.OptionalExpressions(
 				expression: expr,
 				repeatingOptionalExpressions: repeatingOptExprs)
 		case _:
@@ -479,7 +479,7 @@ class Parser {
 		}
 	}
 
-	func repeatingOptionalExpressions() throws -> ConcTree.RepeatingOptionalExpressions? {
+	func repeatingOptionalExpressions() throws -> CST.RepeatingOptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
 			print("repeatingOptionalExpressions ::= ε")
@@ -489,7 +489,7 @@ class Parser {
 			try! consume(Terminal.COMMA)
 			let expr = try! expression()
 			let repeatingOptExprs = try! repeatingOptionalExpressions()
-			return ConcTree.RepeatingOptionalExpressions(
+			return CST.RepeatingOptionalExpressions(
 				expression: expr,
 				repeatingOptionalExpressions: repeatingOptExprs)
 		case _:
@@ -497,7 +497,7 @@ class Parser {
 		}
 	}
 
-	func repeatingOptionalCommands() throws -> ConcTree.RepeatingOptionalCommands? {
+	func repeatingOptionalCommands() throws -> CST.RepeatingOptionalCommands? {
 		switch(terminal) {
 		case Terminal.ENDPROC: fallthrough
 		case Terminal.ENDFUN: fallthrough
@@ -512,7 +512,7 @@ class Parser {
 			try! consume(Terminal.SEMICOLON)
 			let cmd = try! command()
 			let repeatingOptionalCmds = try! repeatingOptionalCommands()
-			return ConcTree.RepeatingOptionalCommands(
+			return CST.RepeatingOptionalCommands(
 				command: cmd,
 				repeatingOptionalCommands: repeatingOptionalCmds)
 		case _:
@@ -520,7 +520,7 @@ class Parser {
 		}
 	}
 
-	func optionalGlobalDeclarations() throws -> ConcTree.OptionalGlobalDeclarations? {
+	func optionalGlobalDeclarations() throws -> CST.OptionalGlobalDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
 			print("optionalGlobalDeclarations ::= ε")
@@ -529,13 +529,13 @@ class Parser {
 			print("optionalGlobalDeclarations ::= GLOBAL declarations")
 			try! consume(Terminal.GLOBAL)
 			let decls = try! declarations()
-			return ConcTree.OptionalGlobalDeclarations(declarations: decls)
+			return CST.OptionalGlobalDeclarations(declarations: decls)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func declarations() throws -> ConcTree.Declarations {
+	func declarations() throws -> CST.Declarations {
 		switch(terminal) {
 		case Terminal.PROC: fallthrough
 		case Terminal.FUN: fallthrough
@@ -544,7 +544,7 @@ class Parser {
 			print("declarations ::= declaration repeatingOptionalDeclarations")
 			let decl = try! declaration()
 			let repeatingOptDeclaration = try! repeatingOptionalDelcarations()
-			return ConcTree.Declarations(
+			return CST.Declarations(
 				declaration: decl,
 				repeatingOptionalDelcarations: repeatingOptDeclaration)
 		case _:
@@ -552,7 +552,7 @@ class Parser {
 		}
 	}
 
-	func declaration() throws -> ConcTree.Declaration {
+	func declaration() throws -> CST.Declaration {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:
@@ -569,7 +569,7 @@ class Parser {
 		}
 	}
 
-	func repeatingOptionalDelcarations() throws -> ConcTree.RepeatingOptionalDelcarations? {
+	func repeatingOptionalDelcarations() throws -> CST.RepeatingOptionalDelcarations? {
 		switch(terminal) {
 		case Terminal.DO:
 			print("optionalGlobalDeclarations ::= ε")
@@ -578,7 +578,7 @@ class Parser {
 			try! consume(Terminal.SEMICOLON)
 			let decl = try! declaration()
 			let repeatingOptDelcarations = try! repeatingOptionalDelcarations()
-			return ConcTree.RepeatingOptionalDelcarations(
+			return CST.RepeatingOptionalDelcarations(
 				declaration: decl,
 				repeatingOptionalDelcarations: repeatingOptDelcarations)
 		case _:
@@ -586,14 +586,14 @@ class Parser {
 		}
 	}
 
-	func storageDeclaraction() throws -> ConcTree.StorageDeclaraction {
+	func storageDeclaraction() throws -> CST.StorageDeclaraction {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:
 			print("storageDeclaraction ::= optionalChangeMode typedIdent")
 			let optChangeMode = try! optionalChangeMode()
 			let typedIdentifier = try! typedIdent()
-			return ConcTree.StorageDeclaraction(
+			return CST.StorageDeclaraction(
 				optionalChangeMode: optChangeMode,
 				typedIdent: typedIdentifier)
 		case _:
@@ -601,7 +601,7 @@ class Parser {
 		}
 	}
 
-	func optionalChangeMode() throws -> ConcTree.OptionalChangeMode? {
+	func optionalChangeMode() throws -> CST.OptionalChangeMode? {
 		switch(terminal) {
 		case Terminal.IDENT:
 			print("optionalChangeMode ::= ε")
@@ -609,21 +609,21 @@ class Parser {
 		case Terminal.CHANGEMODE:
 			print("optionalChangeMode ::= MECHMODE")
 			let changeMode = try! consume(Terminal.CHANGEMODE).attribute!
-			return ConcTree.OptionalChangeMode(
+			return CST.OptionalChangeMode(
 				changeMode: changeMode)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func typedIdent() throws -> ConcTree.TypedIdent {
+	func typedIdent() throws -> CST.TypedIdent {
 		switch(terminal) {
 		case Terminal.IDENT:
 			print("typedIdent ::= IDENT COLON typeDeclartion")
 			let identifier = try! consume(Terminal.IDENT).attribute!
 			try! consume(Terminal.COLON)
 			let typeDecl = try! typeDeclartion()
-			return ConcTree.TypedIdent(
+			return CST.TypedIdent(
 				identifier: identifier,
 				typeDeclartion: typeDecl)
 		case _:
@@ -631,13 +631,13 @@ class Parser {
 		}
 	}
 
-	func typeDeclartion() throws -> ConcTree.TypeDeclaration {
+	func typeDeclartion() throws -> CST.TypeDeclaration {
         switch(terminal) {
         case Terminal.TYPE:
             print("typeDecl ::=  TYPE optRecordDecl")
             let type = try! consume(Terminal.TYPE)
             let optRecDecl = try! optRecordDeclaration();
-            return ConcTree.TypeDeclaration(
+            return CST.TypeDeclaration(
                 type: type,
                 optionalRecordDecl: optRecDecl)
         case _:
@@ -645,7 +645,7 @@ class Parser {
         }
 	}
 
-    func optRecordDeclaration() throws -> ConcTree.OptionalRecordDeclaration? {
+    func optRecordDeclaration() throws -> CST.OptionalRecordDeclaration? {
         switch(terminal) {
         case Terminal.RPAREN: fallthrough
         case Terminal.COMMA: fallthrough
@@ -657,20 +657,20 @@ class Parser {
         case Terminal.LPAREN:
             print("optRecordDecl ::= recordFieldList")
             let recFieldList = try! recordFieldList()
-            return ConcTree.OptionalRecordDeclaration(recordFieldList: recFieldList)
+            return CST.OptionalRecordDeclaration(recordFieldList: recFieldList)
         case _:
             throw ParseError.WrongTerminal
         }
     }
 
-    func recordFieldList() throws -> ConcTree.RecordFieldList {
+    func recordFieldList() throws -> CST.RecordFieldList {
 		switch(terminal) {
 		case Terminal.LPAREN:
 			print("recordFieldList ::= LPAREN recordFields RPAREN")
 			try! consume(Terminal.LPAREN)
 			let recFields = try! recordFields()
 			try! consume(Terminal.RPAREN)
-			return ConcTree.RecordFieldList(
+			return CST.RecordFieldList(
 				recordFields: recFields
 			)
 		case _:
@@ -678,7 +678,7 @@ class Parser {
 		}
     }
 
-	func recordFields() throws -> ConcTree.RecordFields {
+	func recordFields() throws -> CST.RecordFields {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
@@ -686,7 +686,7 @@ class Parser {
 			print("recordFields ::= recordField repeatingRecordFields")
 			let recField = try! recordField()
 			let repRecFields = try! repeatingRecordFields()
-			return ConcTree.RecordFields(
+			return CST.RecordFields(
 				recordField: recField,
 				repeatingRecordFields: repRecFields)
 		case _:
@@ -694,21 +694,21 @@ class Parser {
 		}
 	}
 
-	func recordField() throws -> ConcTree.RecordField {
+	func recordField() throws -> CST.RecordField {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
 		case Terminal.IDENT: fallthrough
 		case Terminal.LITERAL:
 			print("recordField ::= expression")
 			let expr = try! expression()
-			return ConcTree.RecordField(
+			return CST.RecordField(
 				expression: expr)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func repeatingRecordFields() throws -> ConcTree.RepeatingRecordFields? {
+	func repeatingRecordFields() throws -> CST.RepeatingRecordFields? {
 		switch(terminal) {
 		case Terminal.RPAREN:
 			print("repeatingRecordFields ::= ε")
@@ -718,7 +718,7 @@ class Parser {
 			try! consume(Terminal.COMMA)
 			let recField = try! recordField()
 			let repeatingOptExpressions = try! repeatingOptionalExpressions()
-			return ConcTree.RepeatingRecordFields(
+			return CST.RepeatingRecordFields(
 				recordField: recField,
 				repeatingOptionalExpressions: repeatingOptExpressions)
 		case _:
@@ -726,7 +726,7 @@ class Parser {
 		}
 	}
 
-	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
+	func optionalLocalStorageDeclaractions() throws -> CST.OptionalLocalStorageDeclaractions? {
 		switch(terminal) {
 		case Terminal.DO:
 			print("optionalLocalStorageDeclaraction ::= ε")
@@ -736,7 +736,7 @@ class Parser {
 			try! consume(Terminal.LOCAL)
 			let storageDecl = try! storageDeclaraction()
 			let repeatingOptionalStorageDecl = try! repeatingOptionalStorageDeclarations()
-			return ConcTree.OptionalLocalStorageDeclaractions(
+			return CST.OptionalLocalStorageDeclaractions(
 				storageDeclaraction: storageDecl,
 				repeatingOptionalStorageDeclarations: repeatingOptionalStorageDecl)
 		case _:
@@ -744,7 +744,7 @@ class Parser {
 		}
 	}
 
-	func repeatingOptionalStorageDeclarations() throws -> ConcTree.RepeatingOptionalStorageDeclarations? {
+	func repeatingOptionalStorageDeclarations() throws -> CST.RepeatingOptionalStorageDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
 			print("repeatingOptionalStorageDeclarations ::= ε")
@@ -753,14 +753,14 @@ class Parser {
 			print("repeatingOptionalStorageDeclarations ::= SEMICOLON storageDeclaration")
 			try! consume(Terminal.SEMICOLON)
 			let storageDecl = try! storageDeclaraction()
-			return ConcTree.RepeatingOptionalStorageDeclarations(
+			return CST.RepeatingOptionalStorageDeclarations(
 				storageDeclaration: storageDecl)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func functionDeclaration() throws -> ConcTree.FunctionDeclaraction {
+	func functionDeclaration() throws -> CST.FunctionDeclaraction {
 		switch(terminal) {
 		case Terminal.FUN:
 			print("funDecl ::= FUN IDENT parameterList RETURNS storageDeclaration")
@@ -773,7 +773,7 @@ class Parser {
 			try! consume(Terminal.DO)
 			let blockCmd = try! blockCommand()
 			try! consume(Terminal.ENDFUN)
-			return ConcTree.FunctionDeclaraction(
+			return CST.FunctionDeclaraction(
 				ident: ident,
 				parameterList: paramList,
 				storageDeclaration: storageDecl,
@@ -784,7 +784,7 @@ class Parser {
 		}
 	}
 
-	func procedureDeclaration() throws-> ConcTree.ProcedureDeclaration {
+	func procedureDeclaration() throws-> CST.ProcedureDeclaration {
         switch(terminal) {
 		case Terminal.PROC:
 			print("procDecl ::= PROC IDENT parameterList optrionalLocalStorageDeclarations DO blockCmd ENDPROC")
@@ -795,7 +795,7 @@ class Parser {
             try! consume(Terminal.DO)
             let blockCmd = try! blockCommand()
             try! consume(Terminal.ENDPROC)
-            return ConcTree.ProcedureDeclaration(
+            return CST.ProcedureDeclaration(
                 ident: ident,
                 parameterList: paramList,
                 optionalLocalStorageDeclaractions: optionalLocalStorageDecl,
@@ -805,21 +805,21 @@ class Parser {
 		}
 	}
 
-	func parameterList() throws -> ConcTree.ParameterList {
+	func parameterList() throws -> CST.ParameterList {
 		switch(terminal) {
 		case Terminal.LPAREN:
 			print("parameterList ::= LPAREN optionalParameters RPAREN")
 			try! consume(Terminal.LPAREN)
 			let optParameters = try! optionalParameters()
 			try! consume(Terminal.RPAREN)
-			return ConcTree.ParameterList(
+			return CST.ParameterList(
 				optionalParameters: optParameters)
 		case _:
 			throw ParseError.WrongTerminal
 		}
 	}
 
-	func optionalParameters() throws -> ConcTree.OptionalParameters? {
+	func optionalParameters() throws -> CST.OptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
 			print("optionalParameters ::= ε")
@@ -830,7 +830,7 @@ class Parser {
 			print("optionalParameters ::= parameter repeatingOptionalParameter")
 			let param = try! parameter()
 			let repeatingOptionalParams = try! repeatingOptionalParameters()
-			return ConcTree.OptionalParameters(
+			return CST.OptionalParameters(
 				parameter: param,
 				repeatingOptionalParameters: repeatingOptionalParams
 			)
@@ -839,7 +839,7 @@ class Parser {
 		}
 	}
 
-	func parameter() throws -> ConcTree.Parameter {
+	func parameter() throws -> CST.Parameter {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE: fallthrough
@@ -847,7 +847,7 @@ class Parser {
 			print("parameter ::= optionalMECHMODE storageDeclaration")
 			let optMechMode = try! optionalMechMode()
 			let storageDecl = try! storageDeclaraction()
-			return ConcTree.Parameter(
+			return CST.Parameter(
 				optionalMechMode: optMechMode,
 				storageDeclaraction: storageDecl
 			)
@@ -856,7 +856,7 @@ class Parser {
 		}
 	}
 
-	func repeatingOptionalParameters() throws -> ConcTree.RepeatingOptionalParameters? {
+	func repeatingOptionalParameters() throws -> CST.RepeatingOptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
 			print("repeatingOptionalParameters ::= ε")
@@ -866,7 +866,7 @@ class Parser {
 			try! consume(Terminal.COMMA)
 			let param = try! parameter()
 			let repeatingOptParameters = try! repeatingOptionalParameters()
-			return ConcTree.RepeatingOptionalParameters(
+			return CST.RepeatingOptionalParameters(
 				parameter: param,
 				repeatingOptParameters: repeatingOptParameters)
 		case _:
@@ -874,7 +874,7 @@ class Parser {
 		}
 	}
 
-	func optionalMechMode() throws -> ConcTree.OptionalMechMode? {
+	func optionalMechMode() throws -> CST.OptionalMechMode? {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:
@@ -883,7 +883,7 @@ class Parser {
 		case Terminal.MECHMODE:
 			print("optionalMechMode ::= MECHMODE")
 			let mechmode = try! consume(Terminal.MECHMODE).attribute!
-			return ConcTree.OptionalMechMode(mechmode: mechmode)
+			return CST.OptionalMechMode(mechmode: mechmode)
 		case _:
 			throw ParseError.WrongTerminal
 		}

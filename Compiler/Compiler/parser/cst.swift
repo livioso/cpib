@@ -4,7 +4,7 @@ protocol ASTConvertible: CustomStringConvertible {
 	func toAbstract() -> Void
 }
 
-class ConcTree {
+class CST {
 
 	class Program: ASTConvertible {
 
