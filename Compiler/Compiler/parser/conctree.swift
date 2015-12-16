@@ -40,7 +40,7 @@ class ConcTree {
 		}
 
 		var description: String {
-			return "OptionalGlobalDeclarations"
+			return "\(self.dynamicType)"
 		}
 
 		func toAbstract() {
@@ -60,7 +60,7 @@ class ConcTree {
 		}
 
 		var description: String {
-			return "OptionalGlobalDeclarations"
+			return "\(self.dynamicType)"
 		}
 
 		func toAbstract() {
@@ -306,7 +306,6 @@ class ConcTree {
 		}
 	}
 
-
 	class TypeDeclaration: ASTConvertible {
 
         let type : Token
@@ -381,7 +380,6 @@ class ConcTree {
 		}
 	}
 
-
 	class RecordField: ASTConvertible {
 
 		let expression: Expression
@@ -398,7 +396,6 @@ class ConcTree {
 
 		}
 	}
-
 
 	class RepeatingRecordFields: ASTConvertible {
 
@@ -779,7 +776,6 @@ class ConcTree {
 		}
 	}
 
-
 	class Factor: ASTConvertible {
 
 		var description: String {
@@ -790,7 +786,6 @@ class ConcTree {
 
 		}
 	}
-
 
 	class FactorLiteral: Factor {
 
@@ -844,7 +839,6 @@ class ConcTree {
 
 		}
 	}
-
 
 	class OptionalIdentifier: ASTConvertible {
 
@@ -905,7 +899,6 @@ class ConcTree {
 
 		}
 	}
-
 
 	class OptionalExpressions: ASTConvertible {
 
