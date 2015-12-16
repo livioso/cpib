@@ -1,24 +1,24 @@
 import Foundation
 
 class Parser {
-    
+
 	enum ParseError : ErrorType {
 		case WrongTerminal
 	}
-	
+
 	var tokenlist: [Token]
 	var token: Token
 	var terminal: Terminal
-	
+
 	init(tokenlist: [Token]) {
 		self.tokenlist = tokenlist
 		// fixme: this is bad. how can we do this better?
 		self.token = Token(terminal: Terminal.PROGRAM)
 		self.terminal = Terminal.PROGRAM
 	}
-	
+
 	func consume(expectedTerminal: Terminal) throws -> Token {
-		
+
 		if terminal == expectedTerminal {
 			let consumedToken = token
 			if terminal != Terminal.SENTINEL {
@@ -28,23 +28,23 @@ class Parser {
 				terminal = token.terminal
 			}
 			return consumedToken
-			
+
 		} else {
 			print("PError: expected \(expectedTerminal) found: \(terminal): \(token.lineNumber)")
             throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func parse() -> ConcTree.Program {
 		let prog = try! program()
 		try! consume(Terminal.SENTINEL)
 		return prog
 	}
-	
-	
+
+
 	// Production Functions
 	// Terminals can be found in <terminals.swift>
-	
+
 	func program() throws -> ConcTree.Program {
 		switch(terminal) {
 		case Terminal.PROGRAM:
@@ -63,7 +63,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func blockCommand() throws -> ConcTree.BlockCommand {
 		switch(terminal) {
 		case Terminal.DEBUGOUT: fallthrough
@@ -84,7 +84,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func command() throws -> ConcTree.Command {
 		switch(terminal) {
 		case Terminal.SKIP:
@@ -148,7 +148,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func expression() throws -> ConcTree.Expression {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -180,7 +180,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func addOprTerm3() throws -> ConcTree.AddOprTerm3? {
 		switch(terminal) {
 		case Terminal.ADDOPR:
@@ -211,7 +211,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func term3() throws -> ConcTree.Term3 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -228,7 +228,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func term4() throws -> ConcTree.Term4 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -244,7 +244,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func factor() throws -> ConcTree.Factor {
 		switch(terminal) {
 		case Terminal.LITERAL:
@@ -270,7 +270,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalIdentifier() throws -> ConcTree.OptionalIdentifier? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -306,7 +306,7 @@ class Parser {
 				throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func dotOprFactor() throws -> ConcTree.DotOprFactor? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -339,7 +339,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func multOprTerm4() throws -> ConcTree.MultOprTerm4? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -370,7 +370,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
+
 	func term2() throws -> ConcTree.Term2 {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -386,7 +386,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func relOprTerm2() throws -> ConcTree.RelOprTerm2? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -417,7 +417,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func boolOprTerm1() throws -> ConcTree.BoolOprTerm1? {
 		switch(terminal) {
 		case Terminal.RPAREN: fallthrough
@@ -445,7 +445,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func expressionList() throws -> ConcTree.ExpressionList {
 		switch(terminal) {
 		case Terminal.LPAREN:
@@ -459,7 +459,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalExpressions() throws -> ConcTree.OptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -478,7 +478,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func repeatingOptionalExpressions() throws -> ConcTree.RepeatingOptionalExpressions? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -496,7 +496,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func repeatingOptionalCommands() throws -> ConcTree.RepeatingOptionalCommands? {
 		switch(terminal) {
 		case Terminal.ENDPROC: fallthrough
@@ -519,7 +519,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalGlobalDeclarations() throws -> ConcTree.OptionalGlobalDeclarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -534,7 +534,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func declarations() throws -> ConcTree.Declarations {
 		switch(terminal) {
 		case Terminal.PROC: fallthrough
@@ -551,7 +551,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func declaration() throws -> ConcTree.Declaration {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -568,7 +568,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func repeatingOptionalDelcarations() throws -> ConcTree.RepeatingOptionalDelcarations? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -585,7 +585,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func storageDeclaraction() throws -> ConcTree.StorageDeclaraction {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -600,7 +600,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalChangeMode() throws -> ConcTree.OptionalChangeMode? {
 		switch(terminal) {
 		case Terminal.IDENT:
@@ -615,7 +615,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func typedIdent() throws -> ConcTree.TypedIdent {
 		switch(terminal) {
 		case Terminal.IDENT:
@@ -630,7 +630,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func typeDeclartion() throws -> ConcTree.TypeDeclaration {
         switch(terminal) {
         case Terminal.TYPE:
@@ -644,7 +644,7 @@ class Parser {
             throw ParseError.WrongTerminal
         }
 	}
-    
+
     func optRecordDeclaration() throws -> ConcTree.OptionalRecordDeclaration? {
         switch(terminal) {
         case Terminal.RPAREN: fallthrough
@@ -662,7 +662,7 @@ class Parser {
             throw ParseError.WrongTerminal
         }
     }
-    
+
     func recordFieldList() throws -> ConcTree.RecordFieldList {
 		switch(terminal) {
 		case Terminal.LPAREN:
@@ -677,7 +677,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
     }
-	
+
 	func recordFields() throws -> ConcTree.RecordFields {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -693,7 +693,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
+
 	func recordField() throws -> ConcTree.RecordField {
 		switch(terminal) {
 		case Terminal.LPAREN: fallthrough
@@ -707,7 +707,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
+
 	func repeatingRecordFields() throws -> ConcTree.RepeatingRecordFields? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -725,7 +725,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalLocalStorageDeclaractions() throws -> ConcTree.OptionalLocalStorageDeclaractions? {
 		switch(terminal) {
 		case Terminal.DO:
@@ -759,7 +759,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func functionDeclaration() throws -> ConcTree.FunctionDeclaraction {
 		switch(terminal) {
 		case Terminal.FUN:
@@ -783,7 +783,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
+
 	func procedureDeclaration() throws-> ConcTree.ProcedureDeclaration {
         switch(terminal) {
 		case Terminal.PROC:
@@ -804,7 +804,7 @@ class Parser {
             throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func parameterList() throws -> ConcTree.ParameterList {
 		switch(terminal) {
 		case Terminal.LPAREN:
@@ -818,7 +818,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func optionalParameters() throws -> ConcTree.OptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -838,7 +838,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func parameter() throws -> ConcTree.Parameter {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
@@ -855,7 +855,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-	
+
 	func repeatingOptionalParameters() throws -> ConcTree.RepeatingOptionalParameters? {
 		switch(terminal) {
 		case Terminal.RPAREN:
@@ -873,7 +873,7 @@ class Parser {
 			throw ParseError.WrongTerminal
 		}
 	}
-		
+
 	func optionalMechMode() throws -> ConcTree.OptionalMechMode? {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
