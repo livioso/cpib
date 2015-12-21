@@ -59,6 +59,19 @@ class AST {
 		}
 	}
 	
+	class CmdWhile: Cmd {
+		
+		let expression: Expression
+		let whileCmd: Cmd
+		let nextCmd: Cmd?
+		
+		init(expression: Expression, whileCmd: Cmd, nextCmd: Cmd?) {
+			self.expression = expression
+			self.whileCmd = whileCmd
+			self.nextCmd = nextCmd
+		}
+	}
+	
 	class Expression: AST {
 		
 	}
