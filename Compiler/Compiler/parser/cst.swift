@@ -564,7 +564,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
@@ -588,7 +588,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
@@ -611,7 +611,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
@@ -636,11 +636,13 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
-			return AST.Nothing()
+			return AST.CmdCall(
+				expressionList: try! expressionList.toAbstract() as! AST.ExpressionList,
+				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
 		}
 	}
 	
@@ -937,7 +939,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! optionalExpressions?.toAbstract()
 		}
 	}
 	
@@ -956,7 +958,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return AST.ExpressionList(
+				expression: try! expression.toAbstract() as! AST.Expression,
+				expressionList: try! repeatingOptionalExpressions?.toAbstract() as! AST.ExpressionList);
 		}
 	}
 	
@@ -975,7 +979,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return AST.ExpressionList(
+				expression: try! expression.toAbstract() as! AST.Expression,
+				expressionList: try! repeatingOptionalExpressions?.toAbstract() as! AST.ExpressionList);
 		}
 	}
 	

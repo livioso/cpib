@@ -94,8 +94,41 @@ class AST {
 		}
 	}
 	
+	class CmdCall: Cmd {
+		
+		let expressionList: ExpressionList
+		let nextCmd: Cmd?
+		
+		init(expressionList: ExpressionList, nextCmd: Cmd?) {
+			self.expressionList = expressionList
+			self.nextCmd = nextCmd
+		}
+	}
+	
+	class RoutineCall: AST {
+		
+		let ident: String
+		let expressionList: ExpressionList
+		
+		init(ident: String, expressionList: ExpressionList) {
+			self.ident = ident
+			self.expressionList = expressionList
+		}
+	}
+	
 	class Expression: AST {
 		
+	}
+	
+	class ExpressionList: AST {
+		
+		let expression: Expression
+		let expressionList: ExpressionList?
+		
+		init(expression: Expression, expressionList: ExpressionList?) {
+			self.expression = expression
+			self.expressionList = expressionList
+		}
 	}
 	
 	// not implemented yet
