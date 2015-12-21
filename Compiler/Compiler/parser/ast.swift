@@ -72,6 +72,28 @@ class AST {
 		}
 	}
 	
+	class CmdDebugin: Cmd {
+		
+		let expression: Expression
+		let nextCmd: Cmd?
+		
+		init(expression: Expression, nextCmd: Cmd?) {
+			self.expression = expression
+			self.nextCmd = nextCmd
+		}
+	}
+	
+	class CmdDebugout: Cmd {
+		
+		let expression: Expression
+		let nextCmd: Cmd?
+		
+		init(expression: Expression, nextCmd: Cmd?) {
+			self.expression = expression
+			self.nextCmd = nextCmd
+		}
+	}
+	
 	class Expression: AST {
 		
 	}

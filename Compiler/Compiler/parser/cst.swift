@@ -592,7 +592,9 @@ class CST {
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
-			return AST.Nothing()
+			return AST.CmdDebugin(
+				expression: try! expression.toAbstract() as! AST.Expression,
+				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
 		}
 	}
 	
@@ -613,7 +615,9 @@ class CST {
 		}
 		
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
-			return AST.Nothing()
+			return AST.CmdDebugout(
+				expression: try! expression.toAbstract() as! AST.Expression,
+				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
 		}
 	}
 	
