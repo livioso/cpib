@@ -4,10 +4,10 @@ class AST {
 	
 	class Program: AST {
 		let ident: String
-		let declaration: Declaration
+		let declaration: Declaration?
 		let cmd: Cmd
 		
-		init(ident: String, declaration: Declaration, cmd: Cmd) {
+		init(ident: String, declaration: Declaration?, cmd: Cmd) {
 			self.ident = ident
 			self.declaration = declaration
 			self.cmd = cmd

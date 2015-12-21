@@ -1,10 +1,11 @@
 import Foundation
 
+enum ParseError : ErrorType {
+	case WrongTerminal // can happen during CST
+	case WrongTokenAttribute // should never happen!
+}
+
 class Parser {
-	
-	enum ParseError : ErrorType {
-		case WrongTerminal
-	}
 	
 	var tokenlist: [Token]
 	var token: Token
