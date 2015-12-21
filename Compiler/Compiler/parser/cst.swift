@@ -4,6 +4,10 @@ protocol ASTConvertible: CustomStringConvertible {
 	func toAbstract() throws -> AST?
 }
 
+protocol Command: ASTConvertible {
+	func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST?
+}
+
 class CST {
 	
 	class Program: ASTConvertible {
@@ -71,6 +75,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
+			// todo continue here
 			return AST.Nothing()
 		}
 	}
@@ -90,7 +95,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Cmd()
+			return try! command.toAbstract(repeatingOptionalCommands)
 		}
 	}
 	
@@ -101,6 +106,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
+			// todo continue here
 			return AST.Declaration()
 		}
 	}
@@ -474,25 +480,18 @@ class CST {
 		}
 	}
 	
-	class Command: ASTConvertible {
+	class CommandSkip: Command {
 		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
-		}
-	}
-	
-	class CommandSkip: Command {
-		
-		override var description: String {
-			return "\(self.dynamicType)"
+			throw ParseError.NotSupported
 		}
 		
-		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
+			return AST.CmdSkip() // next = nil
 		}
 	}
 	
@@ -506,12 +505,16 @@ class CST {
 			self.rightHandExpression = rightHandExpression
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+		func toAbstract() throws -> AST? {
+			throw ParseError.NotSupported
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
+			return AST.Nothing() // help me!
 		}
 	}
 	
@@ -529,12 +532,20 @@ class CST {
 				self.blockCommandElse = blockCommandElse
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+		func toAbstract() throws -> AST? {
+			throw ParseError.NotSupported
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
+			return AST.CmdCond(
+				expression: try! expression.toAbstract() as! AST.Expression,
+				ifCmd: try! blockCommandThen.toAbstract() as! AST.Cmd,
+				elseCmd: try! blockCommandElse.toAbstract() as! AST.Cmd,
+				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
 		}
 	}
 	
@@ -548,11 +559,15 @@ class CST {
 			self.blockCommand = blockCommand
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
+			return AST.Nothing()
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.Nothing()
 		}
 	}
@@ -565,11 +580,15 @@ class CST {
 			self.expression = expression
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
+			return AST.Nothing()
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.Nothing()
 		}
 	}
@@ -582,11 +601,15 @@ class CST {
 			self.expression = expression
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
+			return AST.Nothing()
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.Nothing()
 		}
 	}
@@ -601,11 +624,15 @@ class CST {
 			self.expressionList = expressionList
 		}
 		
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
+			return AST.Nothing()
+		}
+		
+		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.Nothing()
 		}
 	}
@@ -960,7 +987,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! command.toAbstract(repeatingOptionalCommands)
 		}
 	}
 }

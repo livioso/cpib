@@ -39,9 +39,31 @@ class AST {
 		}
 	}
 	
-	// this should be returned by 
-	// CST nodes that can not provided
-	// any meaningful information.
+	class CmdSkip: Cmd {
+		
+		let nextCmd: Cmd? = nil
+	}
+	
+	class CmdCond: Cmd {
+		
+		let expression: Expression
+		let ifCmd: Cmd
+		let elseCmd: Cmd
+		let nextCmd: Cmd?
+		
+		init(expression: Expression, ifCmd: Cmd, elseCmd: Cmd, nextCmd: Cmd?) {
+			self.expression = expression
+			self.ifCmd = ifCmd
+			self.elseCmd = elseCmd
+			self.nextCmd = nextCmd
+		}
+	}
+	
+	class Expression: AST {
+		
+	}
+	
+	// not implemented yet
 	class Nothing: AST {
 		
 		var description: String {

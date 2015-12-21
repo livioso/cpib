@@ -3,6 +3,7 @@ import Foundation
 enum ParseError : ErrorType {
 	case WrongTerminal // can happen during CST
 	case WrongTokenAttribute // should never happen!
+	case NotSupported
 }
 
 class Parser {
@@ -86,7 +87,7 @@ class Parser {
 		}
 	}
 	
-	func command() throws -> CST.Command {
+	func command() throws -> Command {
 		switch(terminal) {
 		case Terminal.SKIP:
 			print("cmd ::= SKIP")

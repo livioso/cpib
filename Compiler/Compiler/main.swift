@@ -19,7 +19,7 @@ func main() {
 		print(cst)
 		
 		print("🔴 Parser.parse(tokenlist) // AST")
-		let ast = try! cst.toAbstract()
+		let ast = try! cst.toAbstract() as! AST.Program
 		print(ast)
 		
 	} else {
