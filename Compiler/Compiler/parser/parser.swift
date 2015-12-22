@@ -554,7 +554,7 @@ class Parser {
 		}
 	}
 	
-	func declaration() throws -> CST.Declaration {
+	func declaration() throws -> Declaration {
 		switch(terminal) {
 		case Terminal.IDENT: fallthrough
 		case Terminal.CHANGEMODE:

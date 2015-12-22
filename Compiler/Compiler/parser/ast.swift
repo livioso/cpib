@@ -105,6 +105,17 @@ class AST {
 		}
 	}
 	
+	class CmdBecomes: Cmd {
+		
+		let leftHandExpression: Expression
+		let rightHandExpression: Expression
+		
+		init(leftHandExpression: Expression, rightHandExpression: Expression) {
+			self.leftHandExpression = leftHandExpression
+			self.rightHandExpression = rightHandExpression
+		}
+	}
+	
 	class RoutineCall: AST {
 		
 		let ident: String
@@ -116,19 +127,79 @@ class AST {
 		}
 	}
 	
+	class DeclarationStore: AST {
+	
+		let changeMode: ChangeMode?
+		let typedIdent: TypedIdent
+		let nextDecl: Declaration?
+		
+		init(changeMode: ChangeMode?, typedIdent: TypedIdent, nextDecl: Declaration?) {
+			self.changeMode = changeMode
+			self.typedIdent = typedIdent
+			self.nextDecl = nextDecl
+		}
+	}
+	
+	class DeclarationFunction: AST {
+		
+		let ident: String
+		let parameterList: ParameterList
+		let storageDeclarations: Declaration?
+		let cmd: Cmd
+		let nextDecl: Declaration?
+		
+		init(ident: String, parameterList: ParameterList,
+			storageDeclarations: Declaration?,
+			cmd: Cmd, nextDecl: Declaration?) {
+				self.ident = ident
+				self.parameterList = parameterList
+				self.storageDeclarations = storageDeclarations
+				self.cmd = cmd
+				self.nextDecl = nextDecl
+		}
+	}
+	
+	class DeclarationProcedure: AST {
+		
+		let ident: String
+		let parameterList: ParameterList
+		let storageDeclarations: Declaration?
+		let cmd: Cmd
+		let nextDecl: Declaration?
+		
+		init(ident: String, parameterList: ParameterList,
+			storageDeclarations: Declaration?,
+			cmd: Cmd, nextDecl: Declaration?) {
+				self.ident = ident
+				self.parameterList = parameterList
+				self.storageDeclarations = storageDeclarations
+				self.cmd = cmd
+				self.nextDecl = nextDecl
+		}
+	}
+	
+	class Parameter: AST {
+		
+	}
+	
+	class ParameterList: AST {
+		
+	}
+	
+	class ChangeMode: AST {
+		
+	}
+	
+	class TypedIdent: AST {
+		
+	}
+	
 	class Expression: AST {
 		
 	}
 	
 	class ExpressionList: AST {
 		
-		let expression: Expression
-		let expressionList: ExpressionList?
-		
-		init(expression: Expression, expressionList: ExpressionList?) {
-			self.expression = expression
-			self.expressionList = expressionList
-		}
 	}
 	
 	// not implemented yet
