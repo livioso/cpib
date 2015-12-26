@@ -466,8 +466,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// recordField.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+			return recordField.toAbstract(repeatingOptionalExpressions)
 		}
 	}
 	
@@ -484,8 +483,8 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// changeMode.toAbstract()
-			return AST.Nothing()
+			return AST.ChangeMode(
+                changeMode: changeMode)
 		}
 	}
 	
@@ -502,7 +501,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+            return AST.MechMode(mechmode: mechmode)
 		}
 	}
 	
@@ -706,7 +705,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+            return boolOprTerm1?.toAbstract(term1)
 		}
 	}
 	
@@ -725,8 +724,12 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(term1: ASTConvertible?) -> AST {
+            return AST.DyadicExpr()
+        }
 	}
 	
 	class RelOprTerm2: ASTConvertible {

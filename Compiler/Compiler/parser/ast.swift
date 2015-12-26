@@ -209,8 +209,17 @@ class AST {
 	}
 	
 	class ChangeMode: AST {
-		
+        
+        let changeMode: Token.Attribute
+        
+        init(changeMode: Token.Attribute) {
+            self.changeMode = changeMode
+        }
 	}
+    
+    class DyadicExpr: AST {
+        
+    }
 	
 	class TypedIdent: AST {
 		
@@ -226,6 +235,11 @@ class AST {
     
     class MechMode: AST {
         
+        let mechmode: Token.Attribute
+        
+        init(mechmode: Token.Attribute) {
+            self.mechmode = mechmode
+        } 
     }
     
     class DeclarationRecord: AST {
