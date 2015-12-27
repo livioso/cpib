@@ -219,6 +219,15 @@ class AST {
     
     class DyadicExpr: AST {
         
+        let opr: Token.Attribute
+        let expression: AST
+        let term: AST
+        
+        init(opr: Token.Attribute, expression: AST, term: AST){
+            self.opr = opr
+            self.expression = expression
+            self.term = term
+        }
     }
 	
 	class TypedIdent: AST {
