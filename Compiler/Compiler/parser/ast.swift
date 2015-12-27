@@ -179,16 +179,47 @@ class AST {
 	}
 	
 	class Parameter: AST {
-		
+        
+        let mechMode: MechMode?
+        let declarationStorage: DeclarationStore
+        let nextParam: Parameter?
+    
+        init(mechMode: MechMode?, declarationStorage: DeclarationStore, nextParam: Parameter?){
+            self.mechMode = mechMode
+            self.declarationStorage = declarationStorage
+            self.nextParam = nextParam
+        }
 	}
-	
+    
+    class TypeDeclaration: AST {
+        
+        let ident: Token.Attribute
+        let type: Token
+        let optionalRecordDecl: DeclarationRecord?
+        
+        init(ident: Token.Attribute, type: Token, optionalRecordDecl: DeclarationRecord?) {
+            self.ident = ident
+            self.type = type
+            self.optionalRecordDecl = optionalRecordDecl //Not sure...
+        }
+    }
+    
 	class ParameterList: AST {
 		
 	}
 	
 	class ChangeMode: AST {
-		
+        
+        let changeMode: Token.Attribute
+        
+        init(changeMode: Token.Attribute) {
+            self.changeMode = changeMode
+        }
 	}
+    
+    class DyadicExpr: AST {
+        
+    }
 	
 	class TypedIdent: AST {
 		
@@ -201,6 +232,32 @@ class AST {
 	class ExpressionList: AST {
 		
 	}
+    
+    class MechMode: AST {
+        
+        let mechmode: Token.Attribute
+        
+        init(mechmode: Token.Attribute) {
+            self.mechmode = mechmode
+        } 
+    }
+    
+    class DeclarationRecord: AST {
+        
+    }
+    
+    class RecordField: AST {
+        
+        let expression: Expression
+        let repeatingRecordFields: RecordField?
+        
+        init(expression: Expression, repeatingRecordFields: RecordField?) {
+            self.expression = expression
+            self.repeatingRecordFields = repeatingRecordFields
+        }
+        
+    }
+    
 	
 	// not implemented yet
 	class Nothing: AST {

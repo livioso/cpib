@@ -211,7 +211,16 @@ class CST {
 		}
 		
 		func toAbstract(repeatingDecls: ASTConvertible?) throws -> AST? {
-			return AST.Nothing()
+            if case Token.Attribute.Ident(let identifier) = ident.attribute! {
+                return AST.DeclarationProcedure(
+                    ident: identifier,
+                    parameterList: try! parameterList.toAbstract() as! AST.ParameterList,
+                    storageDeclarations: try! optionalLocalStorageDeclarations?.toAbstract() as! AST.Declaration,
+                    cmd: try! blockCmd.toAbstract() as! AST.Cmd,
+                    nextDecl: try! repeatingDecls?.toAbstract() as! AST.Declaration)
+            } else {
+                throw ParseError.WrongTokenAttribute
+            }
 		}
 	}
 	
@@ -246,9 +255,16 @@ class CST {
 		var description: String {
 			return "\(self.dynamicType)"
 		}
+        
+        func toAbstract() throws -> AST? {
+            throw ParseError.NotSupported
+        }
 		
-		func toAbstract() throws -> AST? {
-			return AST.Nothing() // do bruchts eine
+        func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
+			return AST.Parameter(
+                mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
+                declarationStorage: try! storageDeclaraction.toAbstract() as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                nextParam: try! repeatingParams?.toAbstract() as! AST.Parameter)
 		}
 	}
 	
@@ -268,8 +284,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return parameter.toAbstract(repeatingOptParameters)
-			return AST.Nothing()
+            return try! parameter.toAbstract(repeatingOptParameters)
 		}
 	}
 	
@@ -288,8 +303,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return parameter.toAbstract(repeatingOptParameters)
-			return AST.Nothing()
+			return try! parameter.toAbstract(repeatingOptionalParameters)
 		}
 	}
 	
@@ -309,8 +323,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
-			return AST.Nothing()
+			return storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
 		}
 	}
 	
@@ -329,8 +342,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// do bruchts eine
-			return AST.Nothing()
+			return typeDeclartion.toAbstract(identifier)
 		}
 	}
 	
@@ -351,9 +363,15 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// do burchts eine
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(ident: Token.Attribute) -> AST?{
+            return AST.TypeDeclaration(
+                ident: ident,
+                type: type,
+                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as! AST.DeclarationRecord) //Not sure...
+        }
 	}
 	
 	class OptionalRecordDeclaration: ASTConvertible {
@@ -405,8 +423,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return recordField.toAbstract(repeatingRecordFields)
-			return AST.Nothing()
+			return recordField.toAbstract(repeatingRecordFields)
 		}
 	}
 	
@@ -424,8 +441,14 @@ class CST {
 		
 		// todo: check L-Value / R-Value
 		func toAbstract() throws -> AST? {
-			return try! expression.toAbstract()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(repeatingRecordFields: ASTConvertible?) -> AST {
+            return AST.RecordField(
+                expression: try! expression.toAbstract() as! AST.Expression,
+                repeatingRecordFields: try! repeatingRecordFields?.toAbstract() as! AST.RecordField)
+        }
 	}
 	
 	class RepeatingRecordFields: ASTConvertible {
@@ -443,8 +466,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// recordField.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+			return recordField.toAbstract(repeatingOptionalExpressions)
 		}
 	}
 	
@@ -461,8 +483,8 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// changeMode.toAbstract()
-			return AST.Nothing()
+			return AST.ChangeMode(
+                changeMode: changeMode)
 		}
 	}
 	
@@ -479,7 +501,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+            return AST.MechMode(mechmode: mechmode)
 		}
 	}
 	
@@ -683,7 +705,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+            return boolOprTerm1?.toAbstract(term1)
 		}
 	}
 	
@@ -702,8 +724,12 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(term1: ASTConvertible?) -> AST {
+            return AST.DyadicExpr()
+        }
 	}
 	
 	class RelOprTerm2: ASTConvertible {
