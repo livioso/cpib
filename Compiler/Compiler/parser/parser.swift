@@ -187,10 +187,11 @@ class Parser {
 		switch(terminal) {
 		case Terminal.ADDOPR:
 			print("addOprTerm3 ::= ADDOPR term3 addOprTerm3")
-			try! consume(Terminal.ADDOPR)
+			let addOperand = try! consume(Terminal.ADDOPR).attribute!
 			let term = try term3()
 			let addOpr = try! addOprTerm3()
 			return CST.AddOprTerm3(
+                addOpr: addOperand,
 				term3: term,
 				addOprTerm3: addOpr)
 		case Terminal.RPAREN: fallthrough
@@ -331,12 +332,13 @@ class Parser {
 			return nil // ε
 		case Terminal.DOTOPR:
 			print("dotOprFactor ::= DOTOPR ")
-			// todo: raphi what is the DOTOPR?
-			// does it need to be in the CST?
-			try! consume(Terminal.DOTOPR)
-			let ident = try! consume(Terminal.IDENT).attribute!
+			let dotOpr = try! consume(Terminal.DOTOPR).attribute!
+			let fac = try! factor()
+            let repDotOpr = try! dotOprFactor()
 			return CST.DotOprFactor(
-				identifier: ident)
+                dotOpr: dotOpr,
+                factor: fac,
+                dotOprFactor: repDotOpr)
 		case _:
 			throw ParseError.WrongTerminal
 		}
@@ -363,11 +365,13 @@ class Parser {
 			return nil // ε
 		case Terminal.MULTOPR:
 			print("multOpTerm4 ::= term4 multOprTerm4")
+            let mulOperand = try! consume(Terminal.MULTOPR).attribute!
 			let term = try! term4()
 			let multOpr = try! multOprTerm4()
 			return CST.MultOprTerm4(
-				term4: term,
-				multOprTerm4: multOpr)
+                mulOpr: mulOperand,
+                term4: term,
+                multOprTerm4: multOpr)
 		case _:
 			throw ParseError.WrongTerminal
 		}

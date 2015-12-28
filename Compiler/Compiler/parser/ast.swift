@@ -217,8 +217,17 @@ class AST {
         }
 	}
     
-    class DyadicExpr: AST {
+    class DyadicExpr: AST.Expression {
         
+        let opr: Token.Attribute
+        let expression: AST.Expression
+        let term: AST.Expression
+        
+        init(opr: Token.Attribute, expression: AST.Expression, term: AST.Expression){
+            self.opr = opr
+            self.expression = expression
+            self.term = term
+        }
     }
 	
 	class TypedIdent: AST {
@@ -230,8 +239,46 @@ class AST {
 	}
 	
 	class ExpressionList: AST {
+        
+        let expression: AST.Expression
+        let optExpression: AST.Expression?
+        
+        init(expression: AST.Expression, optExpression: AST.Expression?){
+            self.expression = expression
+            self.optExpression = optExpression
+        }
 		
 	}
+    
+    class LiteralExpr: Expression {
+        
+        let literal: Token.Attribute
+        
+        init(literal: Token.Attribute) {
+            self.literal = literal
+        }
+    }
+    
+    class StoreExpr: Expression {
+        
+        let identeifier: Token.Attribute
+        let initToken: Token?
+        
+        init(identifier: Token.Attribute, initToken: Token?) {
+            self.identeifier = identifier
+            self.initToken = initToken
+        }
+    }
+    
+    class FuncCallExpr: Expression {
+        
+        let routineCall: RoutineCall
+        
+        init(routineCall: RoutineCall) {
+            self.routineCall = routineCall
+        }
+        
+    }
     
     class MechMode: AST {
         

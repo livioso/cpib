@@ -263,7 +263,7 @@ class CST {
         func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
 			return AST.Parameter(
                 mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
-                declarationStorage: try! storageDeclaraction.toAbstract() as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                declarationStorage: try! storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
                 nextParam: try! repeatingParams?.toAbstract() as! AST.Parameter)
 		}
 	}
@@ -727,8 +727,11 @@ class CST {
 			throw ParseError.NotSupported
 		}
         
-        func toAbstract(term1: ASTConvertible?) -> AST {
-            return AST.DyadicExpr()
+        func toAbstract(term1: ASTConvertible?) -> AST? {
+            return AST.DyadicExpr(
+                opr: boolOpr,
+                expression: try! term1?.toAbstract() as! AST.Expression, //What am i doing here?
+                term: try! self.term1.toAbstract() as! AST.Expression) //What am i doing here?
         }
 	}
 	
@@ -738,7 +741,8 @@ class CST {
 		let term2: Term2
 		let relOprTerm2: RelOprTerm2?
 		
-		init(relOpr: Token.Attribute, term2: Term2, relOprTerm2: RelOprTerm2?) {
+		init(
+            relOpr: Token.Attribute, term2: Term2, relOprTerm2: RelOprTerm2?) {
 			self.relOpr = relOpr
 			self.term2 = term2
 			self.relOprTerm2 = relOprTerm2
@@ -749,8 +753,15 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(term2: ASTConvertible?) -> AST? {
+            return AST.DyadicExpr(
+                opr: relOpr,
+                expression: try! term2?.toAbstract() as! AST.Expression,
+                term: try! self.term2.toAbstract() as! AST.Expression)
+        }
 	}
 	
 	class Term1: ASTConvertible {
@@ -768,7 +779,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return relOprTerm2?.toAbstract(term2)
 		}
 	}
 	
@@ -787,7 +798,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return addOprTerm3?.toAbstract(term3)
 		}
 	}
 	
@@ -806,16 +817,18 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return multOprTerm4?.toAbstract(term4)
 		}
 	}
 	
 	class AddOprTerm3: ASTConvertible {
 		
+        let addOpr: Token.Attribute
 		let term3: Term3
-		let addOprTerm3: AddOprTerm3?
+		let addOprTerm3: AddOprTerm3? //Oh Oh!
 		
-		init(term3: Term3, addOprTerm3: AddOprTerm3?) {
+        init(addOpr: Token.Attribute, term3: Term3, addOprTerm3: AddOprTerm3?) {
+            self.addOpr = addOpr
 			self.term3 = term3
 			self.addOprTerm3 = addOprTerm3
 		}
@@ -825,8 +838,15 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(term3: ASTConvertible?) -> AST? {
+            return AST.DyadicExpr(
+                opr: addOpr,
+                expression: try! term3?.toAbstract() as! AST.Expression,
+                term: try! self.term3.toAbstract() as! AST.Expression)
+        }
 	}
 	
 	class Term4: ASTConvertible {
@@ -844,16 +864,18 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return dotOprFactor?.toAbstract(factor)
 		}
 	}
 	
 	class MultOprTerm4: ASTConvertible {
 		
+        let mulOpr: Token.Attribute
 		let term4: Term4
 		let multOprTerm4: MultOprTerm4?
 		
-		init(term4: Term4, multOprTerm4: MultOprTerm4?) {
+        init(mulOpr: Token.Attribute, term4: Term4, multOprTerm4: MultOprTerm4?) {
+            self.mulOpr = mulOpr
 			self.term4 = term4
 			self.multOprTerm4 = multOprTerm4
 		}
@@ -863,18 +885,25 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(term4: ASTConvertible?) -> AST? {
+            return AST.DyadicExpr(
+                opr: mulOpr,
+                expression: try! term4?.toAbstract() as! AST.Expression,
+                term: try! self.term4.toAbstract() as! AST.Expression)
+        }
 	}
 	
-	class Factor: ASTConvertible {
+	class Factor: ASTConvertible { //why not a protocol?
 		
 		var description: String {
 			return "\(self.dynamicType)"
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 	}
 	
@@ -891,7 +920,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return AST.LiteralExpr(literal: literal)
 		}
 	}
 	
@@ -910,7 +939,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! optionalIdent?.toAbstract(identifier)
 		}
 	}
 	
@@ -927,7 +956,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! expression.toAbstract()
 		}
 	}
 	
@@ -953,16 +982,35 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(identifier: Token.Attribute) throws -> AST? {
+            if(expressionList == nil) {
+                return AST.StoreExpr(identifier: identifier, initToken: initToken)
+            } else {
+                if case Token.Attribute.Ident(let ident) = identifier {
+                    return AST.FuncCallExpr(
+                        routineCall: AST.RoutineCall(
+                            ident: ident,
+                            expressionList: try! expressionList?.toAbstract() as! AST.ExpressionList))
+                } else {
+                    throw ParseError.WrongTokenAttribute
+                }
+            }
+        }
 	}
 	
 	class DotOprFactor: ASTConvertible {
 		
-		let identifier: Token.Attribute
+		let dotOpr: Token.Attribute
+        let factor: Factor
+        let dotOprFactor: DotOprFactor?
 		
-		init(identifier: Token.Attribute) {
-			self.identifier = identifier
+        init(dotOpr: Token.Attribute, factor: Factor, dotOprFactor: DotOprFactor?) {
+			self.dotOpr = dotOpr
+            self.factor = factor
+            self.dotOprFactor = dotOprFactor
 		}
 		
 		var description: String {
@@ -970,8 +1018,15 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(factor: ASTConvertible?) -> AST? {
+            return AST.DyadicExpr(
+                opr: dotOpr,
+                expression: try! factor?.toAbstract() as! AST.Expression,
+                term: try! self.factor.toAbstract() as! AST.Expression)
+        }
 	}
 	
 	class ExpressionList: ASTConvertible {
@@ -1006,8 +1061,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return expression.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+            return AST.ExpressionList(
+                expression: try! expression.toAbstract() as! AST.Expression,
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
 		}
 	}
 	
@@ -1026,8 +1082,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return expression.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+			return AST.ExpressionList(
+                expression: try! expression.toAbstract() as! AST.Expression,
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
 		}
 	}
 	
