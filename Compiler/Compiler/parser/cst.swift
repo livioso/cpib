@@ -263,7 +263,7 @@ class CST {
         func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
 			return AST.Parameter(
                 mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
-                declarationStorage: try! storageDeclaraction.toAbstract() as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                declarationStorage: try! storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
                 nextParam: try! repeatingParams?.toAbstract() as! AST.Parameter)
 		}
 	}
@@ -903,7 +903,7 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
 	}
 	
@@ -920,7 +920,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return AST.LiteralExpr(literal: literal)
 		}
 	}
 	
@@ -939,7 +939,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! optionalIdent?.toAbstract(identifier)
 		}
 	}
 	
@@ -956,7 +956,7 @@ class CST {
 		}
 		
 		override func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			return try! expression.toAbstract()
 		}
 	}
 	
@@ -982,8 +982,23 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			return AST.Nothing()
+			throw ParseError.NotSupported
 		}
+        
+        func toAbstract(identifier: Token.Attribute) throws -> AST? {
+            if(expressionList == nil) {
+                return AST.StoreExpr(identifier: identifier, initToken: initToken)
+            } else {
+                if case Token.Attribute.Ident(let ident) = identifier {
+                    return AST.FuncCallExpr(
+                        routineCall: AST.RoutineCall(
+                            ident: ident,
+                            expressionList: try! expressionList?.toAbstract() as! AST.ExpressionList))
+                } else {
+                    throw ParseError.WrongTokenAttribute
+                }
+            }
+        }
 	}
 	
 	class DotOprFactor: ASTConvertible {
@@ -1046,8 +1061,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return expression.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+            return AST.ExpressionList(
+                expression: try! expression.toAbstract() as! AST.Expression,
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
 		}
 	}
 	
@@ -1066,8 +1082,9 @@ class CST {
 		}
 		
 		func toAbstract() throws -> AST? {
-			// return expression.toAbstract(repeatingOptionalExpressions)
-			return AST.Nothing()
+			return AST.ExpressionList(
+                expression: try! expression.toAbstract() as! AST.Expression,
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
 		}
 	}
 	
