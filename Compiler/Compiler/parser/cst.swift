@@ -263,7 +263,7 @@ class CST {
         func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
 			return AST.Parameter(
                 mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
-                declarationStorage: try! storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                declarationStorage: storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
                 nextParam: try! repeatingParams?.toAbstract() as! AST.Parameter)
 		}
 	}
