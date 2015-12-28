@@ -370,7 +370,7 @@ class CST {
             return AST.TypeDeclaration(
                 ident: ident,
                 type: type,
-                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as! AST.DeclarationRecord) //Not sure...
+                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as? AST.DeclarationRecord) //Not sure...
         }
 	}
 	
