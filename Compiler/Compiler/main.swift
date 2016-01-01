@@ -6,7 +6,7 @@ func main() {
 	if var sourcePath = Process.arguments.last {
 
 		// while debugging better use "make test" ;)
-		sourcePath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
+		sourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
 		sourcePath += "Compiler/TestSources/test-01.iml"
 
 		print("🔴 Scanner.scan(\(sourcePath))")

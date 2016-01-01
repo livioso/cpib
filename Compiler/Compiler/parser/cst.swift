@@ -557,7 +557,7 @@ class CST {
 
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.CmdBecomes(
-				leftHandExpression: try! leftHandExpression.toAbstract() as? AST.Expression,
+				leftHandExpression: try! leftHandExpression.toAbstract() as! AST.Expression,
 				rightHandExpression: try! rightHandExpression.toAbstract() as! AST.Expression)
 		}
 	}
