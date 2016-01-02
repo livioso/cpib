@@ -39,12 +39,16 @@ in
 val productions =
 [
 (*
-    recordDeclaration   ::= IDENT COLON RECORD recordFieldList
-    recordFieldList     ::= LPAREN recordFields RPAREN
-    recordFields        ::= recordField optionalRecordField
-    recordField         ::= IDENT COLON TYPE
-    optionalRecordField ::= COMMA recordField (optionalRecordField)*
-    optionalCHANGEMODE  ::= CHANGEMODE*
+    optRecordDeclarationList ::= LPAREN recordDecl RPAREN | Eps
+    recordDecl               ::= recordField optionalRecordfield
+    optionalRecordField      ::= COMMA recordField optionalRecordField | Eps
+    optionalCHANGEMODE       ::= CHANGEMODE | Eps
+    storageDeclaration       ::= optionalCHANGEMOD typeIdent
+    typeIdent                ::= IDENT COLON typeDeclaration
+    typeDeclaration          ::= TYPE optRecordDeclarationList
+    recordField              ::= storageDeclaration
+    optionalCHANGEMODE       ::= CHANGEMODE | Eps
+    DOTOPRfactor             ::= DOTOPR IDENT | Eps 
 *)
 (recordDeclaration,
     [[T IDENT, T COLON, T RECORD, N recordFieldList]]),

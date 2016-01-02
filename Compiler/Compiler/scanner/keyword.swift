@@ -58,6 +58,8 @@ class KeywordProvider {
 				attribute: Token.Attribute.FlowMode(Token.FlowModeType.INOUT)),
 			"out": Token(terminal: Terminal.FLOWMODE,
 				attribute: Token.Attribute.FlowMode(Token.FlowModeType.OUT)),
+            "debugin": Token(terminal: Terminal.DEBUGIN),
+            "debugout": Token(terminal: Terminal.DEBUGOUT),
 			
 			// relevant for <Symbols>
 			"(": Token(terminal: Terminal.LPAREN),
@@ -92,7 +94,8 @@ class KeywordProvider {
 			"<": Token(terminal: Terminal.RELOPR,
 				attribute: Token.Attribute.RelOperator(Token.RelOprType.LT)),
 			":=": Token(terminal: Terminal.BECOMES),
-			".": Token(terminal: Terminal.DOTOPR)
+			".": Token(terminal: Terminal.DOTOPR,
+                attribute: Token.Attribute.DotOperator())
 		]
 	}
 	

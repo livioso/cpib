@@ -1,19 +1,16 @@
 program main
 
-global
-    proc divide (
-      copy const m:int32,
-      copy const n:int32,
-      ref var q:int32,
-      ref var r:int32 )
-    do
-        q init := 0;
-        r init := m;
-        while r >= n do
-            q := q + 1;
-            r := r - n
-        endwhile
-    endproc
 do
-    call divide ( m, n, q init, r init )
+    position.x init := 4;
+    position.y init := 5;
+
+    professor.id init := 1007;
+    professor.level init := 19;
+
+    debugin position.y;
+    position.x := 42;
+
+    offsetInY init := 5;
+    position.y := position.y + offsetInY
+
 endprogram

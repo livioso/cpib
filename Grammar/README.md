@@ -9,6 +9,10 @@ Navigate to the src folder and start SML:
 
     $ sml
 
+or
+
+    $ /usr/local/smlnj/bin/./sml
+
 To use FixFoxi you have to use the "useNew.sml" file
 
     $ use "useNew.sml";
@@ -36,7 +40,7 @@ This displays all possible commands.
 
     $ dispDiagnosis result;
 
-This command is for checking if your grammar is okey. The output `val ist = () : unit` means everything is okey. Otherwise you see where the failures are.
+This command is for checking if your grammar is okey. The output `val it = () : unit` means everything is okey. Otherwise you see where the failures are.
 
 **FIRST:**
 
