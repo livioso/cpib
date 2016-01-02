@@ -4,11 +4,19 @@ func main() {
 
 	print("🔴 IML-S Compiler 🐵🙈")
 	if var sourcePath = Process.arguments.last {
-
-		// while debugging better use "make test" ;)
-		sourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
-		sourcePath += "Compiler/TestSources/test-01.iml"
-
+		
+		
+		// get rid of this when done ;-)
+		let iAmRaphi = false // lol
+		
+		if iAmRaphi {
+			sourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
+			sourcePath += "Compiler/TestSources/test-01.iml"
+		} else {
+			sourcePath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
+			sourcePath += "Compiler/TestSources/test-01.iml"
+		}
+		
 		print("🔴 Scanner.scan(\(sourcePath))")
 		let scanner = Scanner()
 		let tokenlist = scanner.scan(sourcePath)
