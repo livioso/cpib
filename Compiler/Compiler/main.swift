@@ -28,7 +28,7 @@ func main() {
 
 		print("🔴 Parser.parse(tokenlist) // AST")
 		let ast = try! cst.toAbstract() as! AST.Program
-		print(ast)
+		ast.printTree()
 
 	} else {
 		print("Missing Parameter <source.iml>")
