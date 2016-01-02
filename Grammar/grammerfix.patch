@@ -1,0 +1,45 @@
+--- oldParseTable	2016-01-02 19:03:45.000000000 +0100
++++ newParseTable	2016-01-02 19:04:09.000000000 +0100
+@@ -98,7 +98,7 @@
+   terminal SEMICOLON
+     
+   terminal LPAREN
+-    <recordFieldList>
++    LPAREN <recordDecl> RPAREN
+ <functionDeclaration>
+   terminal FUN
+     FUN IDENT <parameterList> RETURNS <storageDeclaration> <optionalLocalStorageDeclarations> DO <blockCmd> ENDFUN
+@@ -158,28 +158,16 @@
+     
+   terminal COMMA
+     COMMA <parameter> <repeatingOptionalParameters>
+-<recordFieldList>
+-  terminal LPAREN
+-    LPAREN <recordFields> RPAREN
+-<recordFields>
+-  terminal LPAREN
+-    <recordField> <repRecordFields>
++<recordDecl>
+   terminal IDENT
+-    <recordField> <repRecordFields>
+-  terminal LITERAL
+-    <recordField> <repRecordFields>
+-<recordField>
+-  terminal LPAREN
+-    <expression>
+-  terminal IDENT
+-    <expression>
+-  terminal LITERAL
+-    <expression>
++    <storageDeclaration> <repRecordFields>
++  terminal CHANGEMODE
++    <storageDeclaration> <repRecordFields>
+ <repRecordFields>
+   terminal RPAREN
+     
+   terminal COMMA
+-    COMMA <recordField> <repRecordFields>
++    COMMA <storageDeclaration> <repRecordFields>
+ <expressionList>
+   terminal LPAREN
+     LPAREN <optionalExpressions> RPAREN
