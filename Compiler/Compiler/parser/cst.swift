@@ -381,7 +381,7 @@ class CST {
 
 	class OptionalRecordDeclaration: ASTConvertible {
 
-		let recordFieldList : RecordFieldList?
+		let recordDecl: RecordDecl
 
 		init(recordFieldList: RecordFieldList?) {
 			self.recordFieldList = recordFieldList
@@ -395,13 +395,28 @@ class CST {
 			return try! recordFieldList?.toAbstract()
 		}
 	}
-
+	
 	class RecordFieldList: ASTConvertible {
-
+		
 		let recordFields: RecordFields
-
+		
 		init(recordFields: RecordFields) {
 			self.recordFields = recordFields
+		}
+		
+		var description: String {
+			return "\(self.dynamicType)"
+		}
+		
+		func toAbstract() throws -> AST? {
+			return try! recordFields.toAbstract()
+		}
+	}
+
+	class RecordDecl: ASTConvertible {
+
+		init() {
+			// todo
 		}
 
 		var description: String {
@@ -409,7 +424,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return try! recordFields.toAbstract()
+			return nil; // todo
 		}
 	}
 

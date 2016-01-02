@@ -663,8 +663,10 @@ class Parser {
 			return nil
 		case Terminal.LPAREN:
 			print("optRecordDecl ::= recordFieldList")
-			let recFieldList = try! recordFieldList()
-			return CST.OptionalRecordDeclaration(recordFieldList: recFieldList)
+			try! consume(Terminal.LPAREN)
+			let recDecl = try! recordDecl()
+			try! consume(Terminal.RPAREN)
+			return CST.OptionalRecordDeclaration(recordDecl: recDecl)
 		case _:
 			throw ParseError.WrongTerminal
 		}
