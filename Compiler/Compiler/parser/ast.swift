@@ -18,10 +18,10 @@ class AST {
 		}
         
         func printTree() {
-            print(description, " ")
+            print(description, terminator: " ")
             print(ident)
-            declaration?.printTree()
-            cmd.printTree()
+            declaration?.printTree("\t")
+            cmd.printTree("\t")
         }
 	}
 
@@ -38,8 +38,8 @@ class AST {
 			return "\(self.dynamicType)"
 		}
         
-        func printTree() {
-            print("houston, we have a problem!")
+        func printTree(tab: String) {
+            print(tab + "houston, we have a problem!")
         }
 	}
 
@@ -49,8 +49,8 @@ class AST {
 			return "\(self.dynamicType)"
 		}
         
-        func printTree(){
-            print("banane mit Brot")
+        func printTree(tab: String){
+            print(tab + "banane mit Brot")
         }
 	}
 
@@ -58,9 +58,9 @@ class AST {
 
 		let nextCmd: Cmd? = nil
         
-        override func printTree() {
-            print("Skip")
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + "Skip")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -78,12 +78,12 @@ class AST {
 			self.nextCmd = nextCmd
 		}
         
-        override func printTree() {
-            print(description, " ")
-            expression.printTree()
-            ifCmd.printTree()
-            elseCmd.printTree()
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            ifCmd.printTree(tab + "\t")
+            elseCmd.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -99,11 +99,11 @@ class AST {
 			self.nextCmd = nextCmd
 		}
         
-        override func printTree() {
-            print(description, " ")
-            expression.printTree()
-            whileCmd.printTree()
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            whileCmd.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -117,10 +117,10 @@ class AST {
 			self.nextCmd = nextCmd
 		}
         
-        override func printTree() {
-            print(description, " ")
-            expression.printTree()
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -134,10 +134,10 @@ class AST {
 			self.nextCmd = nextCmd
 		}
         
-        override func printTree() {
-            print(description, " ")
-            expression.printTree()
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -151,10 +151,10 @@ class AST {
 			self.nextCmd = nextCmd
 		}
         
-        override func printTree() {
-            print(description, " ")
-            expressionList.printTree()
-            nextCmd?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            expressionList.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -168,10 +168,10 @@ class AST {
 			self.rightHandExpression = rightHandExpression
 		}
         
-        override func printTree() {
-            print(description, " ")
-            leftHandExpression.printTree()
-            rightHandExpression.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            leftHandExpression.printTree(tab + "\t")
+            rightHandExpression.printTree(tab + "\t")
         }
 	}
 
@@ -189,10 +189,10 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
-            print(ident)
-            expressionList.printTree()
+        func printTree(tab: String) {
+            print(tab + description)
+            print(tab + ident)
+            expressionList.printTree(tab + "\t")
         }
 	}
 
@@ -208,11 +208,11 @@ class AST {
 			self.nextDecl = nextDecl
 		}
         
-        override func printTree() {
-            print(description, " ")
-            changeMode?.printTree()
-            typedIdent.printTree()
-            nextDecl?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            changeMode?.printTree(tab + "\t")
+            typedIdent.printTree(tab + "\t")
+            nextDecl?.printTree(tab + "\t")
         }
 	}
 
@@ -234,13 +234,13 @@ class AST {
 				self.nextDecl = nextDecl
 		}
         
-        override func printTree() {
-            print(description, " ")
-            print(ident)
-            parameterList.printTree()
-            storageDeclarations?.printTree()
-            cmd.printTree()
-            nextDecl?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab + ident)
+            parameterList.printTree(tab + "\t")
+            storageDeclarations?.printTree(tab + "\t")
+            cmd.printTree(tab + "\t")
+            nextDecl?.printTree(tab + "\t")
         }
 	}
 
@@ -262,13 +262,13 @@ class AST {
 				self.nextDecl = nextDecl
 		}
         
-        override func printTree() {
-            print(description, " ")
-            print(ident)
-            parameterList?.printTree()
-            storageDeclarations?.printTree()
-            cmd.printTree()
-            nextDecl?.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab + ident)
+            parameterList?.printTree(tab + "\t")
+            storageDeclarations?.printTree(tab + "\t")
+            cmd.printTree(tab + "\t")
+            nextDecl?.printTree(tab + "\t")
         }
 	}
 
@@ -288,11 +288,11 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
-            mechMode?.printTree()
-            declarationStorage.printTree()
-            nextParam?.printTree()
+        func printTree(tab: String) {
+            print(tab + description)
+            mechMode?.printTree(tab + "\t")
+            declarationStorage.printTree(tab + "\t")
+            nextParam?.printTree(tab + "\t")
         }
 	}
 
@@ -308,11 +308,13 @@ class AST {
             self.optionalRecordDecl = optionalRecordDecl //Not sure...
         }
         
-        override func printTree() {
-            print(description, " ")
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(ident)
+            print(tab, terminator: "")
             print(type)
-            optionalRecordDecl?.printTree()
+            optionalRecordDecl?.printTree(tab + "\t")
         }
     }
 
@@ -339,8 +341,9 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
+        func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(changeMode)
         }
 	}
@@ -357,11 +360,12 @@ class AST {
             self.term = term
         }
         
-        override func printTree() {
-            print(description, " ")
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(opr)
-            expression.printTree()
-            term.printTree()
+            expression.printTree(tab + "\t")
+            term.printTree(tab + "\t")
         }
         
     }
@@ -376,8 +380,8 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print("Smombie")
+        func printTree(tab: String) {
+            print(tab + "Smombie")
         }
 	}
 
@@ -395,10 +399,10 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
-            expression.printTree()
-            optExpression?.printTree()
+        func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            optExpression?.printTree(tab + "\t")
         }
 
 	}
@@ -411,8 +415,9 @@ class AST {
             self.literal = literal
         }
         
-        override func printTree() {
-            print(description, " ")
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(literal)
         }
     }
@@ -427,9 +432,11 @@ class AST {
             self.initToken = initToken
         }
         
-        override func printTree() {
-            print(description, " ")
+        override func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(identeifier)
+            print(tab, terminator: "")
             print(initToken)
         }
     }
@@ -442,9 +449,9 @@ class AST {
             self.routineCall = routineCall
         }
         
-        override func printTree() {
-            print(description, " ")
-            routineCall.printTree()
+        override func printTree(tab: String) {
+            print(tab + description)
+            routineCall.printTree(tab + "\t")
         }
 
     }
@@ -461,16 +468,17 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
+        func printTree(tab: String) {
+            print(tab + description)
+            print(tab, terminator: "")
             print(mechmode)
         }
     }
 
     class DeclarationRecord: Declaration {
         
-        override func printTree() {
-            print("Houston, we have an another problem!")
+        override func printTree(tab: String) {
+            print(tab + "Houston, we have an another problem!")
         }
     }
 
@@ -488,10 +496,10 @@ class AST {
             return "\(self.dynamicType)"
         }
         
-        func printTree() {
-            print(description, " ")
-            expression.printTree()
-            repeatingRecordFields?.printTree()
+        func printTree(tab: String) {
+            print(tab + description)
+            expression.printTree(tab + "\t")
+            repeatingRecordFields?.printTree(tab + "\t")
         }
 
     }
@@ -504,8 +512,8 @@ class AST {
 			return "I know nothing."
 		}
         
-        func printTree() {
-            print("Lazy Bitch!")
+        func printTree(tab: String) {
+            print(tab + "Lazy Bitch!")
         }
 	}
 }
