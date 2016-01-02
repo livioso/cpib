@@ -672,6 +672,21 @@ class Parser {
 		}
 	}
 	
+	func recordDecl() throws -> CST.RecordDecl {
+		switch(terminal) {
+		case Terminal.IDENT: fallthrough
+		case Terminal.CHANGEMODE:
+			print("recordDecl ::= LPAREN storageDeclaraction repeatingRecordFields")
+			let storageDecl = try! storageDeclaraction()
+			let repRecFields = try! repeatingRecordFields()
+			return CST.RecordDecl(
+				storageDeclartion: storageDecl,
+				repeatingRecordFields: repRecFields)
+		case _:
+			throw ParseError.WrongTerminal
+		}
+	}
+	
 	func recordFieldList() throws -> CST.RecordFieldList {
 		switch(terminal) {
 		case Terminal.LPAREN:

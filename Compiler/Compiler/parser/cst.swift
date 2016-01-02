@@ -383,8 +383,8 @@ class CST {
 
 		let recordDecl: RecordDecl
 
-		init(recordFieldList: RecordFieldList?) {
-			self.recordFieldList = recordFieldList
+		init(recordDecl: RecordDecl) {
+			self.recordDecl = recordDecl
 		}
 
 		var description: String {
@@ -392,7 +392,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return try! recordFieldList?.toAbstract()
+			return try! recordDecl.toAbstract()
 		}
 	}
 	
@@ -414,9 +414,13 @@ class CST {
 	}
 
 	class RecordDecl: ASTConvertible {
+		
+		let storageDeclartion: StorageDeclaraction
+		let repeatingRecordFields: RepeatingRecordFields?
 
-		init() {
-			// todo
+		init(storageDeclartion: StorageDeclaraction, repeatingRecordFields: RepeatingRecordFields?) {
+			self.storageDeclartion = storageDeclartion
+			self.repeatingRecordFields = repeatingRecordFields
 		}
 
 		var description: String {
