@@ -705,7 +705,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-            return boolOprTerm1?.toAbstract(term1)
+			if boolOprTerm1 != nil {
+				return try! boolOprTerm1!.toAbstract()
+			} else {
+				return try! term1.toAbstract()
+			}
 		}
 	}
 
@@ -779,7 +783,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return relOprTerm2?.toAbstract(term2)
+			if relOprTerm2 != nil {
+				return try! relOprTerm2!.toAbstract()
+			} else {
+				return try! term2.toAbstract()
+			}
 		}
 	}
 
@@ -798,7 +806,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return addOprTerm3?.toAbstract(term3)
+			if addOprTerm3 != nil {
+				return try! addOprTerm3!.toAbstract()
+			} else {
+				return try! term3.toAbstract()
+			}
 		}
 	}
 
@@ -817,7 +829,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return multOprTerm4?.toAbstract(term4)
+			if multOprTerm4 != nil {
+				return try! multOprTerm4!.toAbstract()
+			} else {
+				return try! term4.toAbstract()
+			}
 		}
 	}
 
@@ -864,7 +880,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return dotOprFactor?.toAbstract(factor)
+			if dotOprFactor != nil {
+				return try! dotOprFactor!.toAbstract()
+			} else {
+				return try! factor.toAbstract()
+			}
 		}
 	}
 
