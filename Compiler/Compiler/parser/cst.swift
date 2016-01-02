@@ -691,7 +691,7 @@ class CST {
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.CmdCall(
 				expressionList: try! expressionList.toAbstract() as! AST.ExpressionList,
-				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
+				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -954,7 +954,11 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return try! optionalIdent?.toAbstract(identifier)
+            if optionalIdent != nil {
+                return try! optionalIdent?.toAbstract(identifier)
+            } else {
+                return AST.StoreExpr(identifier: identifier, initToken: nil)
+            }
 		}
 	}
 
@@ -1099,7 +1103,7 @@ class CST {
 		func toAbstract() throws -> AST? {
 			return AST.ExpressionList(
                 expression: try! expression.toAbstract() as! AST.Expression,
-                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.Expression)
 		}
 	}
 
