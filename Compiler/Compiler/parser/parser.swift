@@ -687,51 +687,6 @@ class Parser {
 		}
 	}
 	
-	func recordFieldList() throws -> CST.RecordFieldList {
-		switch(terminal) {
-		case Terminal.LPAREN:
-			print("recordFieldList ::= LPAREN recordFields RPAREN")
-			try! consume(Terminal.LPAREN)
-			let recFields = try! recordFields()
-			try! consume(Terminal.RPAREN)
-			return CST.RecordFieldList(
-				recordFields: recFields
-			)
-		case _:
-			throw ParseError.WrongTerminal
-		}
-	}
-	
-	func recordFields() throws -> CST.RecordFields {
-		switch(terminal) {
-		case Terminal.LPAREN: fallthrough
-		case Terminal.IDENT: fallthrough
-		case Terminal.LITERAL:
-			print("recordFields ::= recordField repeatingRecordFields")
-			let recField = try! recordField()
-			let repRecFields = try! repeatingRecordFields()
-			return CST.RecordFields(
-				recordField: recField,
-				repeatingRecordFields: repRecFields)
-		case _:
-			throw ParseError.WrongTerminal
-		}
-	}
-	
-	func recordField() throws -> CST.RecordField {
-		switch(terminal) {
-		case Terminal.LPAREN: fallthrough
-		case Terminal.IDENT: fallthrough
-		case Terminal.LITERAL:
-			print("recordField ::= expression")
-			let expr = try! expression()
-			return CST.RecordField(
-				expression: expr)
-		case _:
-			throw ParseError.WrongTerminal
-		}
-	}
-	
 	func repeatingRecordFields() throws -> CST.RepeatingRecordFields? {
 		switch(terminal) {
 		case Terminal.RPAREN:

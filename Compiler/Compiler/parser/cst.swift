@@ -395,23 +395,6 @@ class CST {
 			return try! recordDecl.toAbstract()
 		}
 	}
-	
-	class RecordFieldList: ASTConvertible {
-		
-		let recordFields: RecordFields
-		
-		init(recordFields: RecordFields) {
-			self.recordFields = recordFields
-		}
-		
-		var description: String {
-			return "\(self.dynamicType)"
-		}
-		
-		func toAbstract() throws -> AST? {
-			return try! recordFields.toAbstract()
-		}
-	}
 
 	class RecordDecl: ASTConvertible {
 		
@@ -430,49 +413,6 @@ class CST {
 		func toAbstract() throws -> AST? {
 			return nil; // todo
 		}
-	}
-
-	class RecordFields: ASTConvertible {
-
-		let recordField: RecordField
-		let repeatingRecordFields: RepeatingRecordFields?
-
-		init(recordField: RecordField, repeatingRecordFields: RepeatingRecordFields?) {
-			self.recordField = recordField
-			self.repeatingRecordFields = repeatingRecordFields
-		}
-
-		var description: String {
-			return "\(self.dynamicType)"
-		}
-
-		func toAbstract() throws -> AST? {
-			return recordField.toAbstract(repeatingRecordFields)
-		}
-	}
-
-	class RecordField: ASTConvertible {
-
-		let expression: Expression
-
-		init(expression: Expression) {
-			self.expression = expression
-		}
-
-		var description: String {
-			return "\(self.dynamicType)"
-		}
-
-		// todo: check L-Value / R-Value
-		func toAbstract() throws -> AST? {
-			throw ParseError.NotSupported
-		}
-
-        func toAbstract(repeatingRecordFields: ASTConvertible?) -> AST {
-            return AST.RecordField(
-                expression: try! expression.toAbstract() as! AST.Expression,
-                repeatingRecordFields: try! repeatingRecordFields?.toAbstract() as! AST.RecordField)
-        }
 	}
 
 	class RepeatingRecordFields: ASTConvertible {
