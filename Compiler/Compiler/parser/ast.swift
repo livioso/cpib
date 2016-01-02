@@ -162,16 +162,19 @@ class AST {
 
 		let leftHandExpression: Expression
 		let rightHandExpression: Expression
+        let nextCmd: Cmd?
 
-		init(leftHandExpression: Expression, rightHandExpression: Expression) {
+        init(leftHandExpression: Expression, rightHandExpression: Expression, nextCmd: Cmd?) {
 			self.leftHandExpression = leftHandExpression
 			self.rightHandExpression = rightHandExpression
+            self.nextCmd = nextCmd
 		}
         
         override func printTree(tab: String) {
             print(tab + description)
             leftHandExpression.printTree(tab + "\t")
             rightHandExpression.printTree(tab + "\t")
+            nextCmd?.printTree(tab + "\t")
         }
 	}
 
@@ -388,9 +391,9 @@ class AST {
 	class ExpressionList: AST {
 
         let expression: AST.Expression
-        let optExpression: AST.Expression?
+        let optExpression: AST.ExpressionList?
 
-        init(expression: AST.Expression, optExpression: AST.Expression?){
+        init(expression: AST.Expression, optExpression: AST.ExpressionList?){
             self.expression = expression
             self.optExpression = optExpression
         }

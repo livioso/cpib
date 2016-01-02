@@ -563,7 +563,8 @@ class CST {
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.CmdBecomes(
 				leftHandExpression: try! leftHandExpression.toAbstract() as! AST.Expression,
-				rightHandExpression: try! rightHandExpression.toAbstract() as! AST.Expression)
+				rightHandExpression: try! rightHandExpression.toAbstract() as! AST.Expression,
+                nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -594,7 +595,7 @@ class CST {
 				expression: try! expression.toAbstract() as! AST.Expression,
 				ifCmd: try! blockCommandThen.toAbstract() as! AST.Cmd,
 				elseCmd: try! blockCommandElse.toAbstract() as! AST.Cmd,
-				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
+				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -620,7 +621,7 @@ class CST {
 			return AST.CmdWhile(
 				expression: try! expression.toAbstract() as! AST.Expression,
 				whileCmd: try! blockCommand.toAbstract() as! AST.Cmd,
-				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
+				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -643,7 +644,7 @@ class CST {
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.CmdDebugin(
 				expression: try! expression.toAbstract() as! AST.Expression,
-				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
+				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -666,7 +667,7 @@ class CST {
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
 			return AST.CmdDebugout(
 				expression: try! expression.toAbstract() as! AST.Expression,
-				nextCmd: try! repeatingCmds?.toAbstract() as! AST.Cmd)
+				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
 		}
 	}
 
@@ -789,7 +790,7 @@ class CST {
 
 		func toAbstract() throws -> AST? {
 			if relOprTerm2 != nil {
-				return try! relOprTerm2!.toAbstract()
+				return relOprTerm2!.toAbstract(term2)
 			} else {
 				return try! term2.toAbstract()
 			}
@@ -812,7 +813,7 @@ class CST {
 
 		func toAbstract() throws -> AST? {
 			if addOprTerm3 != nil {
-				return try! addOprTerm3!.toAbstract()
+				return addOprTerm3!.toAbstract(term3)
 			} else {
 				return try! term3.toAbstract()
 			}
@@ -835,7 +836,7 @@ class CST {
 
 		func toAbstract() throws -> AST? {
 			if multOprTerm4 != nil {
-				return try! multOprTerm4!.toAbstract()
+				return multOprTerm4!.toAbstract(term4)
 			} else {
 				return try! term4.toAbstract()
 			}
@@ -1082,7 +1083,7 @@ class CST {
 		func toAbstract() throws -> AST? {
             return AST.ExpressionList(
                 expression: try! expression.toAbstract() as! AST.Expression,
-                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.Expression)
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.ExpressionList)
 		}
 	}
 
@@ -1103,7 +1104,7 @@ class CST {
 		func toAbstract() throws -> AST? {
 			return AST.ExpressionList(
                 expression: try! expression.toAbstract() as! AST.Expression,
-                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.Expression)
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.ExpressionList)
 		}
 	}
 
