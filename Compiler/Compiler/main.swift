@@ -11,7 +11,7 @@ func main() {
 		
 		if iAmRaphi {
 			sourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
-			sourcePath += "Compiler/TestSources/test-01.iml"
+			sourcePath += "Compiler/TestSources/test-03.iml"
 		} else {
 			sourcePath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
 			sourcePath += "Compiler/TestSources/test-01.iml"
@@ -29,6 +29,7 @@ func main() {
 		print("🔴 Parser.parse(tokenlist) // AST")
 		let ast = try! cst.toAbstract() as! AST.Program
 		ast.printTree()
+        print("yolo")
 
 	} else {
 		print("Missing Parameter <source.iml>")

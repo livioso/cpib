@@ -306,6 +306,7 @@ class Parser {
 			return CST.OptionalIdentifier(
 				expressionList: exprList)
 		case _:
+            print(terminal)
 			throw ParseError.WrongTerminal
 		}
 	}

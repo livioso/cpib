@@ -84,7 +84,6 @@ datatype nonterm
   | declarations
   | declaration
   | repeatingOptionalDeclarations
-  | recordFieldList
   | optionalCHANGEMODE
   | optionalMECHMODE
   | storageDeclaration
@@ -118,10 +117,9 @@ datatype nonterm
   | optionalParameters
   | parameter
   | repeatingOptionalParameters
-  | recordFields
-  | recordField
   | repRecordFields
   | optRecordDeclaration
+  | recordDecl
 
 
 val string_of_nonterm =
@@ -130,7 +128,6 @@ val string_of_nonterm =
    | declarations                             => "declarations"
    | declaration	                            => "declaration"
    | repeatingOptionalDeclarations            => "repeatingOptionalDeclarations"
-   | recordFieldList	                        => "recordFieldList"
    | optionalCHANGEMODE                       => "optionalCHANGEMODE"
    | optionalMECHMODE                         => "optionalMECHMODE"
    | storageDeclaration                       => "storageDeclaration"
@@ -164,10 +161,9 @@ val string_of_nonterm =
    | optionalParameters                       => "optionalParameters"
    | parameter                                => "parameter"
    | repeatingOptionalParameters              => "repeatingOptionalParameters"
-   | recordFields                             => "recordFields"
-   | recordField                              => "recordField"
    | repRecordFields                          => "repRecordFields"
    | optRecordDeclaration                     => "optRecordDeclaration"
+   | recordDecl                               => "recordDecl"
       
 
 val string_of_gramsym = (string_of_term, string_of_nonterm)
@@ -221,7 +217,7 @@ val productions =
 
 (optRecordDeclaration,
   [[],
-   [N recordFieldList]]),
+   [T LPAREN, N recordDecl, T RPAREN]]),
 
 (functionDeclaration,
 	[[T FUN, T IDENT, N parameterList, T RETURNS, N storageDeclaration, N optionalLocalStorageDeclarations, T DO, N blockCmd, T ENDFUN]]),
@@ -262,18 +258,12 @@ val productions =
 	[[],
 	 [T COMMA, N parameter, N repeatingOptionalParameters]]),
 
-(recordFieldList,
-	[[T LPAREN, N recordFields, T RPAREN]]),
-
-(recordFields,
-	[[N recordField, N repRecordFields]]),
-
-(recordField,
-  [[N cmd]]),
+(recordDecl,
+	[[N storageDeclaration, N repRecordFields]]),
 
 (repRecordFields,
   [[],
-   [T COMMA, N recordField, N repRecordFields]]),
+   [T COMMA, N storageDeclaration, N repRecordFields]]),
 
 (expressionList,
 	[[T LPAREN, N optionalExpressions, T RPAREN]]),

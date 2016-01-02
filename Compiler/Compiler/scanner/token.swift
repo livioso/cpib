@@ -26,6 +26,7 @@ struct Token {
 		case MultOperator(MultOprType)
 		case RelOperator(RelOprType)
 		case BoolOperator(BoolOprType)
+        case DotOperator()
 	}
 	
 	
