@@ -180,7 +180,7 @@ class CST {
 			if case Token.Attribute.Ident(let identifier) = ident.attribute! {
 				return AST.DeclarationFunction(
 					ident: identifier,
-					parameterList: try! parameterList.toAbstract() as! AST.ParameterList,
+					parameterList: try! parameterList.toAbstract() as! AST.Parameter,
 					storageDeclarations: try! storageDeclaration.toAbstract() as! AST.Declaration,
 					cmd: try! blockCmd.toAbstract() as! AST.Cmd,
 					nextDecl: try! repeatingDecls?.toAbstract() as! AST.Declaration)
@@ -219,7 +219,7 @@ class CST {
             if case Token.Attribute.Ident(let identifier) = ident.attribute! {
                 return AST.DeclarationProcedure(
                     ident: identifier,
-                    parameterList: try! parameterList.toAbstract() as? AST.ParameterList,
+                    parameterList: try! parameterList.toAbstract() as? AST.Parameter,
                     storageDeclarations: try! optionalLocalStorageDeclarations?.toAbstract() as? AST.Declaration,
                     cmd: try! blockCmd.toAbstract() as! AST.Cmd,
                     nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)

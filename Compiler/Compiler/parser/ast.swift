@@ -219,12 +219,12 @@ class AST {
 	class DeclarationFunction: Declaration {
 
 		let ident: String
-		let parameterList: ParameterList
+		let parameterList: Parameter
 		let storageDeclarations: Declaration?
 		let cmd: Cmd
 		let nextDecl: Declaration?
 
-		init(ident: String, parameterList: ParameterList,
+		init(ident: String, parameterList: Parameter,
 			storageDeclarations: Declaration?,
 			cmd: Cmd, nextDecl: Declaration?) {
 				self.ident = ident
@@ -247,12 +247,12 @@ class AST {
 	class DeclarationProcedure: Declaration {
 
 		let ident: String
-		let parameterList: ParameterList?
+		let parameterList: Parameter?
 		let storageDeclarations: Declaration?
 		let cmd: Cmd
 		let nextDecl: Declaration?
 
-		init(ident: String, parameterList: ParameterList?,
+		init(ident: String, parameterList: Parameter?,
 			storageDeclarations: Declaration?,
 			cmd: Cmd, nextDecl: Declaration?) {
 				self.ident = ident
@@ -316,15 +316,15 @@ class AST {
         }
     }
 
-	class ParameterList: AST {
+	class ParameterList: Parameter {
         
-        var description: String {
+        /*var description: String {
             return "\(self.dynamicType)"
         }
         
         func printTree() {
             print("#YOLO")
-        }
+        }*/
 	}
 
 	class ChangeMode: AST {
