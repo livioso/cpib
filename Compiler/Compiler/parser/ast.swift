@@ -196,7 +196,7 @@ class AST {
         }
 	}
 
-	class DeclarationStore: AST {
+	class DeclarationStore: Declaration {
 
 		let changeMode: ChangeMode?
 		let typedIdent: TypeDeclaration
@@ -208,11 +208,7 @@ class AST {
 			self.nextDecl = nextDecl
 		}
         
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
+        override func printTree() {
             print(description, " ")
             changeMode?.printTree()
             typedIdent.printTree()
@@ -220,7 +216,7 @@ class AST {
         }
 	}
 
-	class DeclarationFunction: AST {
+	class DeclarationFunction: Declaration {
 
 		let ident: String
 		let parameterList: ParameterList
@@ -238,11 +234,7 @@ class AST {
 				self.nextDecl = nextDecl
 		}
         
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
+        override func printTree() {
             print(description, " ")
             print(ident)
             parameterList.printTree()
@@ -252,7 +244,7 @@ class AST {
         }
 	}
 
-	class DeclarationProcedure: AST {
+	class DeclarationProcedure: Declaration {
 
 		let ident: String
 		let parameterList: ParameterList?
@@ -270,11 +262,7 @@ class AST {
 				self.nextDecl = nextDecl
 		}
         
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
+        override func printTree() {
             print(description, " ")
             print(ident)
             parameterList?.printTree()
@@ -308,7 +296,7 @@ class AST {
         }
 	}
 
-    class TypeDeclaration: AST {
+    class TypeDeclaration: Declaration {
 
         let ident: Token.Attribute
         let type: Token
@@ -320,11 +308,7 @@ class AST {
             self.optionalRecordDecl = optionalRecordDecl //Not sure...
         }
         
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
+        override func printTree() {
             print(description, " ")
             print(ident)
             print(type)
@@ -483,13 +467,9 @@ class AST {
         }
     }
 
-    class DeclarationRecord: AST {
+    class DeclarationRecord: Declaration {
         
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
+        override func printTree() {
             print("Houston, we have an another problem!")
         }
     }
