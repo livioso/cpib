@@ -248,7 +248,7 @@ class Parser {
 		}
 	}
 	
-	func factor() throws -> CST.Factor {
+	func factor() throws -> Factor {
 		switch(terminal) {
 		case Terminal.LITERAL:
 			print("factor ::= LITERAL")
