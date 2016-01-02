@@ -137,15 +137,14 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			throw ParseError.NotSupported
+            return AST.DeclarationStore(
+                changeMode: try! optionalChangeMode?.toAbstract() as! AST.ChangeMode,
+                typedIdent: try! typedIdent.toAbstract() as! AST.TypeDeclaration)
 		}
-
-		func toAbstract(repeatingDecls: ASTConvertible?) -> AST? {
-			return AST.DeclarationStore(
-				changeMode: try! optionalChangeMode?.toAbstract() as! AST.ChangeMode,
-				typedIdent: try! typedIdent.toAbstract() as! AST.TypeDeclaration,
-				nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
-		}
+        
+        func toAbstract(repeatingDecls: ASTConvertible?) throws -> AST? {
+            throw ParseError.NotSupported
+        }
 	}
 
 	class FunctionDeclaraction: Declaration {
@@ -268,7 +267,7 @@ class CST {
         func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
 			return AST.Parameter(
                 mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
-                declarationStorage: storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                declarationStorage: try! storageDeclaraction.toAbstract() as! AST.DeclarationStore,
                 nextParam: try! repeatingParams?.toAbstract() as? AST.Parameter)
 		}
 	}
@@ -328,7 +327,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
+			return try! storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
 		}
 	}
 
@@ -411,7 +410,9 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return nil; // todo
+			return AST.DeclarationRecord(
+                declarationStorage: try! storageDeclartion.toAbstract() as! AST.DeclarationStore,
+                nextDecl: try! repeatingRecordFields?.toAbstract() as? AST.DeclarationRecord)
 		}
 	}
 
@@ -430,7 +431,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return storageDeclaraction.toAbstract(repeatingRecordFields)
+			return try! storageDeclaraction.toAbstract(repeatingRecordFields)
 		}
 	}
 

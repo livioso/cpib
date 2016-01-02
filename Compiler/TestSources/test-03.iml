@@ -1,4 +1,7 @@
 program main
+global
+    position: record ( x:int64, y:int64 )
+    professor: record ( id:int64, level:int64 )
 
 do
     position.x init := 4;

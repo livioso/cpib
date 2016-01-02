@@ -203,19 +203,16 @@ class AST {
 
 		let changeMode: ChangeMode?
 		let typedIdent: TypeDeclaration
-		let nextDecl: Declaration?
 
-		init(changeMode: ChangeMode?, typedIdent: TypeDeclaration, nextDecl: Declaration?) {
+		init(changeMode: ChangeMode?, typedIdent: TypeDeclaration) {
 			self.changeMode = changeMode
 			self.typedIdent = typedIdent
-			self.nextDecl = nextDecl
 		}
         
         override func printTree(tab: String) {
             print(tab + description)
             changeMode?.printTree(tab + "\t")
             typedIdent.printTree(tab + "\t")
-            nextDecl?.printTree(tab + "\t")
         }
 	}
 
@@ -320,17 +317,6 @@ class AST {
             optionalRecordDecl?.printTree(tab + "\t")
         }
     }
-
-	class ParameterList: Parameter {
-        
-        /*var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree() {
-            print("#YOLO")
-        }*/
-	}
 
 	class ChangeMode: AST {
 
@@ -480,8 +466,18 @@ class AST {
 
     class DeclarationRecord: Declaration {
         
+        let declarationStorage: DeclarationStore
+        let nextDecl: DeclarationRecord?
+        
+        init(declarationStorage: DeclarationStore, nextDecl: DeclarationRecord?) {
+            self.declarationStorage = declarationStorage
+            self.nextDecl = nextDecl
+        }
+        
         override func printTree(tab: String) {
-            print(tab + "Houston, we have an another problem!")
+            print(tab + description, terminator: " ")
+            declarationStorage.printTree(tab + "\t")
+            nextDecl?.printTree(tab + "\t")
         }
     }
 
