@@ -468,20 +468,7 @@ class AST {
     }
 
     class DeclarationRecord: Declaration {
-        /*
-        let declarationStorage: DeclarationStore
-        let nextDecl: DeclarationRecord?
         
-        init(declarationStorage: DeclarationStore, nextDecl: DeclarationRecord?) {
-            self.declarationStorage = declarationStorage
-            self.nextDecl = nextDecl
-        }
-        
-        override func printTree(tab: String) {
-            print(tab + description)
-            declarationStorage.printTree(tab + "\t")
-            nextDecl?.printTree(tab + "\t")
-        }*/
     }
 
     class RecordField: AST {
