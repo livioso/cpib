@@ -740,11 +740,11 @@ class Parser {
 		case Terminal.COMMA:
 			print("repeatingRecordFields ::= recordField repeatingRecordFields")
 			try! consume(Terminal.COMMA)
-			let recField = try! recordField()
-			let repeatingOptExpressions = try! repeatingOptionalExpressions()
+			let storageDecl = try! storageDeclaraction()
+			let repRecordFields = try! repeatingRecordFields()
 			return CST.RepeatingRecordFields(
-				recordField: recField,
-				repeatingOptionalExpressions: repeatingOptExpressions)
+				storageDeclaraction: storageDecl,
+				repeatingRecordFields: repRecordFields)
 		case _:
 			throw ParseError.WrongTerminal
 		}

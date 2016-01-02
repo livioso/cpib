@@ -477,12 +477,12 @@ class CST {
 
 	class RepeatingRecordFields: ASTConvertible {
 
-		let recordField: RecordField
-		let repeatingOptionalExpressions: RepeatingOptionalExpressions?
+		let storageDeclaraction: StorageDeclaraction
+		let repeatingRecordFields: RepeatingRecordFields?
 
-		init(recordField: RecordField, repeatingOptionalExpressions: RepeatingOptionalExpressions?) {
-			self.recordField = recordField
-			self.repeatingOptionalExpressions = repeatingOptionalExpressions
+		init(storageDeclaraction: StorageDeclaraction, repeatingRecordFields: RepeatingRecordFields?) {
+			self.storageDeclaraction = storageDeclaraction
+			self.repeatingRecordFields = repeatingRecordFields
 		}
 
 		var description: String {
@@ -490,7 +490,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return recordField.toAbstract(repeatingOptionalExpressions)
+			return storageDeclaraction.toAbstract(repeatingRecordFields)
 		}
 	}
 
