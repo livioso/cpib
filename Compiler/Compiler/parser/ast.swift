@@ -16,6 +16,13 @@ class AST {
 		var description: String {
 			return "\(self.dynamicType)"
 		}
+        
+        func printTree() {
+            print(description, " ")
+            print(ident)
+            declaration?.printTree()
+            cmd.printTree()
+        }
 	}
 
 	class Ident: AST {
@@ -30,6 +37,10 @@ class AST {
 		var description: String {
 			return "\(self.dynamicType)"
 		}
+        
+        func printTree() {
+            print("houston, we have a problem!")
+        }
 	}
 
 	class Cmd: AST {
@@ -37,11 +48,20 @@ class AST {
 		var description: String {
 			return "\(self.dynamicType)"
 		}
+        
+        func printTree(){
+            print("banane mit Brot")
+        }
 	}
 
 	class CmdSkip: Cmd {
 
 		let nextCmd: Cmd? = nil
+        
+        override func printTree() {
+            print("Skip")
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdCond: Cmd {
@@ -57,6 +77,14 @@ class AST {
 			self.elseCmd = elseCmd
 			self.nextCmd = nextCmd
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            expression.printTree()
+            ifCmd.printTree()
+            elseCmd.printTree()
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdWhile: Cmd {
@@ -70,6 +98,13 @@ class AST {
 			self.whileCmd = whileCmd
 			self.nextCmd = nextCmd
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            expression.printTree()
+            whileCmd.printTree()
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdDebugin: Cmd {
@@ -81,6 +116,12 @@ class AST {
 			self.expression = expression
 			self.nextCmd = nextCmd
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            expression.printTree()
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdDebugout: Cmd {
@@ -92,6 +133,12 @@ class AST {
 			self.expression = expression
 			self.nextCmd = nextCmd
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            expression.printTree()
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdCall: Cmd {
@@ -103,6 +150,12 @@ class AST {
 			self.expressionList = expressionList
 			self.nextCmd = nextCmd
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            expressionList.printTree()
+            nextCmd?.printTree()
+        }
 	}
 
 	class CmdBecomes: Cmd {
@@ -114,6 +167,12 @@ class AST {
 			self.leftHandExpression = leftHandExpression
 			self.rightHandExpression = rightHandExpression
 		}
+        
+        override func printTree() {
+            print(description, " ")
+            leftHandExpression.printTree()
+            rightHandExpression.printTree()
+        }
 	}
 
 	class RoutineCall: AST {
@@ -125,6 +184,16 @@ class AST {
 			self.ident = ident
 			self.expressionList = expressionList
 		}
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(ident)
+            expressionList.printTree()
+        }
 	}
 
 	class DeclarationStore: AST {
@@ -138,6 +207,17 @@ class AST {
 			self.typedIdent = typedIdent
 			self.nextDecl = nextDecl
 		}
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            changeMode?.printTree()
+            typedIdent.printTree()
+            nextDecl?.printTree()
+        }
 	}
 
 	class DeclarationFunction: AST {
@@ -157,6 +237,19 @@ class AST {
 				self.cmd = cmd
 				self.nextDecl = nextDecl
 		}
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(ident)
+            parameterList.printTree()
+            storageDeclarations?.printTree()
+            cmd.printTree()
+            nextDecl?.printTree()
+        }
 	}
 
 	class DeclarationProcedure: AST {
@@ -176,6 +269,19 @@ class AST {
 				self.cmd = cmd
 				self.nextDecl = nextDecl
 		}
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(ident)
+            parameterList?.printTree()
+            storageDeclarations?.printTree()
+            cmd.printTree()
+            nextDecl?.printTree()
+        }
 	}
 
 	class Parameter: AST {
@@ -188,6 +294,17 @@ class AST {
             self.mechMode = mechMode
             self.declarationStorage = declarationStorage
             self.nextParam = nextParam
+        }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            mechMode?.printTree()
+            declarationStorage.printTree()
+            nextParam?.printTree()
         }
 	}
 
@@ -202,10 +319,28 @@ class AST {
             self.type = type
             self.optionalRecordDecl = optionalRecordDecl //Not sure...
         }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(ident)
+            print(type)
+            optionalRecordDecl?.printTree()
+        }
     }
 
 	class ParameterList: AST {
-
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print("#YOLO")
+        }
 	}
 
 	class ChangeMode: AST {
@@ -214,6 +349,15 @@ class AST {
 
         init(changeMode: Token.Attribute) {
             self.changeMode = changeMode
+        }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(changeMode)
         }
 	}
 
@@ -228,6 +372,14 @@ class AST {
             self.expression = expression
             self.term = term
         }
+        
+        override func printTree() {
+            print(description, " ")
+            print(opr)
+            expression.printTree()
+            term.printTree()
+        }
+        
     }
 
 	class TypedIdent: AST {
@@ -235,7 +387,14 @@ class AST {
 	}
 
 	class Expression: AST {
-
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print("Smombie")
+        }
 	}
 
 	class ExpressionList: AST {
@@ -247,6 +406,16 @@ class AST {
             self.expression = expression
             self.optExpression = optExpression
         }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            expression.printTree()
+            optExpression?.printTree()
+        }
 
 	}
 
@@ -256,6 +425,11 @@ class AST {
 
         init(literal: Token.Attribute) {
             self.literal = literal
+        }
+        
+        override func printTree() {
+            print(description, " ")
+            print(literal)
         }
     }
 
@@ -268,6 +442,12 @@ class AST {
             self.identeifier = identifier
             self.initToken = initToken
         }
+        
+        override func printTree() {
+            print(description, " ")
+            print(identeifier)
+            print(initToken)
+        }
     }
 
     class FuncCallExpr: Expression {
@@ -276,6 +456,11 @@ class AST {
 
         init(routineCall: RoutineCall) {
             self.routineCall = routineCall
+        }
+        
+        override func printTree() {
+            print(description, " ")
+            routineCall.printTree()
         }
 
     }
@@ -287,10 +472,26 @@ class AST {
         init(mechmode: Token.Attribute) {
             self.mechmode = mechmode
         }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            print(mechmode)
+        }
     }
 
     class DeclarationRecord: AST {
-
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print("Houston, we have an another problem!")
+        }
     }
 
     class RecordField: AST {
@@ -302,6 +503,16 @@ class AST {
             self.expression = expression
             self.repeatingRecordFields = repeatingRecordFields
         }
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree() {
+            print(description, " ")
+            expression.printTree()
+            repeatingRecordFields?.printTree()
+        }
 
     }
 
@@ -312,5 +523,9 @@ class AST {
 		var description: String {
 			return "I know nothing."
 		}
+        
+        func printTree() {
+            print("Lazy Bitch!")
+        }
 	}
 }
