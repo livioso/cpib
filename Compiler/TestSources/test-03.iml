@@ -1,7 +1,16 @@
 program main
 global
-    position: record ( x:int64, y:int64 )
-    professor: record ( id:int64, level:int64 )
+    position: record ( var x:int64, const y:int64 ) ;
+    professor: record ( id:int64, level:int64 ) ;
+
+    fun manhattenDistance (
+      ref const q: record ( x:int64, y:int64 ) ,
+      copy const x:int64,
+      copy const y:int64
+    ) returns const d:int64
+    do
+      d init := x * q.x + y * q.y
+    endfun
 
 do
     position.x init := 4;
@@ -13,7 +22,7 @@ do
     debugin position.y;
     position.x := 42;
 
-    offsetInY init := 5;
+    offsetInY init := manhattenDistance ( position, 5, 4 ) ;
     position.y := position.y + offsetInY
 
 endprogram

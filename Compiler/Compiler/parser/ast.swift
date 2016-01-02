@@ -203,16 +203,19 @@ class AST {
 
 		let changeMode: ChangeMode?
 		let typedIdent: TypeDeclaration
+        let nextDecl: Declaration?
 
-		init(changeMode: ChangeMode?, typedIdent: TypeDeclaration) {
+		init(changeMode: ChangeMode?, typedIdent: TypeDeclaration, nextDecl: Declaration?) {
 			self.changeMode = changeMode
 			self.typedIdent = typedIdent
+            self.nextDecl = nextDecl
 		}
         
         override func printTree(tab: String) {
             print(tab + description)
             changeMode?.printTree(tab + "\t")
             typedIdent.printTree(tab + "\t")
+            nextDecl?.printTree(tab + "\t")
         }
 	}
 
@@ -220,16 +223,16 @@ class AST {
 
 		let ident: String
 		let parameterList: Parameter
-		let storageDeclarations: Declaration?
+		let returnValue: Declaration
 		let cmd: Cmd
 		let nextDecl: Declaration?
 
 		init(ident: String, parameterList: Parameter,
-			storageDeclarations: Declaration?,
+			returnValue: Declaration,
 			cmd: Cmd, nextDecl: Declaration?) {
 				self.ident = ident
 				self.parameterList = parameterList
-				self.storageDeclarations = storageDeclarations
+				self.returnValue = returnValue
 				self.cmd = cmd
 				self.nextDecl = nextDecl
 		}
@@ -238,7 +241,7 @@ class AST {
             print(tab + description)
             print(tab + ident)
             parameterList.printTree(tab + "\t")
-            storageDeclarations?.printTree(tab + "\t")
+            returnValue.printTree(tab + "\t")
             cmd.printTree(tab + "\t")
             nextDecl?.printTree(tab + "\t")
         }
@@ -300,9 +303,9 @@ class AST {
 
         let ident: Token.Attribute
         let type: Token
-        let optionalRecordDecl: DeclarationRecord?
+        let optionalRecordDecl: DeclarationStore?
 
-        init(ident: Token.Attribute, type: Token, optionalRecordDecl: DeclarationRecord?) {
+        init(ident: Token.Attribute, type: Token, optionalRecordDecl: DeclarationStore?) {
             self.ident = ident
             self.type = type
             self.optionalRecordDecl = optionalRecordDecl //Not sure...
@@ -465,7 +468,7 @@ class AST {
     }
 
     class DeclarationRecord: Declaration {
-        
+        /*
         let declarationStorage: DeclarationStore
         let nextDecl: DeclarationRecord?
         
@@ -475,10 +478,10 @@ class AST {
         }
         
         override func printTree(tab: String) {
-            print(tab + description, terminator: " ")
+            print(tab + description)
             declarationStorage.printTree(tab + "\t")
             nextDecl?.printTree(tab + "\t")
-        }
+        }*/
     }
 
     class RecordField: AST {

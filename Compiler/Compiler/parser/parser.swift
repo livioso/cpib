@@ -555,6 +555,7 @@ class Parser {
 				declaration: decl,
 				repeatingOptionalDelcarations: repeatingOptDeclaration)
 		case _:
+            print(terminal)
 			throw ParseError.WrongTerminal
 		}
 	}
@@ -589,6 +590,7 @@ class Parser {
 				declaration: decl,
 				repeatingOptionalDelcarations: repeatingOptDelcarations)
 		case _:
+            print(terminal)
 			throw ParseError.WrongTerminal
 		}
 	}
@@ -668,6 +670,7 @@ class Parser {
 			try! consume(Terminal.RPAREN)
 			return CST.OptionalRecordDeclaration(recordDecl: recDecl)
 		case _:
+            print(terminal)
 			throw ParseError.WrongTerminal
 		}
 	}
@@ -701,6 +704,7 @@ class Parser {
 				storageDeclaraction: storageDecl,
 				repeatingRecordFields: repRecordFields)
 		case _:
+            print(terminal)
 			throw ParseError.WrongTerminal
 		}
 	}
@@ -747,7 +751,7 @@ class Parser {
 			let ident = try! consume(Terminal.IDENT)
 			let paramList = try! parameterList()
 			try! consume(Terminal.RETURNS)
-			let storageDecl = try! storageDeclaraction()
+			let returnValue = try! storageDeclaraction()
 			let optionalLocalStorageDecl = try! optionalLocalStorageDeclaractions()
 			try! consume(Terminal.DO)
 			let blockCmd = try! blockCommand()
@@ -755,7 +759,7 @@ class Parser {
 			return CST.FunctionDeclaraction(
 				ident: ident,
 				parameterList: paramList,
-				storageDeclaration: storageDecl,
+				returnValue: returnValue,
 				optionalStorageDeclarations: optionalLocalStorageDecl,
 				blockCmd: blockCmd)
 		case _:
