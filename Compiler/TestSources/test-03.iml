@@ -1,0 +1,19 @@
+program main
+
+global
+    proc divide (
+      copy const m:int32,
+      copy const n:int32,
+      ref var q:int32,
+      ref var r:int32 )
+    do
+        q init := 0;
+        r init := m;
+        while r >= n do
+            q := q + 1;
+            r := r - n
+        endwhile
+    endproc
+do
+    call divide ( m, n, q init, r init )
+endprogram
