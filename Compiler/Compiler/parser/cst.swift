@@ -217,7 +217,7 @@ class CST {
                     parameterList: try! parameterList.toAbstract() as? AST.ParameterList,
                     storageDeclarations: try! optionalLocalStorageDeclarations?.toAbstract() as? AST.Declaration,
                     cmd: try! blockCmd.toAbstract() as! AST.Cmd,
-                    nextDecl: try! repeatingDecls?.toAbstract() as! AST.Declaration)
+                    nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
             } else {
                 throw ParseError.WrongTokenAttribute
             }
