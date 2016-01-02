@@ -12,6 +12,11 @@ protocol Declaration: ASTConvertible {
 	func toAbstract(repeatingDecls: ASTConvertible?) throws -> AST?
 }
 
+protocol Factor: ASTConvertible {
+    
+    func toAbstract() throws -> AST?
+}
+
 class CST {
 
 	class Program: ASTConvertible {
@@ -217,7 +222,7 @@ class CST {
                     parameterList: try! parameterList.toAbstract() as? AST.ParameterList,
                     storageDeclarations: try! optionalLocalStorageDeclarations?.toAbstract() as? AST.Declaration,
                     cmd: try! blockCmd.toAbstract() as! AST.Cmd,
-                    nextDecl: try! repeatingDecls?.toAbstract() as! AST.Declaration)
+                    nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
             } else {
                 throw ParseError.WrongTokenAttribute
             }
@@ -734,8 +739,8 @@ class CST {
         func toAbstract(term1: ASTConvertible?) -> AST? {
             return AST.DyadicExpr(
                 opr: boolOpr,
-                expression: try! term1?.toAbstract() as! AST.Expression, //What am i doing here?
-                term: try! self.term1.toAbstract() as! AST.Expression) //What am i doing here?
+                expression: try! term1?.toAbstract() as! AST.Expression,
+                term: try! self.term1.toAbstract() as! AST.Expression)
         }
 	}
 
@@ -916,16 +921,6 @@ class CST {
         }
 	}
 
-	class Factor: ASTConvertible { //why not a protocol?
-
-		var description: String {
-			return "\(self.dynamicType)"
-		}
-
-		func toAbstract() throws -> AST? {
-			throw ParseError.NotSupported
-		}
-	}
 
 	class FactorLiteral: Factor {
 
@@ -935,11 +930,11 @@ class CST {
 			self.literal = literal
 		}
 
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
 			return AST.LiteralExpr(literal: literal)
 		}
 	}
@@ -954,11 +949,11 @@ class CST {
 			self.optionalIdent = optionalIdent
 		}
 
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
 			return try! optionalIdent?.toAbstract(identifier)
 		}
 	}
@@ -971,11 +966,11 @@ class CST {
 			self.expression = expression
 		}
 
-		override var description: String {
+		var description: String {
 			return "\(self.dynamicType)"
 		}
 
-		override func toAbstract() throws -> AST? {
+		func toAbstract() throws -> AST? {
 			return try! expression.toAbstract()
 		}
 	}
@@ -1083,7 +1078,7 @@ class CST {
 		func toAbstract() throws -> AST? {
             return AST.ExpressionList(
                 expression: try! expression.toAbstract() as! AST.Expression,
-                optExpression: try! repeatingOptionalExpressions?.toAbstract() as! AST.Expression)
+                optExpression: try! repeatingOptionalExpressions?.toAbstract() as? AST.Expression)
 		}
 	}
 
