@@ -7,7 +7,7 @@ func main() {
 		
 		
 		// get rid of this when done ;-)
-		let iAmRaphi = false // lol
+		let iAmRaphi = true // lol
 		
 		if iAmRaphi {
 			sourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"

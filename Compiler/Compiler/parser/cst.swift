@@ -881,7 +881,7 @@ class CST {
 
 		func toAbstract() throws -> AST? {
 			if dotOprFactor != nil {
-				return try! dotOprFactor!.toAbstract()
+				return dotOprFactor!.toAbstract(factor)
 			} else {
 				return try! factor.toAbstract()
 			}
