@@ -26,7 +26,7 @@ build_vm: prepare
 		./VirtualMachine/src/vm/*.java
 
 compile_example_1:
-	@echo "Compiling example 1..."
+	@echo "Compilinng example 1..."
 	./bin/compiler/iml_compiler ./TestSources/test-01.iml
 
 compile_example_2:
@@ -39,9 +39,6 @@ run_example_1:
 	@cat ./bin/intermediate/example1.intermediate | java Machine
 
 run_example_vmtest:
-	@touch ./bin/intermediate/vmtest.intermediate
-	@echo "1, AllocBlock 5," > ./bin/intermediate/vmtest.intermediate
-	@echo "2, AllocStack 5,," > ./bin/intermediate/vmtest.intermediate
-	@echo "3, Stop" > ./bin/intermediate/vmtest.intermediate
+	@cp ./TestSources/*.intermediate ./bin/intermediate/
 	@cd ./bin/vm/; \
-		cat ../intermediate/vmtest.intermediate | java Machine
+		cat ../intermediate/test-virtualmachine.intermediate | java Machine
