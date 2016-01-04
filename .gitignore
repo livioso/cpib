@@ -1,4 +1,10 @@
-imlCompiler
+# Other
+xcshareddata
+bin/
+out/
+.idea/
+*.iml
+
 # Xcode
 #
 build/
