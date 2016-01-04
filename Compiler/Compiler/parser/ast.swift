@@ -30,6 +30,7 @@ class AST {
         }
         
         func check() {
+            try! declaration?.checkDeclaration()
             try! declaration?.check()
             try! cmd.check()
         }
@@ -41,17 +42,16 @@ class AST {
 			return "\(self.dynamicType)"
 		}
         
-        func printTree(tab: String) {
-            print(tab + "houston, we have a problem!")
+        func printTree(tab: String){
+            print("Error: should be inherited!")
         }
         
         func check() throws {
-            print("yolo")
-            //throw ContextError.SomethingWentWrong
+            throw ImplementationError.ShouldBeOverritten
         }
         
         func checkDeclaration() throws {
-            throw ContextError.SomethingWentWrong
+            throw ImplementationError.ShouldBeOverritten
         }
 	}
 
@@ -62,11 +62,11 @@ class AST {
 		}
         
         func printTree(tab: String){
-            print(tab + "banane mit Brot")
+            print("Error: should be inherited!")
         }
         
         func check() throws {
-            throw ContextError.SomethingWentWrong
+            throw ImplementationError.ShouldBeOverritten
         }
 	}
 
@@ -80,7 +80,7 @@ class AST {
         }
         
         override func check() throws {
-            print("skip is never a bad idea!")
+            ImplementationError.ToBeImplement
         }
 	}
 
@@ -704,12 +704,11 @@ class AST {
         }
         
         func printTree(tab: String) {
-            print(tab + "Smombie")
+            print("Error: should be inherited")
         }
         
         func check() throws -> (ValueType, ExpressionType) {
-            //throw ContextError.SomethingWentWrong
-            return (ValueType.Unknown, ExpressionType.R_Value)
+            throw ImplementationError.ShouldBeOverritten
         }
 	}
 
@@ -906,6 +905,11 @@ class AST {
         }
 
     }*/
+}
+
+enum ImplementationError: ErrorType {
+    case ShouldBeOverritten
+    case ToBeImplement
 }
 
 enum ContextError: ErrorType {
