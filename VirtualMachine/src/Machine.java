@@ -20,7 +20,9 @@ public class Machine {
             code.fromSystemIn();
 
             // load & run code
+            System.out.println("Executing...");
             new VirtualMachine(code, size);
+            System.out.println("Finished...");
 
         } catch (ExecutionError e) {
             e.printStackTrace();

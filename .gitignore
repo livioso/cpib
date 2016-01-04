@@ -1,6 +1,7 @@
 # Other
 xcshareddata
 bin/
+out/
 .idea/
 *.iml
 

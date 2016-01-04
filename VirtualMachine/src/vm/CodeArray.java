@@ -81,13 +81,18 @@ public class CodeArray implements ICodeArray {
                 readInstruction(line);
             }
             while (line.substring(line.length() - 1, line.length()).equals(","));
+
+            // make sure that we have
+            // set the correct size
+            this.resize();
+
         } catch (Exception e) {
            e.printStackTrace();
         }
     }
 
     private void readInstruction(String line) throws Exception {
-        String[] cmdRaw = line.split(":");
+        String[] cmdRaw = line.split(",");
         Integer loc = Integer.valueOf(cmdRaw[0]);
         String tmp = cmdRaw[1].trim();
         String[] cmd = tmp.split(" ");

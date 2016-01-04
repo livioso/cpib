@@ -1,5 +1,8 @@
 all: prepare build_vm build_compiler
 
+clean:
+	@rm -rf ./bin/
+
 prepare:
 	@mkdir -p ./bin/vm
 	@mkdir -p ./bin/compiler
@@ -22,10 +25,24 @@ build_vm: prepare
 		./VirtualMachine/src/*.java \
 		./VirtualMachine/src/vm/*.java
 
-run_example_1:
-	@echo "Running example 1..."
+compile_example_1:
+	@echo "Compiling example 1..."
 	./bin/compiler/iml_compiler ./TestSources/test-01.iml
 
-run_example_2:
-	@echo "Running example 2..."
+compile_example_2:
+	@echo "Compiling example 2..."
 	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml
+
+run_example_1:
+	@echo "Running example 1..."
+	@cd ./bin/vm
+	@cat ./bin/intermediate/example1.intermediate | java Machine
+
+run_example_vmtest:
+	@echo "$ cat ../intermediate/vmtest.intermediate | java Machine"
+	@touch ./bin/intermediate/vmtest.intermediate
+	@echo "0, AllocBlock 5," > ./bin/intermediate/vmtest.intermediate
+	@echo "1, AllocBlock 5," >> ./bin/intermediate/vmtest.intermediate
+	@echo "2, Stop" >> ./bin/intermediate/vmtest.intermediate
+	@cd ./bin/vm/; \
+		cat ../intermediate/vmtest.intermediate | java Machine
