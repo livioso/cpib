@@ -29,6 +29,7 @@ func main() {
 		print("🔴 Parser.parse(tokenlist) // AST")
 		let ast = try! cst.toAbstract() as! AST.Program
 		ast.printTree()
+        ast.check()
         print("yolo")
 
 	} else {

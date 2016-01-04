@@ -9,8 +9,6 @@ class KeywordProvider {
 			// relevant for <Identifier>
 			"bool": Token(terminal: Terminal.TYPE,
 				attribute: Token.Attribute.Type(Token.TypeIdentifier.BOOLEAN)),
-			"int32": Token(terminal: Terminal.TYPE,
-				attribute: Token.Attribute.Type(Token.TypeIdentifier.INT32)),
 			"int64": Token(terminal: Terminal.TYPE,
 				attribute: Token.Attribute.Type(Token.TypeIdentifier.INT64)),
 			"call": Token(terminal: Terminal.CALL),

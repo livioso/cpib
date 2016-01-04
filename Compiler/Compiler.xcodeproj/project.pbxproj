@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F2102DB1C3A5B11007CCE77 /* context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2102DA1C3A5B11007CCE77 /* context.swift */; };
 		BA1C8A3D1BFCF91300D226A4 /* parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A3C1BFCF91300D226A4 /* parser.swift */; };
 		BA1C8A401BFCF97400D226A4 /* characterExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A3F1BFCF97400D226A4 /* characterExtension.swift */; };
 		BA1C8A461BFCF98F00D226A4 /* keyword.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA1C8A421BFCF98F00D226A4 /* keyword.swift */; };
@@ -31,6 +32,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2F2102DA1C3A5B11007CCE77 /* context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = context.swift; sourceTree = "<group>"; };
 		2F2A5A041BD2D033008EE1B5 /* TestSources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestSources; sourceTree = "<group>"; };
 		BA1C8A3C1BFCF91300D226A4 /* parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = parser.swift; path = parser/parser.swift; sourceTree = "<group>"; };
 		BA1C8A3F1BFCF97400D226A4 /* characterExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = characterExtension.swift; sourceTree = "<group>"; };
@@ -55,6 +57,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F2102D91C3A521B007CCE77 /* context */ = {
+			isa = PBXGroup;
+			children = (
+				2F2102DA1C3A5B11007CCE77 /* context.swift */,
+			);
+			name = context;
+			sourceTree = "<group>";
+		};
 		BA1C8A3B1BFC893900D226A4 /* parser */ = {
 			isa = PBXGroup;
 			children = (
@@ -104,6 +114,7 @@
 		BAF3245F1BBC71190039CB43 /* Compiler */ = {
 			isa = PBXGroup;
 			children = (
+				2F2102D91C3A521B007CCE77 /* context */,
 				BA1C8A411BFCF98F00D226A4 /* scanner */,
 				BA1C8A3E1BFCF97400D226A4 /* extensions */,
 				BA1C8A3B1BFC893900D226A4 /* parser */,
@@ -179,6 +190,7 @@
 				BA1C8A4B1BFD01C500D226A4 /* cst.swift in Sources */,
 				BA1C8A401BFCF97400D226A4 /* characterExtension.swift in Sources */,
 				BA1C8A481BFCF98F00D226A4 /* terminal.swift in Sources */,
+				2F2102DB1C3A5B11007CCE77 /* context.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

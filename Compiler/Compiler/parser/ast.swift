@@ -1,7 +1,135 @@
 import Foundation
 
-class AST {
+enum ContextError: ErrorType {
+    case IdentifierAlreadyDeclared
+    case Not_R_Value
+    case Not_L_Value
+    case NotInScope
+    case IdentifierNotDeclared
+    case NotAllowedType
+    case VariableIsConstant
+    case TypeErrorInOperator
+    case RecordCanNotBeInitializedDirectly
+    case IdentifierAlreadyInitialized
+    case IdentifierNotInitialized
+    case NotWriteable
+    case RecordsNotSupportedAsRightValue
+    case InitialisationInTheRightSide
+    case RoutineDeclarationNotGlobal
+    case RecordIsConstButNotTheirFields
+    case SomethingWentWrong //shouldn't be called!
+    
+}
 
+enum ValueType {
+    case BOOL
+    case INT64
+    case RECORD
+    
+    case Unknown //Has to be replaced at the end!
+}
+
+enum RoutineType {
+    case FUN
+    case PROC
+}
+
+enum Side {
+    case LEFT
+    case RIGHT
+}
+
+enum ExpressionType {
+    case L_Value
+    case R_Value
+}
+
+enum MechModeType {
+    case COPY
+    case REF
+}
+
+enum ChangeModeType {
+    case VAR
+    case CONST
+}
+
+class ContextParameter {
+    let mechMode:MechModeType
+    let changeMode:ChangeModeType
+    let ident:String
+    let type:ValueType
+    
+    init(mechMode:MechModeType, changeMode:ChangeModeType, ident:String, type:ValueType) {
+        self.mechMode = mechMode
+        self.changeMode = changeMode
+        self.ident = ident
+        self.type = type
+    }
+    
+}
+
+class Scope {
+    var storeTable: [String:Store]
+    
+    init(storeTable:[String:Store]) {
+        self.storeTable = storeTable
+    }
+    init() {
+        storeTable = [:]
+    }
+}
+
+class Symbol {
+    var ident:String
+    var type:ValueType
+    init(ident:String, type:ValueType){
+        self.ident = ident
+        self.type = type
+    }
+}
+
+class Store : Symbol{
+    var initialized:Bool
+    var isConst:Bool
+    
+    init(ident:String, type:ValueType, isConst:Bool){
+        self.initialized = false
+        self.isConst = isConst
+        super.init(ident: ident, type: type)
+    }
+}
+
+class Routine {
+    let scope:Scope
+    let ident:String
+    let routineType:RoutineType
+    var parameterList: [ContextParameter] = []
+    
+    init(ident:String, routineType: RoutineType) {
+        self.ident = ident
+        self.routineType = routineType
+        self.scope = Scope()
+    }
+}
+
+class Record {
+    let scope:Scope
+    let ident:String
+    var recordFields: [String:Store] = [:]
+    
+    init(ident:String) {
+        self.ident = ident
+        self.scope = Scope()
+    }
+}
+
+class AST {
+    
+    static var globalStoreTable:[String:Store] = [:]
+    static var globalRoutineTable:[String:Routine] = [:]
+    static var scope:Scope?
+    
 	class Program: AST {
 		let ident: String
 		let declaration: Declaration?
@@ -23,13 +151,11 @@ class AST {
             declaration?.printTree("\t")
             cmd.printTree("\t")
         }
-	}
-
-	class Ident: AST {
-
-		var description: String {
-			return "\(self.dynamicType)"
-		}
+        
+        func check() {
+            try! declaration?.check()
+            try! cmd.check()
+        }
 	}
 
 	class Declaration: AST {
@@ -40,6 +166,15 @@ class AST {
         
         func printTree(tab: String) {
             print(tab + "houston, we have a problem!")
+        }
+        
+        func check() throws {
+            print("yolo")
+            //throw ContextError.SomethingWentWrong
+        }
+        
+        func checkDeclaration() throws {
+            throw ContextError.SomethingWentWrong
         }
 	}
 
@@ -52,6 +187,10 @@ class AST {
         func printTree(tab: String){
             print(tab + "banane mit Brot")
         }
+        
+        func check() throws {
+            throw ContextError.SomethingWentWrong
+        }
 	}
 
 	class CmdSkip: Cmd {
@@ -61,6 +200,10 @@ class AST {
         override func printTree(tab: String) {
             print(tab + "Skip")
             nextCmd?.printTree(tab + "\t")
+        }
+        
+        override func check() throws {
+            print("skip is never a bad idea!")
         }
 	}
 
@@ -85,6 +228,20 @@ class AST {
             elseCmd.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
         }
+        
+        override func check() throws {
+            let check = try! expression.check()
+            
+            let (type, _) = check
+            
+            if(type != .BOOL) {
+                throw ContextError.NotAllowedType
+            }
+        
+            try! ifCmd.check()
+            try! elseCmd.check()
+            try! nextCmd?.check()
+        }
 	}
 
 	class CmdWhile: Cmd {
@@ -105,6 +262,19 @@ class AST {
             whileCmd.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
         }
+        
+        override func check() throws {
+            let check = try! expression.check()
+            
+            let (type, _) = check
+            
+            if(type != .BOOL) {
+                throw ContextError.NotAllowedType
+            }
+            
+            try! whileCmd.check()
+            try! nextCmd?.check()
+        }
 	}
 
 	class CmdDebugin: Cmd {
@@ -121,6 +291,11 @@ class AST {
             print(tab + description)
             expression.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
+        }
+        
+        override func check() throws {
+            try! expression.check()
+            try! nextCmd?.check()
         }
 	}
 
@@ -139,6 +314,11 @@ class AST {
             expression.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
         }
+        
+        override func check() throws {
+            try! expression.check()
+            try! nextCmd?.check()
+        }
 	}
 
 	class CmdCall: Cmd {
@@ -155,6 +335,11 @@ class AST {
             print(tab + description)
             expressionList.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
+        }
+        
+        override func check() throws {
+            try! expressionList.check()
+            try! nextCmd?.check()
         }
 	}
 
@@ -175,6 +360,26 @@ class AST {
             leftHandExpression.printTree(tab + "\t")
             rightHandExpression.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
+        }
+        
+        override func check() throws {
+            let checkL = try! leftHandExpression.check()
+            let checkR = try! rightHandExpression.check()
+            
+            let (typeL, sideL) = checkL
+            let (typeR, sideR) = checkR
+            
+            if(typeL != typeR) {
+                throw ContextError.NotAllowedType
+            }
+            if(sideL != ExpressionType.L_Value) {
+                throw ContextError.Not_L_Value
+            }
+            if(sideR != ExpressionType.R_Value) {
+                throw ContextError.Not_R_Value
+            }
+            
+            try! nextCmd?.check()
         }
 	}
 
@@ -197,6 +402,11 @@ class AST {
             print(tab + ident)
             expressionList.printTree(tab + "\t")
         }
+        
+        func check() throws -> (ValueType, ExpressionType) {
+            try! expressionList.check()
+            return (.Unknown, .R_Value) //TODO get Type from Context
+        }
 	}
 
 	class DeclarationStore: Declaration {
@@ -216,6 +426,99 @@ class AST {
             changeMode?.printTree(tab + "\t")
             typedIdent.printTree(tab + "\t")
             nextDecl?.printTree(tab + "\t")
+        }
+        
+        func check() throws -> Store{
+            let store:Store
+            let type:ValueType
+            
+            switch(typedIdent.type){
+            case .Type(.BOOLEAN):
+                type = .BOOL
+            case .Type(.INT64):
+                type = .INT64
+            case .Type(.RECORD):
+                type = .RECORD
+            case _:
+                throw ContextError.SomethingWentWrong
+            }
+            
+            if(changeMode != nil) {
+                store  = Store(ident: typedIdent.ident, type: type, isConst: try! changeMode!.check())
+            } else {
+                store = Store(ident: typedIdent.ident, type: type, isConst: true)
+            }
+            
+            if(AST.scope != nil){
+                let check = AST.globalStoreTable[store.ident]
+                if(check != nil) {
+                    throw ContextError.IdentifierAlreadyDeclared
+                } else {
+                    AST.globalStoreTable[store.ident] = store
+                }
+            } else {
+                let check = AST.scope!.storeTable[store.ident]
+                if(check != nil) {
+                    throw ContextError.IdentifierAlreadyDeclared
+                } else {
+                    AST.scope!.storeTable[store.ident] = store
+                }
+            }
+        
+            return store
+        }
+        
+        override func checkDeclaration() throws {
+            let type:ValueType
+            let isConst:Bool
+            
+            if(changeMode != nil) {
+                isConst = try! changeMode!.check()
+            } else {
+                isConst = true;
+            }
+            
+            switch(typedIdent.type){
+            case .Type(.BOOLEAN):
+                type = .BOOL
+            case .Type(.INT64):
+                type = .INT64
+            case .Type(.RECORD):
+                type = .RECORD
+            case _:
+                throw ContextError.SomethingWentWrong
+            }
+            
+            if(type == ValueType.RECORD){
+                let record = Record(ident: typedIdent.ident)
+                let oldScope = AST.scope
+                AST.scope = record.scope
+                
+                var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
+                
+                while(decl != nil){
+                    let store:Store = try! decl!.check()
+                    
+                    if(isConst && store.isConst != isConst){
+                        throw ContextError.RecordIsConstButNotTheirFields
+                    }
+                    
+                    let check = AST.scope!.storeTable[store.ident]
+                    if(check != nil) {
+                        throw ContextError.IdentifierAlreadyDeclared
+                    } else {
+                        AST.scope!.storeTable[store.ident] = store
+                        record.recordFields[store.ident] = store
+                    }
+                    
+                    decl = decl!.typedIdent.optionalRecordDecl
+                }
+                
+                AST.scope = oldScope
+            } else {
+                
+            }
+            try! nextDecl?.checkDeclaration()
         }
 	}
 
@@ -245,6 +548,29 @@ class AST {
             cmd.printTree(tab + "\t")
             nextDecl?.printTree(tab + "\t")
         }
+        
+        override func checkDeclaration() throws {
+            if(AST.scope != nil) {
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
+            let function = Routine(ident: ident, routineType: .FUN)
+            AST.scope = function.scope
+            let check = AST.globalRoutineTable[ident]
+            if(check != nil) {
+                throw ContextError.IdentifierAlreadyDeclared
+            } else {
+                AST.globalRoutineTable[ident] = function
+            }
+            try! parameterList.check(function)
+            AST.scope = nil
+            try! nextDecl?.checkDeclaration()
+        }
+        
+        override func check() throws {
+            try! returnValue.check()
+            try! cmd.check()
+            try! nextDecl?.check()
+        }
 	}
 
 	class DeclarationProcedure: Declaration {
@@ -273,6 +599,29 @@ class AST {
             cmd.printTree(tab + "\t")
             nextDecl?.printTree(tab + "\t")
         }
+        
+        override func checkDeclaration() throws {
+            if(AST.scope != nil) {
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
+            let procedure = Routine(ident: ident, routineType: .PROC)
+            AST.scope = procedure.scope
+            let check = AST.globalRoutineTable[ident]
+            if(check != nil) {
+                throw ContextError.IdentifierAlreadyDeclared
+            } else {
+                AST.globalRoutineTable[ident] = procedure
+            }
+            try! parameterList?.check(procedure)
+            AST.scope = nil
+            try! nextDecl?.checkDeclaration()
+        }
+        
+        override func check() throws {
+            try! storageDeclarations?.check()
+            try! cmd.check()
+            try! nextDecl?.check()
+        }
 	}
 
 	class Parameter: AST {
@@ -297,15 +646,28 @@ class AST {
             declarationStorage.printTree(tab + "\t")
             nextParam?.printTree(tab + "\t")
         }
+        
+        func check(routine:Routine) throws {
+            let store:Store = try! declarationStorage.check()
+            var mechModeType:MechModeType = MechModeType.COPY
+            let mechType = try! mechMode?.check()
+            if(mechType != nil){
+                mechModeType = mechType!
+            }
+            let changeMode: ChangeModeType = (store.isConst) ? .CONST : .VAR
+            let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
+            routine.parameterList.append(contextParameter)
+            try! nextParam?.check(routine)
+        }
 	}
 
     class TypeDeclaration: Declaration {
 
-        let ident: Token.Attribute
-        let type: Token
+        let ident: String
+        let type: Token.Attribute
         let optionalRecordDecl: DeclarationStore?
 
-        init(ident: Token.Attribute, type: Token, optionalRecordDecl: DeclarationStore?) {
+        init(ident: String, type: Token.Attribute, optionalRecordDecl: DeclarationStore?) {
             self.ident = ident
             self.type = type
             self.optionalRecordDecl = optionalRecordDecl //Not sure...
@@ -318,6 +680,14 @@ class AST {
             print(tab, terminator: "")
             print(type)
             optionalRecordDecl?.printTree(tab + "\t")
+        }
+        
+        /*override func check() throws { //TODO: typeDeclaration?
+            try! optionalRecordDecl?.check()
+        }*/
+        
+        override func checkDeclaration() throws {
+            try!optionalRecordDecl?.checkDeclaration()
         }
     }
 
@@ -337,6 +707,17 @@ class AST {
             print(tab + description)
             print(tab, terminator: "")
             print(changeMode)
+        }
+        
+        func check() throws -> Bool {
+            switch(changeMode) {
+            case .ChangeMode(.CONST):
+                return true
+            case .ChangeMode(.VAR):
+                return false
+            case _:
+                throw ContextError.SomethingWentWrong
+            }
         }
 	}
 
@@ -360,11 +741,84 @@ class AST {
             term.printTree(tab + "\t")
         }
         
+        override func check() throws -> (ValueType, ExpressionType) {
+            let checkL = try! expression.check()
+            let checkR = try! term.check()
+            
+            let (typeL, _) = checkL
+            let (typeR, _) = checkR
+            let expressionType: ValueType
+            
+            switch(opr) {
+            case .MultOperator(.TIMES): fallthrough
+            case .MultOperator(.DIV_E): fallthrough
+            case .MultOperator(.MOD_E): fallthrough
+            case .AddOperator(.PLUS): fallthrough
+            case .AddOperator(.MINUS):
+                if(typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
+                    expressionType = .INT64
+                } else {
+                    throw ContextError.TypeErrorInOperator
+                }
+            case .RelOperator(.EQ): fallthrough
+            case .RelOperator(.NE):
+                if(typeL == ValueType.BOOL &&  typeR == ValueType.BOOL || typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
+                    expressionType = .BOOL
+                } else {
+                    throw ContextError.TypeErrorInOperator
+                }
+            case .RelOperator(.LT): fallthrough
+            case .RelOperator(.GT): fallthrough
+            case .RelOperator(.LE): fallthrough
+            case .RelOperator(.GE):
+                if(typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
+                    expressionType = .BOOL
+                } else {
+                    throw ContextError.TypeErrorInOperator
+                }
+            case .BoolOperator(.NOT): fallthrough
+            case .BoolOperator(.AND): fallthrough
+            case .BoolOperator(.OR): fallthrough
+            case .BoolOperator(.CAND): fallthrough
+            case .BoolOperator(.COR):
+                if(typeL == ValueType.BOOL &&  typeR == ValueType.BOOL){
+                    expressionType = .BOOL
+                } else {
+                    throw ContextError.TypeErrorInOperator
+                }
+            case .DotOperator:
+                if(typeL == ValueType.RECORD){
+                    let lhs = expression as! StoreExpr
+                    let rhs = term as! StoreExpr
+                    
+                    let leftIdent: String = lhs.identifier
+                    let rightIdent: String = rhs.identifier
+                    
+                    let identifier: String = leftIdent + "." + rightIdent
+                    
+                    if(AST.scope != nil){
+                        guard let type = AST.scope!.storeTable[identifier]?.type else {
+                            throw ContextError.SomethingWentWrong
+                        }
+                        expressionType = type
+                    } else {
+                        guard let type = AST.globalStoreTable[identifier]?.type else {
+                            throw ContextError.SomethingWentWrong
+                        }
+                        expressionType = type
+                    }
+                    
+                } else {
+                    throw ContextError.TypeErrorInOperator
+                }
+            case _:
+                throw ContextError.SomethingWentWrong
+            }
+            
+            return (expressionType, .R_Value)
+        }
+        
     }
-
-	class TypedIdent: AST {
-
-	}
 
 	class Expression: AST {
         
@@ -374,6 +828,10 @@ class AST {
         
         func printTree(tab: String) {
             print(tab + "Smombie")
+        }
+        
+        func check() throws -> (ValueType, ExpressionType) {
+            //throw ContextError.SomethingWentWrong
         }
 	}
 
@@ -396,6 +854,11 @@ class AST {
             expression.printTree(tab + "\t")
             optExpression?.printTree(tab + "\t")
         }
+        
+        func check() throws {
+            try! expression.check() //TODO: LookiLooki
+            try! optExpression?.check()
+        }
 
 	}
 
@@ -412,24 +875,81 @@ class AST {
             print(tab, terminator: "")
             print(literal)
         }
+        
+        override func check() throws -> (ValueType, ExpressionType) {
+            let type: ValueType
+            
+            switch(literal) {
+            case .Boolean(true): fallthrough
+            case .Boolean(false):
+                type = .BOOL
+            case _:
+                type = .INT64
+            }
+            
+            return (type, .R_Value)
+        }
     }
 
     class StoreExpr: Expression {
 
-        let identeifier: Token.Attribute
+        let identifier: String
         let initToken: Token?
 
-        init(identifier: Token.Attribute, initToken: Token?) {
-            self.identeifier = identifier
+        init(identifier: String, initToken: Token?) {
+            self.identifier = identifier
             self.initToken = initToken
         }
         
         override func printTree(tab: String) {
             print(tab + description)
             print(tab, terminator: "")
-            print(identeifier)
+            print(identifier)
             print(tab, terminator: "")
             print(initToken)
+        }
+        
+        func check(side:Side) throws -> (ValueType, ExpressionType) {
+            let expressionType:ValueType
+            let store:Store
+            if(AST.scope != nil){
+                guard let type = AST.scope!.storeTable[identifier] else {
+                    throw ContextError.IdentifierNotDeclared
+                }
+                store = type
+            } else {
+                guard let type = AST.globalStoreTable[identifier] else {
+                    throw ContextError.IdentifierNotDeclared
+                }
+                store = type
+            }
+            
+            expressionType = store.type
+            
+            if(side == Side.RIGHT && expressionType == ValueType.RECORD){
+                throw ContextError.RecordsNotSupportedAsRightValue
+            }
+            
+            if(initToken != nil) {
+                if(side == Side.RIGHT){
+                    throw ContextError.InitialisationInTheRightSide
+                }
+                if(expressionType == ValueType.RECORD) {
+                    throw ContextError.RecordCanNotBeInitializedDirectly
+                }
+                if(store.initialized) {
+                    throw ContextError.IdentifierAlreadyInitialized
+                }
+                store.initialized = true
+            } else if(side == Side.LEFT && !store.initialized && expressionType != ValueType.RECORD){
+                throw ContextError.IdentifierNotInitialized
+            } else if(side == Side.LEFT && store.isConst) {
+                throw ContextError.NotWriteable
+            } else if(side == Side.RIGHT && !store.initialized) {
+                throw ContextError.IdentifierNotInitialized
+            }
+            
+            return (expressionType, .L_Value)
         }
     }
 
@@ -444,6 +964,10 @@ class AST {
         override func printTree(tab: String) {
             print(tab + description)
             routineCall.printTree(tab + "\t")
+        }
+        
+        override func check() throws -> (ValueType, ExpressionType) {
+            return try! routineCall.check()
         }
 
     }
@@ -465,13 +989,20 @@ class AST {
             print(tab, terminator: "")
             print(mechmode)
         }
-    }
-
-    class DeclarationRecord: Declaration {
         
+        func check() throws -> MechModeType {
+            switch(mechmode) {
+            case .MechMode(.COPY):
+                return .COPY
+            case .MechMode(.REF):
+                return .REF
+            case _:
+                throw ContextError.SomethingWentWrong
+            }
+        }
     }
 
-    class RecordField: AST {
+    /*class RecordField: AST {
 
         let expression: Expression
         let repeatingRecordFields: RecordField?
@@ -490,19 +1021,11 @@ class AST {
             expression.printTree(tab + "\t")
             repeatingRecordFields?.printTree(tab + "\t")
         }
-
-    }
-
-
-	// not implemented yet
-	class Nothing: AST {
-
-		var description: String {
-			return "I know nothing."
-		}
         
-        func printTree(tab: String) {
-            print(tab + "Lazy Bitch!")
+        func check() throws { //TODO: Hmm...
+            try! expression.check()
+            try! repeatingRecordFields?.check()
         }
-	}
+
+    }*/
 }

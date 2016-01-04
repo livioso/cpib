@@ -644,7 +644,7 @@ class Parser {
 		switch(terminal) {
 		case Terminal.TYPE:
 			print("typeDecl ::=  TYPE optRecordDecl")
-			let type = try! consume(Terminal.TYPE)
+			let type = try! consume(Terminal.TYPE).attribute!
 			let optRecDecl = try! optRecordDeclaration();
 			return CST.TypeDeclaration(
 				type: type,

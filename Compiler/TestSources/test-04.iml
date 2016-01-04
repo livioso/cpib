@@ -1,0 +1,8 @@
+program Assoc
+global x:int32
+do
+  debugin x init ;
+  debugout x - ( x - x ) ;
+  debugout ( x - x ) - x ;
+  debugout x - x - x
+endprogram
