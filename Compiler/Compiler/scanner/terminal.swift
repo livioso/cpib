@@ -1,7 +1,7 @@
 import Foundation
 
 public enum Terminal {
-	case TYPE // BOOL, INT32, INT64
+	case TYPE // BOOL, INT64, RECORD
 	case RELOPR // LT, GT, etc.
 	case ADDOPR // PLUS, MINUS
 	case MULTOPR // TIMES, DIV_E, MOD_E
@@ -9,7 +9,6 @@ public enum Terminal {
 	case CHANGEMODE // VAR, CONST
 	case FLOWMODE // IN, INOUT, OUT
 	case MECHMODE // REF, COPY
-	case BOOL
 	case LPAREN
 	case RPAREN
 	case COMMA

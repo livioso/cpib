@@ -347,17 +347,17 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return typeDeclartion.toAbstract(identifier)
+			return try! typeDeclartion.toAbstract(identifier)
 		}
 	}
 
 	class TypeDeclaration: ASTConvertible {
 
-		let type : Token
+		let type : Token.Attribute
 		let optionalRecordDecl : OptionalRecordDeclaration?
 
 		init(
-			type:Token,
+			type:Token.Attribute,
 			optionalRecordDecl: OptionalRecordDeclaration?) {
 				self.type = type;
 				self.optionalRecordDecl = optionalRecordDecl
@@ -371,11 +371,15 @@ class CST {
 			throw ParseError.NotSupported
 		}
 
-        func toAbstract(ident: Token.Attribute) -> AST?{
-            return AST.TypeDeclaration(
-                ident: ident,
-                type: type,
-                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as? AST.DeclarationStore) //Not sure...
+        func toAbstract(ident: Token.Attribute) throws -> AST?{
+            if case Token.Attribute.Ident(let identifier) = ident {
+                return AST.TypeDeclaration(
+                    ident: identifier,
+                    type: type,
+                    optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as? AST.DeclarationStore)
+            } else {
+                throw ParseError.WrongTokenAttribute
+            }
         }
 	}
 
@@ -822,7 +826,7 @@ class CST {
 			throw ParseError.NotSupported
 		}
 
-        func toAbstract(term3: ASTConvertible?) -> AST? {
+        func toAbstract(term3: ASTConvertible?) -> AST? { //TODO: Find something -> Test-04.iml
             return AST.DyadicExpr(
                 opr: addOpr,
                 expression: try! term3?.toAbstract() as! AST.Expression,
@@ -914,10 +918,14 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-            if optionalIdent != nil {
-                return try! optionalIdent?.toAbstract(identifier)
+            if case Token.Attribute.Ident(let ident) = identifier {
+                if optionalIdent != nil {
+                    return try! optionalIdent?.toAbstract(ident)
+                } else {
+                    return AST.StoreExpr(identifier: ident, initToken: nil)
+                }
             } else {
-                return AST.StoreExpr(identifier: identifier, initToken: nil)
+                throw ParseError.WrongTokenAttribute
             }
 		}
 	}
@@ -964,18 +972,14 @@ class CST {
 			throw ParseError.NotSupported
 		}
 
-        func toAbstract(identifier: Token.Attribute) throws -> AST? {
+        func toAbstract(identifier: String) throws -> AST? {
             if(expressionList == nil) {
                 return AST.StoreExpr(identifier: identifier, initToken: initToken)
             } else {
-                if case Token.Attribute.Ident(let ident) = identifier {
-                    return AST.FuncCallExpr(
-                        routineCall: AST.RoutineCall(
-                            ident: ident,
-                            expressionList: try! expressionList?.toAbstract() as! AST.ExpressionList))
-                } else {
-                    throw ParseError.WrongTokenAttribute
-                }
+                return AST.FuncCallExpr(
+                    routineCall: AST.RoutineCall(
+                        ident: identifier,
+                        expressionList: try! expressionList?.toAbstract() as! AST.ExpressionList))
             }
         }
 	}
