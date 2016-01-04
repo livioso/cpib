@@ -1,128 +1,5 @@
 import Foundation
 
-enum ContextError: ErrorType {
-    case IdentifierAlreadyDeclared
-    case Not_R_Value
-    case Not_L_Value
-    case NotInScope
-    case IdentifierNotDeclared
-    case NotAllowedType
-    case VariableIsConstant
-    case TypeErrorInOperator
-    case RecordCanNotBeInitializedDirectly
-    case IdentifierAlreadyInitialized
-    case IdentifierNotInitialized
-    case NotWriteable
-    case RecordsNotSupportedAsRightValue
-    case InitialisationInTheRightSide
-    case RoutineDeclarationNotGlobal
-    case RecordIsConstButNotTheirFields
-    case SomethingWentWrong //shouldn't be called!
-    
-}
-
-enum ValueType {
-    case BOOL
-    case INT64
-    case RECORD
-    
-    case Unknown //Has to be replaced at the end!
-}
-
-enum RoutineType {
-    case FUN
-    case PROC
-}
-
-enum Side {
-    case LEFT
-    case RIGHT
-}
-
-enum ExpressionType {
-    case L_Value
-    case R_Value
-}
-
-enum MechModeType {
-    case COPY
-    case REF
-}
-
-enum ChangeModeType {
-    case VAR
-    case CONST
-}
-
-class ContextParameter {
-    let mechMode:MechModeType
-    let changeMode:ChangeModeType
-    let ident:String
-    let type:ValueType
-    
-    init(mechMode:MechModeType, changeMode:ChangeModeType, ident:String, type:ValueType) {
-        self.mechMode = mechMode
-        self.changeMode = changeMode
-        self.ident = ident
-        self.type = type
-    }
-    
-}
-
-class Scope {
-    var storeTable: [String:Store]
-    
-    init(storeTable:[String:Store]) {
-        self.storeTable = storeTable
-    }
-    init() {
-        storeTable = [:]
-    }
-}
-
-class Symbol {
-    var ident:String
-    var type:ValueType
-    init(ident:String, type:ValueType){
-        self.ident = ident
-        self.type = type
-    }
-}
-
-class Store : Symbol{
-    var initialized:Bool
-    var isConst:Bool
-    
-    init(ident:String, type:ValueType, isConst:Bool){
-        self.initialized = false
-        self.isConst = isConst
-        super.init(ident: ident, type: type)
-    }
-}
-
-class Routine {
-    let scope:Scope
-    let ident:String
-    let routineType:RoutineType
-    var parameterList: [ContextParameter] = []
-    
-    init(ident:String, routineType: RoutineType) {
-        self.ident = ident
-        self.routineType = routineType
-        self.scope = Scope()
-    }
-}
-
-class Record {
-    let scope:Scope
-    let ident:String
-    var recordFields: [String:Store] = [:]
-    
-    init(ident:String) {
-        self.ident = ident
-        self.scope = Scope()
-    }
-}
 
 class AST {
     
@@ -832,6 +709,7 @@ class AST {
         
         func check() throws -> (ValueType, ExpressionType) {
             //throw ContextError.SomethingWentWrong
+            return (ValueType.Unknown, ExpressionType.R_Value)
         }
 	}
 
@@ -1029,3 +907,128 @@ class AST {
 
     }*/
 }
+
+enum ContextError: ErrorType {
+    case IdentifierAlreadyDeclared
+    case Not_R_Value
+    case Not_L_Value
+    case NotInScope
+    case IdentifierNotDeclared
+    case NotAllowedType
+    case VariableIsConstant
+    case TypeErrorInOperator
+    case RecordCanNotBeInitializedDirectly
+    case IdentifierAlreadyInitialized
+    case IdentifierNotInitialized
+    case NotWriteable
+    case RecordsNotSupportedAsRightValue
+    case InitialisationInTheRightSide
+    case RoutineDeclarationNotGlobal
+    case RecordIsConstButNotTheirFields
+    case SomethingWentWrong //shouldn't be called!
+    
+}
+
+enum ValueType {
+    case BOOL
+    case INT64
+    case RECORD
+    
+    case Unknown //Has to be replaced at the end!
+}
+
+enum RoutineType {
+    case FUN
+    case PROC
+}
+
+enum Side {
+    case LEFT
+    case RIGHT
+}
+
+enum ExpressionType {
+    case L_Value
+    case R_Value
+}
+
+enum MechModeType {
+    case COPY
+    case REF
+}
+
+enum ChangeModeType {
+    case VAR
+    case CONST
+}
+
+class ContextParameter {
+    let mechMode:MechModeType
+    let changeMode:ChangeModeType
+    let ident:String
+    let type:ValueType
+    
+    init(mechMode:MechModeType, changeMode:ChangeModeType, ident:String, type:ValueType) {
+        self.mechMode = mechMode
+        self.changeMode = changeMode
+        self.ident = ident
+        self.type = type
+    }
+    
+}
+
+class Scope {
+    var storeTable: [String:Store]
+    
+    init(storeTable:[String:Store]) {
+        self.storeTable = storeTable
+    }
+    init() {
+        storeTable = [:]
+    }
+}
+
+class Symbol {
+    var ident:String
+    var type:ValueType
+    init(ident:String, type:ValueType){
+        self.ident = ident
+        self.type = type
+    }
+}
+
+class Store : Symbol{
+    var initialized:Bool
+    var isConst:Bool
+    
+    init(ident:String, type:ValueType, isConst:Bool){
+        self.initialized = false
+        self.isConst = isConst
+        super.init(ident: ident, type: type)
+    }
+}
+
+class Routine {
+    let scope:Scope
+    let ident:String
+    let routineType:RoutineType
+    var parameterList: [ContextParameter] = []
+    
+    init(ident:String, routineType: RoutineType) {
+        self.ident = ident
+        self.routineType = routineType
+        self.scope = Scope()
+    }
+}
+
+class Record {
+    let scope:Scope
+    let ident:String
+    var recordFields: [String:Store] = [:]
+    
+    init(ident:String) {
+        self.ident = ident
+        self.scope = Scope()
+    }
+}
+
