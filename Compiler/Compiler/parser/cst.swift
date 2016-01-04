@@ -136,34 +136,34 @@ class CST {
 			return "\(self.dynamicType)"
 		}
 
-		func toAbstract() throws -> AST? {
-			throw ParseError.NotSupported
+		func toAbstract() throws -> AST? { //TODO: Think about it
+            throw ParseError.NotSupported
 		}
-
-		func toAbstract(repeatingDecls: ASTConvertible?) -> AST? {
-			return AST.DeclarationStore(
-				changeMode: try! optionalChangeMode?.toAbstract() as! AST.ChangeMode,
-				typedIdent: try! typedIdent.toAbstract() as! AST.TypeDeclaration,
-				nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
-		}
+        
+        func toAbstract(repeatingDecls: ASTConvertible?) throws -> AST? { //TODO: Think about it
+            return AST.DeclarationStore(
+                changeMode: try! optionalChangeMode?.toAbstract() as? AST.ChangeMode,
+                typedIdent: try! typedIdent.toAbstract() as! AST.TypeDeclaration,
+                nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
+        }
 	}
 
 	class FunctionDeclaraction: Declaration {
 
 		let ident: Token
 		let parameterList: ParameterList
-		let storageDeclaration: StorageDeclaraction
+		let returnValue: StorageDeclaraction
 		let optionalStorageDeclarations: OptionalLocalStorageDeclaractions?
 		let blockCmd: BlockCommand
 
 		init(ident: Token,
 			parameterList: ParameterList,
-			storageDeclaration: StorageDeclaraction,
+			returnValue: StorageDeclaraction,
 			optionalStorageDeclarations: OptionalLocalStorageDeclaractions?,
 			blockCmd: BlockCommand) {
 				self.ident = ident
 				self.parameterList = parameterList
-				self.storageDeclaration = storageDeclaration
+				self.returnValue = returnValue
 				self.optionalStorageDeclarations = optionalStorageDeclarations
 				self.blockCmd = blockCmd
 		}
@@ -181,9 +181,9 @@ class CST {
 				return AST.DeclarationFunction(
 					ident: identifier,
 					parameterList: try! parameterList.toAbstract() as! AST.Parameter,
-					storageDeclarations: try! storageDeclaration.toAbstract() as! AST.Declaration,
+					returnValue: try! returnValue.toAbstract(nil) as! AST.Declaration,
 					cmd: try! blockCmd.toAbstract() as! AST.Cmd,
-					nextDecl: try! repeatingDecls?.toAbstract() as! AST.Declaration)
+					nextDecl: try! repeatingDecls?.toAbstract() as? AST.Declaration)
 			} else {
 				throw ParseError.WrongTokenAttribute
 			}
@@ -268,7 +268,7 @@ class CST {
         func toAbstract(repeatingParams: ASTConvertible?) throws -> AST? {
 			return AST.Parameter(
                 mechMode: try! optionalMechMode?.toAbstract() as! AST.MechMode,
-                declarationStorage: storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore, //Declaration or DeclarationStorage?
+                declarationStorage: try! storageDeclaraction.toAbstract(nil) as! AST.DeclarationStore,
                 nextParam: try! repeatingParams?.toAbstract() as? AST.Parameter)
 		}
 	}
@@ -328,7 +328,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
+			return try! storageDeclaraction.toAbstract(repeatingOptionalStorageDeclarations)
 		}
 	}
 
@@ -375,7 +375,7 @@ class CST {
             return AST.TypeDeclaration(
                 ident: ident,
                 type: type,
-                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as? AST.DeclarationRecord) //Not sure...
+                optionalRecordDecl: try! optionalRecordDecl?.toAbstract() as? AST.DeclarationStore) //Not sure...
         }
 	}
 
@@ -411,7 +411,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return nil; // todo
+			return try! storageDeclartion.toAbstract(repeatingRecordFields) as! AST.DeclarationStore
 		}
 	}
 
@@ -430,7 +430,7 @@ class CST {
 		}
 
 		func toAbstract() throws -> AST? {
-			return storageDeclaraction.toAbstract(repeatingRecordFields)
+			return try! storageDeclaraction.toAbstract(repeatingRecordFields)
 		}
 	}
 
