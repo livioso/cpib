@@ -16,4 +16,5 @@ public interface ICodeArray {
     int getSize();
     IInstructions.IInstr get(int loc);
     void fromString();
+    void fromSystemIn();
 }
