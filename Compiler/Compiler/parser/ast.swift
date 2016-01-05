@@ -1,12 +1,20 @@
 import Foundation
 
+enum CodeImplementation : ErrorType {
+    case ToBeImplemented
+    case ToBeOverwritten
+}
 
 class AST {
     
+    //Context Stuff
     static var globalStoreTable:[String:Store] = [:]
     static var globalRoutineTable:[String:Routine] = [:]
     static var globalRecordTable:[String:Record] = [:]
     static var scope:Scope?
+    
+    //Code-Generation Stuff
+    static var codeArray:[Int:String] = [:]
     
 	class Program: AST {
 		let ident: String
@@ -32,12 +40,14 @@ class AST {
         
         func check() {
             try! declaration?.checkDeclaration()
-            let test1 = AST.globalStoreTable
-            let test2 = AST.globalRoutineTable
-            let test3 = AST.globalRecordTable
             try! declaration?.check()
             try! cmd.check()
         }
+        
+        func code(let loc:Int) throws {
+            throw CodeImplementation.ToBeImplemented
+        }
+        
 	}
 
 	class Declaration: AST {
@@ -57,6 +67,10 @@ class AST {
         func checkDeclaration() throws {
             throw ImplementationError.ShouldBeOverritten
         }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
+        }
 	}
 
 	class Cmd: AST {
@@ -72,7 +86,30 @@ class AST {
         func check() throws {
             throw ImplementationError.ShouldBeOverritten
         }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
+        }
 	}
+    
+    class Expression: AST {
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree(tab: String) {
+            print("Error: should be inherited")
+        }
+        
+        func check() throws -> (ValueType, ExpressionType) {
+            throw ImplementationError.ShouldBeOverritten
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
+        }
+    }
 
 	class CmdSkip: Cmd {
 
@@ -802,21 +839,6 @@ class AST {
         }
         
     }
-
-	class Expression: AST {
-        
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree(tab: String) {
-            print("Error: should be inherited")
-        }
-        
-        func check() throws -> (ValueType, ExpressionType) {
-            throw ImplementationError.ShouldBeOverritten
-        }
-	}
 
 	class ExpressionList: AST {
 

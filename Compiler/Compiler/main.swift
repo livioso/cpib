@@ -8,7 +8,7 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	let iAmRaphi = false
+	let iAmRaphi = true
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
@@ -50,7 +50,7 @@ func main() {
 			ast.printTree()
 			ast.check()
 			
-		} else {
+		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")
 		}
 
