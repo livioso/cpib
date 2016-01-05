@@ -464,8 +464,14 @@ class AST {
             if(AST.scope != nil) {
                 throw ContextError.RoutineDeclarationNotGlobal
             }
-            let function = Routine(ident: ident, routineType: .FUN)
+            
+            let retVal:DeclarationStore = returnValue as! DeclarationStore
+            let returnStore:Store = try! retVal.check()
+            
+            let function = Routine(ident: ident, routineType: .FUN, returnValue: returnStore)
             AST.scope = function.scope
+            try! retVal.checkDeclaration()
+            
             let check = AST.globalRoutineTable[ident]
             if(check != nil) {
                 throw ContextError.IdentifierAlreadyDeclared
@@ -593,10 +599,6 @@ class AST {
             print(type)
             optionalRecordDecl?.printTree(tab + "\t")
         }
-        
-        /*override func check() throws { //TODO: typeDeclaration?
-            try! optionalRecordDecl?.check()
-        }*/
         
         override func checkDeclaration() throws {
             try!optionalRecordDecl?.checkDeclaration()
@@ -913,33 +915,6 @@ class AST {
             }
         }
     }
-
-    /*class RecordField: AST {
-
-        let expression: Expression
-        let repeatingRecordFields: RecordField?
-
-        init(expression: Expression, repeatingRecordFields: RecordField?) {
-            self.expression = expression
-            self.repeatingRecordFields = repeatingRecordFields
-        }
-        
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree(tab: String) {
-            print(tab + description)
-            expression.printTree(tab + "\t")
-            repeatingRecordFields?.printTree(tab + "\t")
-        }
-        
-        func check() throws { //TODO: Hmm...
-            try! expression.check()
-            try! repeatingRecordFields?.check()
-        }
-
-    }*/
 }
 
 enum ImplementationError: ErrorType {
@@ -1052,12 +1027,14 @@ class Routine {
     let scope:Scope
     let ident:String
     let routineType:RoutineType
+    let returnValue:Store?
     var parameterList: [ContextParameter] = []
     
-    init(ident:String, routineType: RoutineType) {
+    init(ident:String, routineType: RoutineType, returnValue:Store? = nil) {
         self.ident = ident
         self.routineType = routineType
         self.scope = Scope()
+        self.returnValue = returnValue
     }
 }
 
