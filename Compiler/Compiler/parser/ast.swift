@@ -567,8 +567,8 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            let newLoc = parameterList.calcAdress(routine.parameterList.count, loc: 0)
-            try! returnValue.check(newLoc)
+            //let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
+            //try! returnValue.check(newLoc)
             
             try! cmd.check()
             AST.scope = nil
@@ -626,11 +626,11 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            if let newLoc = parameterList?.calcAdress(routine.parameterList.count, loc: 0) {
-                try! storageDeclarations?.check(newLoc)
-            } else {
-                try! storageDeclarations?.check(loc)
-            }
+            //if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
+            //    try! storageDeclarations?.check(newLoc)
+            //} else {
+            //    try! storageDeclarations?.check(loc)
+            //}
             
             try! cmd.check()
             AST.scope = nil
@@ -684,8 +684,8 @@ class AST {
             try! nextParam?.check(routine)
         }
         
-        func calcAdress(paramListSize:Int, loc:Int) -> Int {
-            /*var loc1 = loc
+        /*func calculateAdress(paramListSize:Int, loc:Int) -> Int {
+            var loc1 = loc
             let store = AST.scope!.storeTable[try! declarationStorage.check().ident]!
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
@@ -695,12 +695,11 @@ class AST {
                 //TODO save nonreference?
                 store.adress = 2 + ++loc1
             }
-            guard let newLoc = nextParam?.calcAdress(paramListSize - 1, loc: loc1) else {
+            guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
                 return loc1
             }
-            return newLoc*/
-            return 0
-        }
+            return newLoc
+        }*/
 	}
 
     class TypeDeclaration: Declaration {
