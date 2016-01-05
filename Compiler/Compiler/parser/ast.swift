@@ -329,22 +329,6 @@ class AST {
             } else {
                 store = Store(ident: typedIdent.ident, type: type, isConst: true)
             }
-            
-            if(AST.scope != nil){
-                let check = AST.scope!.storeTable[store.ident]
-                if(check != nil) {
-                    throw ContextError.IdentifierAlreadyDeclared
-                } else {
-                    AST.scope!.storeTable[store.ident] = store
-                }
-            } else {
-                let check = AST.globalStoreTable[store.ident]
-                if(check != nil) {
-                    throw ContextError.IdentifierAlreadyDeclared
-                } else {
-                    AST.globalStoreTable[store.ident] = store
-                }
-            }
         
             return store
         }
@@ -376,8 +360,7 @@ class AST {
             
             if(type == ValueType.RECORD){
                 let record = Record(ident: typedIdent.ident)
-                let oldScope = AST.scope
-                AST.scope = record.scope
+                let recordStore = Store(ident: record.ident, type: type, isConst: isConst)
                 
                 var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
                 
@@ -387,6 +370,7 @@ class AST {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.scope!.recordTable[record.ident] = record
+                        AST.scope!.storeTable[record.ident] = recordStore
                     }
                 } else {
                     let check = AST.globalRecordTable[record.ident]
@@ -394,28 +378,39 @@ class AST {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.globalRecordTable[record.ident] = record
+                        AST.globalStoreTable[record.ident] = recordStore
                     }
                 }
                 
                 while(decl != nil){
                     let store:Store = try! decl!.check()
                     
+                    store.ident = recordStore.ident + "." + store.ident
+                    
                     if(isConst && store.isConst != isConst){
                         throw ContextError.RecordIsConstButNotTheirFields
                     }
                     
-                    let check = AST.scope!.storeTable[store.ident]
-                    if(check != nil) {
-                        AST.scope!.storeTable[store.ident] = store
-                        record.recordFields[store.ident] = store
+                    if(AST.scope != nil){
+                        let check = AST.scope!.storeTable[store.ident]
+                        if(check != nil) {
+                            throw ContextError.IdentifierAlreadyDeclared
+                        } else {
+                            AST.scope!.storeTable[store.ident] = store
+                            record.recordFields[store.ident] = store
+                        }
                     } else {
-                        throw ContextError.IdentifierAlreadyDeclared
+                        let check = AST.globalStoreTable[store.ident]
+                        if(check != nil) {
+                            throw ContextError.IdentifierAlreadyDeclared
+                        } else {
+                            AST.globalStoreTable[store.ident] = store
+                            record.recordFields[store.ident] = store
+                        }
                     }
                     
-                    decl = decl!.typedIdent.optionalRecordDecl
+                    decl = decl!.nextDecl as? AST.DeclarationStore
                 }
-                
-                AST.scope = oldScope
             } else {
                 let store:Store = Store(ident: typedIdent.ident, type: type, isConst: isConst)
                 if(AST.scope != nil){
@@ -564,6 +559,7 @@ class AST {
         }
         
         func check(routine:Routine) throws {
+            try! declarationStorage.checkDeclaration()
             let store:Store = try! declarationStorage.check()
             var mechModeType:MechModeType = MechModeType.COPY
             let mechType = try! mechMode?.check()
@@ -1066,13 +1062,11 @@ class Routine {
 }
 
 class Record {
-    let scope:Scope
     let ident:String
     var recordFields: [String:Store] = [:]
     
     init(ident:String) {
         self.ident = ident
-        self.scope = Scope()
     }
 }
 
