@@ -93,6 +93,7 @@ class Symbol {
 class Store : Symbol{
     var initialized:Bool
     var isConst:Bool
+    var adress:Int?
     
     init(ident:String, type:ValueType, isConst:Bool){
         self.initialized = false
@@ -107,6 +108,7 @@ class Routine {
     let routineType:RoutineType
     let returnValue:Store?
     var parameterList: [ContextParameter] = []
+    var adress:Int?
     
     init(ident:String, routineType: RoutineType, returnValue:Store? = nil) {
         self.ident = ident

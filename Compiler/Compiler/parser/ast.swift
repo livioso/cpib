@@ -40,7 +40,7 @@ class AST {
         
         func check() {
             try! declaration?.checkDeclaration()
-            try! declaration?.check()
+            try! declaration?.check(-1)
             try! cmd.check()
         }
         
@@ -65,7 +65,7 @@ class AST {
             print("Error: should be inherited!")
         }
         
-        func check() throws {
+        func check(let loc:Int) throws -> Int {
             throw ImplementationError.ShouldBeOverritten
         }
         
@@ -393,8 +393,23 @@ class AST {
             return store
         }
         
-        override func check() throws {
-            try! nextDecl?.check()
+        override func check(let loc:Int) throws -> Int {
+            if(loc < 0){
+                return -1
+            } else {
+                let store:Store
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[typedIdent.ident]!
+                } else {
+                    store = AST.globalStoreTable[typedIdent.ident]!
+                }
+                if(store.type == ValueType.RECORD){
+                    return loc
+                } else {
+                    store.adress = 2 + loc + 1
+                    return loc + 1
+                }
+            }
         }
         
         override func checkDeclaration() throws {
@@ -546,13 +561,18 @@ class AST {
             try! nextDecl?.checkDeclaration()
         }
         
-        override func check() throws {
+        override func check(let loc:Int) throws -> Int {
+            if(loc >= 0){
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            try! returnValue.check()
+            let newLoc = parameterList.calcAdress(routine.parameterList.count, loc: 0)
+            try! returnValue.check(newLoc)
+            
             try! cmd.check()
             AST.scope = nil
-            try! nextDecl?.check()
+            return -1
         }
 	}
 
@@ -600,10 +620,21 @@ class AST {
             try! nextDecl?.checkDeclaration()
         }
         
-        override func check() throws {
-            try! storageDeclarations?.check()
+        override func check(let loc:Int) throws -> Int{
+            if(loc >= 0){
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            if let newLoc = parameterList?.calcAdress(routine.parameterList.count, loc: 0) {
+                try! storageDeclarations?.check(newLoc)
+            } else {
+                try! storageDeclarations?.check(loc)
+            }
+            
             try! cmd.check()
-            try! nextDecl?.check()
+            AST.scope = nil
+            return -1
         }
 	}
 
@@ -651,6 +682,24 @@ class AST {
             let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
             routine.parameterList.append(contextParameter)
             try! nextParam?.check(routine)
+        }
+        
+        func calcAdress(paramListSize:Int, loc:Int) -> Int {
+            /*var loc1 = loc
+            let store = AST.scope!.storeTable[try! declarationStorage.check().ident]!
+            let mechTest = try!  mechMode?.check()
+            if(mechTest != nil && mechTest == MechModeType.REF){
+                store.adress = -paramListSize
+                //TODO save reference?
+            } else {
+                //TODO save nonreference?
+                store.adress = 2 + ++loc1
+            }
+            guard let newLoc = nextParam?.calcAdress(paramListSize - 1, loc: loc1) else {
+                return loc1
+            }
+            return newLoc*/
+            return 0
         }
 	}
 
