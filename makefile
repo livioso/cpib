@@ -33,11 +33,6 @@ compile_example_2:
 	@echo "Compiling example 2..."
 	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml
 
-run_example_1:
-	@echo "Running example 1..."
-	@cd ./bin/vm
-	@cat ./bin/intermediate/example1.intermediate | java Machine
-
 run_example_vmtest:
 	@cp ./TestSources/*.intermediate ./bin/intermediate/
 	@cd ./bin/vm/; \
