@@ -5,6 +5,7 @@ class AST {
     
     static var globalStoreTable:[String:Store] = [:]
     static var globalRoutineTable:[String:Routine] = [:]
+    static var globalRecordTable:[String:Record] = [:]
     static var scope:Scope?
     
 	class Program: AST {
@@ -31,6 +32,9 @@ class AST {
         
         func check() {
             try! declaration?.checkDeclaration()
+            let test1 = AST.globalStoreTable
+            let test2 = AST.globalRoutineTable
+            let test3 = AST.globalRecordTable
             try! declaration?.check()
             try! cmd.check()
         }
@@ -327,22 +331,26 @@ class AST {
             }
             
             if(AST.scope != nil){
-                let check = AST.globalStoreTable[store.ident]
-                if(check != nil) {
-                    throw ContextError.IdentifierAlreadyDeclared
-                } else {
-                    AST.globalStoreTable[store.ident] = store
-                }
-            } else {
                 let check = AST.scope!.storeTable[store.ident]
                 if(check != nil) {
                     throw ContextError.IdentifierAlreadyDeclared
                 } else {
                     AST.scope!.storeTable[store.ident] = store
                 }
+            } else {
+                let check = AST.globalStoreTable[store.ident]
+                if(check != nil) {
+                    throw ContextError.IdentifierAlreadyDeclared
+                } else {
+                    AST.globalStoreTable[store.ident] = store
+                }
             }
         
             return store
+        }
+        
+        override func check() throws {
+            throw ImplementationError.ToBeImplement
         }
         
         override func checkDeclaration() throws {
@@ -373,6 +381,22 @@ class AST {
                 
                 var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
                 
+                if(AST.scope != nil){
+                    let check = AST.scope!.recordTable[record.ident]
+                    if(check != nil) {
+                        throw ContextError.IdentifierAlreadyDeclared
+                    } else {
+                        AST.scope!.recordTable[record.ident] = record
+                    }
+                } else {
+                    let check = AST.globalRecordTable[record.ident]
+                    if(check != nil) {
+                        throw ContextError.IdentifierAlreadyDeclared
+                    } else {
+                        AST.globalRecordTable[record.ident] = record
+                    }
+                }
+                
                 while(decl != nil){
                     let store:Store = try! decl!.check()
                     
@@ -382,10 +406,10 @@ class AST {
                     
                     let check = AST.scope!.storeTable[store.ident]
                     if(check != nil) {
-                        throw ContextError.IdentifierAlreadyDeclared
-                    } else {
                         AST.scope!.storeTable[store.ident] = store
                         record.recordFields[store.ident] = store
+                    } else {
+                        throw ContextError.IdentifierAlreadyDeclared
                     }
                     
                     decl = decl!.typedIdent.optionalRecordDecl
@@ -393,7 +417,22 @@ class AST {
                 
                 AST.scope = oldScope
             } else {
-                
+                let store:Store = Store(ident: typedIdent.ident, type: type, isConst: isConst)
+                if(AST.scope != nil){
+                    let check = AST.scope!.storeTable[store.ident]
+                    if(check != nil) {
+                        throw ContextError.IdentifierAlreadyDeclared
+                    } else {
+                        AST.scope!.storeTable[store.ident] = store
+                    }
+                } else {
+                    let check = AST.globalStoreTable[store.ident]
+                    if(check != nil) {
+                        throw ContextError.IdentifierAlreadyDeclared
+                    } else {
+                        AST.globalStoreTable[store.ident] = store
+                    }
+                }
             }
             try! nextDecl?.checkDeclaration()
         }
@@ -664,7 +703,7 @@ class AST {
                     throw ContextError.TypeErrorInOperator
                 }
             case .DotOperator:
-                if(typeL == ValueType.RECORD){
+                if(typeL == ValueType.RECORD){ //TODO we neet do think about it again
                     let lhs = expression as! StoreExpr
                     let rhs = term as! StoreExpr
                     
@@ -983,6 +1022,7 @@ class ContextParameter {
 
 class Scope {
     var storeTable: [String:Store]
+    var recordTable:[String:Record] = [:]
     
     init(storeTable:[String:Store]) {
         self.storeTable = storeTable
