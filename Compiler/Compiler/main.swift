@@ -49,6 +49,8 @@ func main() {
 			let ast = try! cst.toAbstract() as! AST.Program
 			ast.printTree()
 			ast.check()
+            let code = ast.code(0) //TODO catch code
+            print(code)
 			
 		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")
