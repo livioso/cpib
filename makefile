@@ -27,11 +27,11 @@ build_vm: prepare
 
 compile_example_1:
 	@echo "Compilinng example 1..."
-	./bin/compiler/iml_compiler ./TestSources/test-01.iml
+	./bin/compiler/iml_compiler ./TestSources/test-01.iml ./bin/intermediate/test-01.intermediate
 
 compile_example_2:
 	@echo "Compiling example 2..."
-	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml
+	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml ./bin/intermediate/test-02.intermediate
 
 run_example_vmtest:
 	@cp ./TestSources/*.intermediate ./bin/intermediate/
