@@ -131,6 +131,13 @@ class AST {
         override func check() throws {
             ImplementationError.ToBeImplement
         }
+        
+        override func code(loc: Int) throws -> Int {
+            guard let newLoc = try! nextCmd?.code(loc) else {
+                return loc
+            }
+            return newLoc
+        }
 	}
 
 	class CmdCond: Cmd {
@@ -168,6 +175,18 @@ class AST {
             try! elseCmd.check()
             try! nextCmd?.check()
         }
+        
+        override func code(loc: Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            let loc2 = try! ifCmd.code(loc1 + 1)
+            AST.codeArray[loc1] = buildCommand(.CondJump, param: "\(loc2 + 1)")
+            let loc3 = try! elseCmd.code(loc2)
+            AST.codeArray[loc2] = buildCommand(.UncondJump, param: "\(loc3)")
+            guard let newLoc = try! nextCmd?.code(loc3) else {
+                return loc3
+            }
+            return newLoc
+        }
 	}
 
 	class CmdWhile: Cmd {
@@ -201,6 +220,16 @@ class AST {
             try! whileCmd.check()
             try! nextCmd?.check()
         }
+        override func code(loc: Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            let loc2 = try! whileCmd.code(loc1 + 1)
+            AST.codeArray[loc1] = buildCommand(.CondJump, param: "\(loc2 + 1)")
+            AST.codeArray[loc2] = buildCommand(.UncondJump, param: "\(loc)")
+            guard let newLoc = try! nextCmd?.code(loc2 + 1) else {
+                return loc2 + 1
+            }
+            return newLoc
+        }
 	}
 
 	class CmdDebugin: Cmd {
@@ -220,7 +249,13 @@ class AST {
         }
         
         override func check() throws {
-            try! expression.check()
+            if let expr = expression as? StoreExpr {
+                try! expr.check(.LEFT)
+            } else if let expr = expression as? DyadicExpr {
+                try! expr.check(.LEFT)
+            } else {
+                try! expression.check()
+            }
             try! nextCmd?.check()
         }
 	}
@@ -570,8 +605,8 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            //let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
-            //try! returnValue.check(newLoc)
+            let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
+            try! returnValue.check(newLoc)
             
             try! cmd.check()
             AST.scope = nil
@@ -629,11 +664,11 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            //if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
-            //    try! storageDeclarations?.check(newLoc)
-            //} else {
-            //    try! storageDeclarations?.check(loc)
-            //}
+            if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
+                try! storageDeclarations?.check(newLoc)
+            } else {
+                try! storageDeclarations?.check(loc)
+            }
             
             try! cmd.check()
             AST.scope = nil
