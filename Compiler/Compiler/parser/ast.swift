@@ -14,6 +14,7 @@ class AST {
     static var scope:Scope?
     
     //Code-Generation Stuff
+    static var allocBlock:Int = 0
     static var codeArray:[Int:String] = [:]
     
 	class Program: AST {
@@ -48,7 +49,8 @@ class AST {
         }
         
         func code(let loc:Int) -> [Int:String] {
-            let newLoc = try! cmd.code(loc)
+            AST.codeArray[loc] = buildCommand(.AllocBlock, param: "\(AST.allocBlock)")
+            let newLoc = try! cmd.code(loc + 1)
             AST.codeArray[newLoc] = buildCommand(.Stop)
             try! declaration?.code(newLoc + 1)
             //TODO: Routines
@@ -694,6 +696,7 @@ class AST {
                             record.recordFields[store.ident] = store
                         }
                     }
+                    store.adress = AST.allocBlock++
                     
                     decl = decl!.nextDecl as? AST.DeclarationStore
                 }
@@ -713,6 +716,7 @@ class AST {
                     } else {
                         AST.globalStoreTable[store.ident] = store
                     }
+                    store.adress = AST.allocBlock++
                 }
             }
             try! nextDecl?.checkDeclaration()
@@ -1223,6 +1227,24 @@ class AST {
             
             return (type, .R_Value)
         }
+        
+        override func code(loc: Int) throws -> Int {
+            let lit:Int
+            switch(literal) {
+            case .Integer(let v):
+                lit = v
+            case .Boolean(let v):
+                if (v){
+                    lit = 1
+                } else {
+                    lit = 0
+                }
+            case _:
+                throw CodeGenerationError.RuntimeException
+            }
+            AST.codeArray[loc] = buildCommand(.LoadImInt, param: "\(lit)")
+            return loc + 1
+         }
     }
 
     class StoreExpr: Expression {
@@ -1328,6 +1350,11 @@ class AST {
         
         override func check() throws -> (ValueType, ExpressionType) {
             return try! routineCall.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            print("yolo")
+            return loc
         }
 
     }

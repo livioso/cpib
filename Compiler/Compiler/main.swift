@@ -50,7 +50,10 @@ func main() {
 			ast.printTree()
 			ast.check()
             let code = ast.code(0) //TODO catch code
-            print(code)
+            for(var i = 0; i < code.count; i++){
+                print(code[i]!)
+            }
+            print("finish")
 			
 		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")
