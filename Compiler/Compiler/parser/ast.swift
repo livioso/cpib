@@ -788,6 +788,26 @@ class AST {
             AST.scope = nil
             return -1
         }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1 = loc
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            routine.adress = loc1
+            let params = routine.parameterList
+            for param in params {
+                throw ImplementationError.ToBeImplement
+                if(param.mechMode == MechModeType.REF){
+                    //TODO: no alloc needed
+                } else {
+                    let store = AST.scope!.storeTable[param.ident]
+                }
+            }
+            //TODO: What to do here?
+            
+            AST.scope = nil
+            return loc1
+        }
 	}
 
 	class DeclarationProcedure: Declaration {
@@ -852,12 +872,7 @@ class AST {
         }
         
         override func code(loc: Int) throws -> Int {
-            var loc1 = loc
-            let routine = AST.globalRoutineTable[ident]!
-            AST.scope = routine.scope
-            routine.adress = loc1
-            //TODO: What to do here?
-            return loc1
+            throw ImplementationError.ToBeImplement
         }
 	}
 
@@ -1117,6 +1132,40 @@ class AST {
             }
             
             return (expressionType, valueSide)
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1 = try! expression.code(loc)
+            loc1 = try! term.code(loc1)
+            switch(opr){
+            case .DotOperator():
+                loc1++
+            case .AddOperator(.PLUS):
+                AST.codeArray[loc1++] = buildCommand(.AddInt)
+            case .AddOperator(.MINUS):
+                AST.codeArray[loc1++] = buildCommand(.SubInt)
+            case .MultOperator(.TIMES):
+                AST.codeArray[loc1++] = buildCommand(.MultInt)
+            case .MultOperator(.DIV_E):
+                AST.codeArray[loc1++] = buildCommand(.DivTruncInt)
+            case .MultOperator(.MOD_E):
+                AST.codeArray[loc1++] = buildCommand(.ModTruncInt)
+            case .RelOperator(.EQ):
+                AST.codeArray[loc1++] = buildCommand(.EqInt)
+            case .RelOperator(.NE):
+                AST.codeArray[loc1++] = buildCommand(.NeInt)
+            case .RelOperator(.GT):
+                AST.codeArray[loc1++] = buildCommand(.GtInt)
+            case .RelOperator(.LT):
+                AST.codeArray[loc1++] = buildCommand(.LtInt)
+            case .RelOperator(.GE):
+                AST.codeArray[loc1++] = buildCommand(.GeInt)
+            case .RelOperator(.LE):
+                AST.codeArray[loc1++] = buildCommand(.LeInt)
+            case _:
+                throw CodeGenerationError.RuntimeException
+            }
+            return loc1
         }
         
     }
