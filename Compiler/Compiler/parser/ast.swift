@@ -717,6 +717,12 @@ class AST {
             }
             try! nextDecl?.checkDeclaration()
         }
+        
+        override func code(loc: Int) throws -> Int {
+            return loc
+        }
+        
+        
 	}
 
 	class DeclarationFunction: Declaration {
@@ -843,6 +849,15 @@ class AST {
             try! cmd.check()
             AST.scope = nil
             return -1
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1 = loc
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            routine.adress = loc1
+            //TODO: What to do here?
+            return loc1
         }
 	}
 
