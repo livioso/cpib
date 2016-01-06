@@ -131,6 +131,13 @@ class AST {
         override func check() throws {
             ImplementationError.ToBeImplement
         }
+        
+        override func code(loc: Int) throws -> Int {
+            guard let newLoc = try! nextCmd?.code(loc) else {
+                return loc
+            }
+            return newLoc
+        }
 	}
 
 	class CmdCond: Cmd {
@@ -168,6 +175,18 @@ class AST {
             try! elseCmd.check()
             try! nextCmd?.check()
         }
+        
+        override func code(loc: Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            let loc2 = try! ifCmd.code(loc1 + 1)
+            AST.codeArray[loc1] = buildCommand(.CondJump, param: "\(loc2 + 1)")
+            let loc3 = try! elseCmd.code(loc2)
+            AST.codeArray[loc2] = buildCommand(.UncondJump, param: "\(loc3)")
+            guard let newLoc = try! nextCmd?.code(loc3) else {
+                return loc3
+            }
+            return newLoc
+        }
 	}
 
 	class CmdWhile: Cmd {
@@ -200,6 +219,16 @@ class AST {
             
             try! whileCmd.check()
             try! nextCmd?.check()
+        }
+        override func code(loc: Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            let loc2 = try! whileCmd.code(loc1 + 1)
+            AST.codeArray[loc1] = buildCommand(.CondJump, param: "\(loc2 + 1)")
+            AST.codeArray[loc2] = buildCommand(.UncondJump, param: "\(loc)")
+            guard let newLoc = try! nextCmd?.code(loc2 + 1) else {
+                return loc2 + 1
+            }
+            return newLoc
         }
 	}
 
