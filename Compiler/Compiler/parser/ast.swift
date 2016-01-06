@@ -236,6 +236,7 @@ class AST {
 
 		let expression: Expression
 		let nextCmd: Cmd?
+        var type:ValueType?
 
 		init(expression: Expression, nextCmd: Cmd?) {
 			self.expression = expression
@@ -251,12 +252,62 @@ class AST {
         override func check() throws {
             if let expr = expression as? StoreExpr {
                 try! expr.check(.LEFT)
+                if(AST.scope != nil) {
+                    type = AST.scope!.storeTable[expr.identifier]!.type
+                } else {
+                    type = AST.globalStoreTable[expr.identifier]!.type
+                }
             } else if let expr = expression as? DyadicExpr {
                 try! expr.check(.LEFT)
+                switch(expr.opr){
+                case .DotOperator():
+                    let lhs = expr.expression as! StoreExpr
+                    let rhs = expr.term as! StoreExpr
+                    let ident = lhs.identifier + "." + rhs.identifier
+                    if(AST.scope != nil) {
+                        type = AST.scope!.storeTable[ident]!.type
+                    } else {
+                        type = AST.globalStoreTable[ident]!.type
+                    }
+                case _:
+                    throw ContextError.ThisExpressionNotAllowedWithDebugin
+                }
             } else {
                 try! expression.check()
             }
             try! nextCmd?.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1:Int
+            let ident:String
+            if let expr = expression as? StoreExpr {
+                ident = expr.identifier
+                loc1 = expr.codeReference(loc)
+            } else {
+                //TODO: why/what am i doing (this)?
+                let dyadicExpr = expression as! DyadicExpr
+                let expr1 = dyadicExpr.expression as! StoreExpr
+                let expr2 = dyadicExpr.term as! StoreExpr
+                let store:Store
+                ident = expr1.identifier + "." + expr2.identifier
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[ident]!
+                } else {
+                    store = AST.globalStoreTable[ident]!
+                }
+                loc1 = store.codeReference(loc)
+            }
+            switch(type!) {
+            case .BOOL:
+                AST.codeArray[loc1++] = buildCommand(.InputBool, param: ident)
+            case _:
+                AST.codeArray[loc1++] = buildCommand(.InputInt, param: ident)
+            }
+            guard let newLoc = try! nextCmd?.code(loc) else {
+                return loc
+            }
+            return newLoc
         }
 	}
 
@@ -445,6 +496,8 @@ class AST {
                     return loc
                 } else {
                     store.adress = 2 + loc + 1
+                    store.reference = false
+                    store.relative = true
                     return loc + 1
                 }
             }
@@ -732,10 +785,11 @@ class AST {
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
-                //TODO save reference?
+                store.reference = true
+                store.relative = true
             } else {
-                //TODO save nonreference?
                 store.adress = 2 + ++loc1
+                store.relative = true
             }
             guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
                 return loc1
@@ -1049,6 +1103,32 @@ class AST {
             }
             
             return (expressionType, .L_Value)
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            let store:Store
+            if(AST.scope != nil) {
+                store = AST.scope!.storeTable[identifier]!
+            } else {
+                store = AST.globalStoreTable[identifier]!
+            }
+            if(store.type == ValueType.RECORD){
+                return loc
+            }
+            return store.code(loc)
+        }
+        
+        func codeReference(let loc:Int) -> Int {
+            let store:Store
+            if(AST.scope != nil) {
+                store = AST.scope!.storeTable[identifier]!
+            } else {
+                store = AST.globalStoreTable[identifier]!
+            }
+            if(store.type == ValueType.RECORD){
+                return loc
+            }
+            return store.codeReference(loc)
         }
     }
 
