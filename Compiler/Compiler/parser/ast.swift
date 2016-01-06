@@ -615,6 +615,7 @@ class AST {
                     return loc
                 } else {
                     store.adress = 2 + loc + 1
+                    print("setAdress: \(store.ident), adress: \(store.adress)")
                     store.reference = false
                     store.relative = true
                     return loc + 1
@@ -697,6 +698,7 @@ class AST {
                         }
                     }
                     store.adress = AST.allocBlock++
+                    print("alloc: \(store.ident), adress: \(store.adress)")
                     
                     decl = decl!.nextDecl as? AST.DeclarationStore
                 }
@@ -717,6 +719,7 @@ class AST {
                         AST.globalStoreTable[store.ident] = store
                     }
                     store.adress = AST.allocBlock++
+                    print("alloc: \(store.ident), adress: \(store.adress)")
                 }
             }
             try! nextDecl?.checkDeclaration()
@@ -936,10 +939,12 @@ class AST {
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
+                print("setAdress: \(store.ident), adress: \(store.adress)")
                 store.reference = true
                 store.relative = true
             } else {
                 store.adress = 2 + ++loc1
+                print("setAdress: \(store.ident), adress: \(store.adress)")
                 store.relative = true
             }
             guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
