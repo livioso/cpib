@@ -220,7 +220,13 @@ class AST {
         }
         
         override func check() throws {
-            try! expression.check()
+            if let expr = expression as? StoreExpr {
+                try! expr.check(.LEFT)
+            } else if let expr = expression as? DyadicExpr {
+                try! expr.check(.LEFT)
+            } else {
+                try! expression.check()
+            }
             try! nextCmd?.check()
         }
 	}
