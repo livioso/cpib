@@ -576,8 +576,8 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            //let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
-            //try! returnValue.check(newLoc)
+            let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
+            try! returnValue.check(newLoc)
             
             try! cmd.check()
             AST.scope = nil
@@ -635,11 +635,11 @@ class AST {
             }
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
-            //if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
-            //    try! storageDeclarations?.check(newLoc)
-            //} else {
-            //    try! storageDeclarations?.check(loc)
-            //}
+            if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
+                try! storageDeclarations?.check(newLoc)
+            } else {
+                try! storageDeclarations?.check(loc)
+            }
             
             try! cmd.check()
             AST.scope = nil
