@@ -8,7 +8,7 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	let iAmRaphi = false
+	let iAmRaphi = true
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
@@ -49,8 +49,10 @@ func main() {
 			let ast = try! cst.toAbstract() as! AST.Program
 			ast.printTree()
 			ast.check()
+            let code = ast.code(0) //TODO catch code
+            print(code)
 			
-		} else {
+		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")
 		}
 

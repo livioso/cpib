@@ -1,12 +1,20 @@
 import Foundation
 
+enum CodeImplementation : ErrorType {
+    case ToBeImplemented
+    case ToBeOverwritten
+}
 
 class AST {
     
+    //Context Stuff
     static var globalStoreTable:[String:Store] = [:]
     static var globalRoutineTable:[String:Routine] = [:]
     static var globalRecordTable:[String:Record] = [:]
     static var scope:Scope?
+    
+    //Code-Generation Stuff
+    static var codeArray:[Int:String] = [:]
     
 	class Program: AST {
 		let ident: String
@@ -32,12 +40,19 @@ class AST {
         
         func check() {
             try! declaration?.checkDeclaration()
-            let test1 = AST.globalStoreTable
-            let test2 = AST.globalRoutineTable
-            let test3 = AST.globalRecordTable
-            try! declaration?.check()
+            try! declaration?.check(-1)
             try! cmd.check()
         }
+        
+        func code(let loc:Int) -> [Int:String] {
+            let newLoc = try! cmd.code(loc)
+            AST.codeArray[newLoc] = buildCommand(.Stop)
+            try! declaration?.code(newLoc + 1)
+            //TODO: Routines
+            
+            return AST.codeArray
+        }
+        
 	}
 
 	class Declaration: AST {
@@ -50,12 +65,16 @@ class AST {
             print("Error: should be inherited!")
         }
         
-        func check() throws {
+        func check(let loc:Int) throws -> Int {
             throw ImplementationError.ShouldBeOverritten
         }
         
         func checkDeclaration() throws {
             throw ImplementationError.ShouldBeOverritten
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
         }
 	}
 
@@ -72,7 +91,30 @@ class AST {
         func check() throws {
             throw ImplementationError.ShouldBeOverritten
         }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
+        }
 	}
+    
+    class Expression: AST {
+        
+        var description: String {
+            return "\(self.dynamicType)"
+        }
+        
+        func printTree(tab: String) {
+            print("Error: should be inherited")
+        }
+        
+        func check() throws -> (ValueType, ExpressionType) {
+            throw ImplementationError.ShouldBeOverritten
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            throw CodeImplementation.ToBeOverwritten
+        }
+    }
 
 	class CmdSkip: Cmd {
 
@@ -244,8 +286,24 @@ class AST {
         }
         
         override func check() throws {
-            let checkL = try! leftHandExpression.check()
-            let checkR = try! rightHandExpression.check()
+            let checkL:(ValueType, ExpressionType)
+            let checkR:(ValueType, ExpressionType)
+            
+            if let l = leftHandExpression as? StoreExpr {
+                checkL = try! l.check(.LEFT)
+            } else if let l = leftHandExpression as? DyadicExpr {
+                checkL = try! l.check(.LEFT)
+            } else {
+                checkL = try! leftHandExpression.check()
+            }
+            
+            if let r = rightHandExpression as? StoreExpr {
+                checkR = try! r.check(.RIGHT)
+            } else if let r = rightHandExpression as? DyadicExpr {
+                checkR = try! r.check(.RIGHT)
+            } else {
+                checkR = try! rightHandExpression.check()
+            }
             
             let (typeL, sideL) = checkL
             let (typeR, sideR) = checkR
@@ -285,8 +343,10 @@ class AST {
         }
         
         func check() throws -> (ValueType, ExpressionType) {
+            let routine:Routine = AST.globalRoutineTable[ident]!
+            let type = routine.returnValue!.type //not working with Procedures!
             try! expressionList.check()
-            return (.Unknown, .R_Value) //TODO get Type from Context
+            return (type, .R_Value)
         }
 	}
 
@@ -333,8 +393,23 @@ class AST {
             return store
         }
         
-        override func check() throws {
-            throw ImplementationError.ToBeImplement
+        override func check(let loc:Int) throws -> Int {
+            if(loc < 0){
+                return -1
+            } else {
+                let store:Store
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[typedIdent.ident]!
+                } else {
+                    store = AST.globalStoreTable[typedIdent.ident]!
+                }
+                if(store.type == ValueType.RECORD){
+                    return loc
+                } else {
+                    store.adress = 2 + loc + 1
+                    return loc + 1
+                }
+            }
         }
         
         override func checkDeclaration() throws {
@@ -361,6 +436,7 @@ class AST {
             if(type == ValueType.RECORD){
                 let record = Record(ident: typedIdent.ident)
                 let recordStore = Store(ident: record.ident, type: type, isConst: isConst)
+                recordStore.initialized = true
                 
                 var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
                 
@@ -384,6 +460,8 @@ class AST {
                 
                 while(decl != nil){
                     let store:Store = try! decl!.check()
+                    
+                    record.scope.storeTable[store.ident] = Store(ident: store.ident, type: store.type, isConst: store.isConst)
                     
                     store.ident = recordStore.ident + "." + store.ident
                     
@@ -483,10 +561,18 @@ class AST {
             try! nextDecl?.checkDeclaration()
         }
         
-        override func check() throws {
-            try! returnValue.check()
+        override func check(let loc:Int) throws -> Int {
+            if(loc >= 0){
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            //let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
+            //try! returnValue.check(newLoc)
+            
             try! cmd.check()
-            try! nextDecl?.check()
+            AST.scope = nil
+            return -1
         }
 	}
 
@@ -534,10 +620,21 @@ class AST {
             try! nextDecl?.checkDeclaration()
         }
         
-        override func check() throws {
-            try! storageDeclarations?.check()
+        override func check(let loc:Int) throws -> Int{
+            if(loc >= 0){
+                throw ContextError.RoutineDeclarationNotGlobal
+            }
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            //if let newLoc = parameterList?.calculateAdress(routine.parameterList.count, loc: 0) {
+            //    try! storageDeclarations?.check(newLoc)
+            //} else {
+            //    try! storageDeclarations?.check(loc)
+            //}
+            
             try! cmd.check()
-            try! nextDecl?.check()
+            AST.scope = nil
+            return -1
         }
 	}
 
@@ -567,16 +664,42 @@ class AST {
         func check(routine:Routine) throws {
             try! declarationStorage.checkDeclaration()
             let store:Store = try! declarationStorage.check()
+            if(store.type == ValueType.RECORD) {
+                let record = AST.scope!.recordTable[store.ident]!
+                let recordFields = record.recordFields
+                for (idents, _) in recordFields {
+                    record.setInitializedDot(idents)
+                }
+                
+            }
             var mechModeType:MechModeType = MechModeType.COPY
             let mechType = try! mechMode?.check()
             if(mechType != nil){
                 mechModeType = mechType!
             }
             let changeMode: ChangeModeType = (store.isConst) ? .CONST : .VAR
+            AST.scope!.storeTable[store.ident]!.initialized = true
             let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
             routine.parameterList.append(contextParameter)
             try! nextParam?.check(routine)
         }
+        
+        /*func calculateAdress(paramListSize:Int, loc:Int) -> Int {
+            var loc1 = loc
+            let store = AST.scope!.storeTable[try! declarationStorage.check().ident]!
+            let mechTest = try!  mechMode?.check()
+            if(mechTest != nil && mechTest == MechModeType.REF){
+                store.adress = -paramListSize
+                //TODO save reference?
+            } else {
+                //TODO save nonreference?
+                store.adress = 2 + ++loc1
+            }
+            guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
+                return loc1
+            }
+            return newLoc
+        }*/
 	}
 
     class TypeDeclaration: Declaration {
@@ -655,11 +778,46 @@ class AST {
             term.printTree(tab + "\t")
         }
         
-        override func check() throws -> (ValueType, ExpressionType) {
-            let checkL = try! expression.check()
-            let checkR = try! term.check()
+        func check(side: Side) throws -> (ValueType, ExpressionType) {
+            let checkL:(ValueType, ExpressionType)
+            let checkR:(ValueType, ExpressionType)
+            
+            var valueSide:ExpressionType = .R_Value
+            
+            if let l = expression as? StoreExpr {
+                checkL = try! l.check(.RIGHT)
+            } else if let l = expression as? DyadicExpr {
+                checkL = try! l.check(.RIGHT)
+            } else {
+                checkL = try! expression.check()
+            }
             
             let (typeL, _) = checkL
+            
+            let oldScope = AST.scope
+            if(typeL == ValueType.RECORD) {
+                if(oldScope != nil) {
+                    AST.scope = oldScope?.recordTable[(expression as! StoreExpr).identifier]!.scope
+                } else {
+                    AST.scope = AST.globalRecordTable[(expression as! StoreExpr).identifier]!.scope
+                }
+            }
+            
+            if let r = term as? StoreExpr {
+                if(typeL == ValueType.RECORD && side == Side.LEFT) {
+                    checkR = try! r.check(.LEFT)
+                } else {
+                    checkR = try! r.check(.RIGHT)
+                }
+            } else if let r = term as? DyadicExpr {
+                checkR = try! r.check(.RIGHT)
+            } else {
+                checkR = try! term.check()
+            }
+            
+            AST.scope = oldScope
+            
+            
             let (typeR, _) = checkR
             let expressionType: ValueType
             
@@ -701,7 +859,8 @@ class AST {
                     throw ContextError.TypeErrorInOperator
                 }
             case .DotOperator:
-                if(typeL == ValueType.RECORD){ //TODO we neet do think about it again
+                valueSide = .L_Value
+                if(typeL == ValueType.RECORD){
                     let lhs = expression as! StoreExpr
                     let rhs = term as! StoreExpr
                     
@@ -729,25 +888,10 @@ class AST {
                 throw ContextError.SomethingWentWrong
             }
             
-            return (expressionType, .R_Value)
+            return (expressionType, valueSide)
         }
         
     }
-
-	class Expression: AST {
-        
-        var description: String {
-            return "\(self.dynamicType)"
-        }
-        
-        func printTree(tab: String) {
-            print("Error: should be inherited")
-        }
-        
-        func check() throws -> (ValueType, ExpressionType) {
-            throw ImplementationError.ShouldBeOverritten
-        }
-	}
 
 	class ExpressionList: AST {
 
@@ -770,8 +914,7 @@ class AST {
         }
         
         func check() throws {
-            try! expression.check() //TODO: LookiLooki
-            try! optExpression?.check()
+            //TODO: check ParameterList with Expressionlist: Type, Count, Mechmode and Changemode
         }
 
 	}
@@ -840,9 +983,9 @@ class AST {
             
             expressionType = store.type
             
-            if(side == Side.RIGHT && expressionType == ValueType.RECORD){
-                throw ContextError.RecordsNotSupportedAsRightValue
-            }
+            /*if(side == Side.RIGHT && expressionType == ValueType.RECORD){
+                
+            }*/
             
             if(initToken != nil) {
                 if(side == Side.RIGHT){
@@ -922,128 +1065,5 @@ enum ImplementationError: ErrorType {
     case ToBeImplement
 }
 
-enum ContextError: ErrorType {
-    case IdentifierAlreadyDeclared
-    case Not_R_Value
-    case Not_L_Value
-    case NotInScope
-    case IdentifierNotDeclared
-    case NotAllowedType
-    case VariableIsConstant
-    case TypeErrorInOperator
-    case RecordCanNotBeInitializedDirectly
-    case IdentifierAlreadyInitialized
-    case IdentifierNotInitialized
-    case NotWriteable
-    case RecordsNotSupportedAsRightValue
-    case InitialisationInTheRightSide
-    case RoutineDeclarationNotGlobal
-    case RecordIsConstButNotTheirFields
-    case SomethingWentWrong //shouldn't be called!
-    
-}
 
-enum ValueType {
-    case BOOL
-    case INT64
-    case RECORD
-    
-    case Unknown //Has to be replaced at the end!
-}
-
-enum RoutineType {
-    case FUN
-    case PROC
-}
-
-enum Side {
-    case LEFT
-    case RIGHT
-}
-
-enum ExpressionType {
-    case L_Value
-    case R_Value
-}
-
-enum MechModeType {
-    case COPY
-    case REF
-}
-
-enum ChangeModeType {
-    case VAR
-    case CONST
-}
-
-class ContextParameter {
-    let mechMode:MechModeType
-    let changeMode:ChangeModeType
-    let ident:String
-    let type:ValueType
-    
-    init(mechMode:MechModeType, changeMode:ChangeModeType, ident:String, type:ValueType) {
-        self.mechMode = mechMode
-        self.changeMode = changeMode
-        self.ident = ident
-        self.type = type
-    }
-    
-}
-
-class Scope {
-    var storeTable: [String:Store]
-    var recordTable:[String:Record] = [:]
-    
-    init(storeTable:[String:Store]) {
-        self.storeTable = storeTable
-    }
-    init() {
-        storeTable = [:]
-    }
-}
-
-class Symbol {
-    var ident:String
-    var type:ValueType
-    init(ident:String, type:ValueType){
-        self.ident = ident
-        self.type = type
-    }
-}
-
-class Store : Symbol{
-    var initialized:Bool
-    var isConst:Bool
-    
-    init(ident:String, type:ValueType, isConst:Bool){
-        self.initialized = false
-        self.isConst = isConst
-        super.init(ident: ident, type: type)
-    }
-}
-
-class Routine {
-    let scope:Scope
-    let ident:String
-    let routineType:RoutineType
-    let returnValue:Store?
-    var parameterList: [ContextParameter] = []
-    
-    init(ident:String, routineType: RoutineType, returnValue:Store? = nil) {
-        self.ident = ident
-        self.routineType = routineType
-        self.scope = Scope()
-        self.returnValue = returnValue
-    }
-}
-
-class Record {
-    let ident:String
-    var recordFields: [String:Store] = [:]
-    
-    init(ident:String) {
-        self.ident = ident
-    }
-}
 
