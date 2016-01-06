@@ -39,8 +39,11 @@ class AST {
         }
         
         func check() {
-            try! declaration?.checkDeclaration()
-            try! declaration?.check(-1)
+			// I assume this could be the problem
+			if declaration != nil {
+				try! declaration!.checkDeclaration()
+				try! declaration!.check(-1)
+			}
             try! cmd.check()
         }
         
@@ -369,7 +372,7 @@ class AST {
             nextDecl?.printTree(tab + "\t")
         }
         
-        func check() throws -> Store{
+        func check() throws -> Store {
             let store:Store
             let type:ValueType
             
@@ -684,9 +687,13 @@ class AST {
             try! nextParam?.check(routine)
         }
         
-        /*func calculateAdress(paramListSize:Int, loc:Int) -> Int {
+        func calculateAdress(paramListSize:Int, loc:Int) -> Int {
             var loc1 = loc
-            let store = AST.scope!.storeTable[try! declarationStorage.check().ident]!
+			
+			let checkResult = try! declarationStorage.check()
+			let index = checkResult.ident
+			
+            let store = AST.scope!.storeTable[index]!
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
@@ -699,7 +706,7 @@ class AST {
                 return loc1
             }
             return newLoc
-        }*/
+        }
 	}
 
     class TypeDeclaration: Declaration {
