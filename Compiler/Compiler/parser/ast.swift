@@ -509,16 +509,16 @@ class AST {
             }
             //TODO: i am not shure if it's in the right order...
             
-            if let newLoc = rhs?.code(loc) {
+            if let newLoc = lhs?.code(loc) {
                 loc1 = newLoc
             } else {
-                loc1 = try! rightHandExpression.code(loc)
+                loc1 = try! leftHandExpression.code(loc)
             }
-            if let newLoc = lhs?.codeReference(loc1) {
+            if let newLoc = rhs?.codeReference(loc1) {
                 AST.codeArray[loc1++] = buildCommand(.Store)
                 loc1 = newLoc
             } else {
-                loc1 = try! leftHandExpression.code(loc1)
+                loc1 = try! rightHandExpression.code(loc1)
             }
             guard let newLoc = try! nextCmd?.code(loc1) else {
                 return loc1
