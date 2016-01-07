@@ -42,7 +42,6 @@ func buildCommand(cmd:MachineCommand, param:String = "") -> String {
     case .AllocStack: fallthrough
     case .Call: fallthrough
     case .CondJump: fallthrough
-    case .InputInt: fallthrough
     case .LoadAddrRel: fallthrough
     case .LoadImInt: fallthrough
     case .Return: fallthrough
@@ -51,6 +50,7 @@ func buildCommand(cmd:MachineCommand, param:String = "") -> String {
     //String
     case .OutputBool: fallthrough
     case .OutputInt: fallthrough
+    case .InputInt: fallthrough
     case .InputBool:
         return "\(cmd.rawValue) (\(param))"
         

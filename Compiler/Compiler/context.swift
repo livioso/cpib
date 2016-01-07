@@ -17,6 +17,7 @@ enum ContextError: ErrorType {
     case InitialisationInTheRightSide
     case RoutineDeclarationNotGlobal
     case RecordIsConstButNotTheirFields
+    case ThisExpressionNotAllowedWithDebugin
     case SomethingWentWrong //shouldn't be called!
     
 }
@@ -94,11 +95,33 @@ class Store : Symbol{
     var initialized:Bool
     var isConst:Bool
     var adress:Int?
+    var reference:Bool = false
+    var relative:Bool = false
     
     init(ident:String, type:ValueType, isConst:Bool){
         self.initialized = false
         self.isConst = isConst
         super.init(ident: ident, type: type)
+    }
+    
+    func code(let loc:Int) -> Int {
+        var loc1 = codeReference(loc)
+        AST.codeArray[loc1++] = buildCommand(.Deref)
+        return loc1
+    }
+    
+    func codeReference(let loc:Int) -> Int {
+        var loc1 = loc
+        if(relative) {
+            AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(adress)")
+        } else {
+            AST.codeArray[loc1++] = buildCommand(.LoadImInt, param: "\(adress)")
+        }
+        
+        if(reference){
+            AST.codeArray[loc1++] = buildCommand(.Deref)
+        }
+        return loc1
     }
 }
 

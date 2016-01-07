@@ -14,6 +14,7 @@ class AST {
     static var scope:Scope?
     
     //Code-Generation Stuff
+    static var allocBlock:Int = 0
     static var codeArray:[Int:String] = [:]
     
 	class Program: AST {
@@ -48,7 +49,8 @@ class AST {
         }
         
         func code(let loc:Int) -> [Int:String] {
-            let newLoc = try! cmd.code(loc)
+            AST.codeArray[loc] = buildCommand(.AllocBlock, param: "\(AST.allocBlock)")
+            let newLoc = try! cmd.code(loc + 1)
             AST.codeArray[newLoc] = buildCommand(.Stop)
             try! declaration?.code(newLoc + 1)
             //TODO: Routines
@@ -236,6 +238,7 @@ class AST {
 
 		let expression: Expression
 		let nextCmd: Cmd?
+        var type:ValueType?
 
 		init(expression: Expression, nextCmd: Cmd?) {
 			self.expression = expression
@@ -251,12 +254,62 @@ class AST {
         override func check() throws {
             if let expr = expression as? StoreExpr {
                 try! expr.check(.LEFT)
+                if(AST.scope != nil) {
+                    type = AST.scope!.storeTable[expr.identifier]!.type
+                } else {
+                    type = AST.globalStoreTable[expr.identifier]!.type
+                }
             } else if let expr = expression as? DyadicExpr {
                 try! expr.check(.LEFT)
+                switch(expr.opr){
+                case .DotOperator():
+                    let lhs = expr.expression as! StoreExpr
+                    let rhs = expr.term as! StoreExpr
+                    let ident = lhs.identifier + "." + rhs.identifier
+                    if(AST.scope != nil) {
+                        type = AST.scope!.storeTable[ident]!.type
+                    } else {
+                        type = AST.globalStoreTable[ident]!.type
+                    }
+                case _:
+                    throw ContextError.ThisExpressionNotAllowedWithDebugin
+                }
             } else {
                 try! expression.check()
             }
             try! nextCmd?.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1:Int
+            let ident:String
+            if let expr = expression as? StoreExpr {
+                ident = expr.identifier
+                loc1 = expr.codeReference(loc)
+            } else {
+                //TODO: why/what am i doing (this)?
+                let dyadicExpr = expression as! DyadicExpr
+                let expr1 = dyadicExpr.expression as! StoreExpr
+                let expr2 = dyadicExpr.term as! StoreExpr
+                let store:Store
+                ident = expr1.identifier + "." + expr2.identifier
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[ident]!
+                } else {
+                    store = AST.globalStoreTable[ident]!
+                }
+                loc1 = store.codeReference(loc)
+            }
+            switch(type!) {
+            case .BOOL:
+                AST.codeArray[loc1++] = buildCommand(.InputBool, param: ident)
+            case _:
+                AST.codeArray[loc1++] = buildCommand(.InputInt, param: ident)
+            }
+            guard let newLoc = try! nextCmd?.code(loc) else {
+                return loc
+            }
+            return newLoc
         }
 	}
 
@@ -264,6 +317,7 @@ class AST {
 
 		let expression: Expression
 		let nextCmd: Cmd?
+        var type:ValueType?
 
 		init(expression: Expression, nextCmd: Cmd?) {
 			self.expression = expression
@@ -277,8 +331,64 @@ class AST {
         }
         
         override func check() throws {
-            try! expression.check()
+            if let expr = expression as? StoreExpr {
+                try! expr.check(.LEFT)
+                if(AST.scope != nil) {
+                    type = AST.scope!.storeTable[expr.identifier]!.type
+                } else {
+                    type = AST.globalStoreTable[expr.identifier]!.type
+                }
+            } else if let expr = expression as? DyadicExpr {
+                try! expr.check(.LEFT)
+                switch(expr.opr){
+                case .DotOperator():
+                    let lhs = expr.expression as! StoreExpr
+                    let rhs = expr.term as! StoreExpr
+                    let ident = lhs.identifier + "." + rhs.identifier
+                    if(AST.scope != nil) {
+                        type = AST.scope!.storeTable[ident]!.type
+                    } else {
+                        type = AST.globalStoreTable[ident]!.type
+                    }
+                case _:
+                    throw ContextError.ThisExpressionNotAllowedWithDebugin
+                }
+            } else {
+                try! expression.check()
+            }
             try! nextCmd?.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1:Int
+            let ident:String
+            if let expr = expression as? StoreExpr {
+                ident = expr.identifier
+                loc1 = try! expr.code(loc)
+            } else {
+                let dyadicExpr = expression as! DyadicExpr
+                let expr1 = dyadicExpr.expression as! StoreExpr
+                let expr2 = dyadicExpr.term as! StoreExpr
+                ident = expr1.identifier + "." + expr2.identifier
+                let store:Store
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[ident]!
+                } else {
+                    store = AST.globalStoreTable[ident]!
+                }
+                loc1 = store.code(loc)
+            }
+            
+            switch(type!) {
+            case .BOOL:
+                AST.codeArray[loc1++] = buildCommand(.OutputBool, param: ident)
+            case _:
+                AST.codeArray[loc1++] = buildCommand(.OutputInt, param: ident)
+            }
+            guard let newLoc = try! nextCmd?.code(loc) else {
+                return loc
+            }
+            return newLoc
         }
 	}
 
@@ -301,6 +411,11 @@ class AST {
         override func check() throws {
             try! expressionList.check()
             try! nextCmd?.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            //TODO: implement CmdCall (used for procedures!)
+            throw ImplementationError.ToBeImplement
         }
 	}
 
@@ -357,6 +472,61 @@ class AST {
             }
             
             try! nextCmd?.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            var lhs:Store?
+            var rhs:Store?
+            var loc1:Int
+            if let l = leftHandExpression as? DyadicExpr{
+                switch(l.opr){
+                case .DotOperator():
+                    let expr1 = l.expression as! StoreExpr
+                    let expr2 = l.term as! StoreExpr
+                    let ident = expr1.identifier + "." + expr2.identifier
+                    if(AST.scope != nil){
+                        lhs = AST.scope!.storeTable[ident]!
+                    } else {
+                        lhs = AST.globalStoreTable[ident]!
+                    }
+                case _:
+                    break
+                }
+            }
+            
+            if let r = leftHandExpression as? DyadicExpr {
+                switch(r.opr){
+                case .DotOperator():
+                    let expr1 = r.expression as! StoreExpr
+                    let expr2 = r.term as! StoreExpr
+                    let ident = expr1.identifier + "." + expr2.identifier
+                    if(AST.scope != nil){
+                        rhs = AST.scope!.storeTable[ident]!
+                    } else {
+                        rhs = AST.globalStoreTable[ident]!
+                    }
+                case _:
+                    break
+                }
+            }
+            //TODO: i am not shure if it's in the right order...
+            
+            if let newLoc = lhs?.code(loc) {
+                loc1 = newLoc
+            } else {
+                loc1 = try! leftHandExpression.code(loc)
+            }
+            if let newLoc = rhs?.codeReference(loc1) {
+                AST.codeArray[loc1++] = buildCommand(.Store)
+                loc1 = newLoc
+            } else {
+                loc1 = try! rightHandExpression.code(loc1)
+            }
+            guard let newLoc = try! nextCmd?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
+            
         }
 	}
 
@@ -445,6 +615,9 @@ class AST {
                     return loc
                 } else {
                     store.adress = 2 + loc + 1
+                    print("setAdress: \(store.ident), adress: \(store.adress)")
+                    store.reference = false
+                    store.relative = true
                     return loc + 1
                 }
             }
@@ -524,6 +697,8 @@ class AST {
                             record.recordFields[store.ident] = store
                         }
                     }
+                    store.adress = AST.allocBlock++
+                    print("alloc: \(store.ident), adress: \(store.adress)")
                     
                     decl = decl!.nextDecl as? AST.DeclarationStore
                 }
@@ -543,10 +718,18 @@ class AST {
                     } else {
                         AST.globalStoreTable[store.ident] = store
                     }
+                    store.adress = AST.allocBlock++
+                    print("alloc: \(store.ident), adress: \(store.adress)")
                 }
             }
             try! nextDecl?.checkDeclaration()
         }
+        
+        override func code(loc: Int) throws -> Int {
+            return loc
+        }
+        
+        
 	}
 
 	class DeclarationFunction: Declaration {
@@ -612,6 +795,26 @@ class AST {
             AST.scope = nil
             return -1
         }
+        
+        override func code(loc: Int) throws -> Int {
+            var loc1 = loc
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            routine.adress = loc1
+            let params = routine.parameterList
+            for param in params {
+                throw ImplementationError.ToBeImplement
+                if(param.mechMode == MechModeType.REF){
+                    //TODO: no alloc needed
+                } else {
+                    let store = AST.scope!.storeTable[param.ident]
+                }
+            }
+            //TODO: What to do here?
+            
+            AST.scope = nil
+            return loc1
+        }
 	}
 
 	class DeclarationProcedure: Declaration {
@@ -674,6 +877,10 @@ class AST {
             AST.scope = nil
             return -1
         }
+        
+        override func code(loc: Int) throws -> Int {
+            throw ImplementationError.ToBeImplement
+        }
 	}
 
 	class Parameter: AST {
@@ -732,10 +939,13 @@ class AST {
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
-                //TODO save reference?
+                print("setAdress: \(store.ident), adress: \(store.adress)")
+                store.reference = true
+                store.relative = true
             } else {
-                //TODO save nonreference?
                 store.adress = 2 + ++loc1
+                print("setAdress: \(store.ident), adress: \(store.adress)")
+                store.relative = true
             }
             guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
                 return loc1
@@ -933,6 +1143,40 @@ class AST {
             return (expressionType, valueSide)
         }
         
+        override func code(loc: Int) throws -> Int {
+            var loc1 = try! expression.code(loc)
+            loc1 = try! term.code(loc1)
+            switch(opr){
+            case .DotOperator():
+                loc1++
+            case .AddOperator(.PLUS):
+                AST.codeArray[loc1++] = buildCommand(.AddInt)
+            case .AddOperator(.MINUS):
+                AST.codeArray[loc1++] = buildCommand(.SubInt)
+            case .MultOperator(.TIMES):
+                AST.codeArray[loc1++] = buildCommand(.MultInt)
+            case .MultOperator(.DIV_E):
+                AST.codeArray[loc1++] = buildCommand(.DivTruncInt)
+            case .MultOperator(.MOD_E):
+                AST.codeArray[loc1++] = buildCommand(.ModTruncInt)
+            case .RelOperator(.EQ):
+                AST.codeArray[loc1++] = buildCommand(.EqInt)
+            case .RelOperator(.NE):
+                AST.codeArray[loc1++] = buildCommand(.NeInt)
+            case .RelOperator(.GT):
+                AST.codeArray[loc1++] = buildCommand(.GtInt)
+            case .RelOperator(.LT):
+                AST.codeArray[loc1++] = buildCommand(.LtInt)
+            case .RelOperator(.GE):
+                AST.codeArray[loc1++] = buildCommand(.GeInt)
+            case .RelOperator(.LE):
+                AST.codeArray[loc1++] = buildCommand(.LeInt)
+            case _:
+                throw CodeGenerationError.RuntimeException
+            }
+            return loc1
+        }
+        
     }
 
 	class ExpressionList: AST {
@@ -988,6 +1232,24 @@ class AST {
             
             return (type, .R_Value)
         }
+        
+        override func code(loc: Int) throws -> Int {
+            let lit:Int
+            switch(literal) {
+            case .Integer(let v):
+                lit = v
+            case .Boolean(let v):
+                if (v){
+                    lit = 1
+                } else {
+                    lit = 0
+                }
+            case _:
+                throw CodeGenerationError.RuntimeException
+            }
+            AST.codeArray[loc] = buildCommand(.LoadImInt, param: "\(lit)")
+            return loc + 1
+         }
     }
 
     class StoreExpr: Expression {
@@ -1050,6 +1312,32 @@ class AST {
             
             return (expressionType, .L_Value)
         }
+        
+        override func code(loc: Int) throws -> Int {
+            let store:Store
+            if(AST.scope != nil) {
+                store = AST.scope!.storeTable[identifier]!
+            } else {
+                store = AST.globalStoreTable[identifier]!
+            }
+            if(store.type == ValueType.RECORD){
+                return loc
+            }
+            return store.code(loc)
+        }
+        
+        func codeReference(let loc:Int) -> Int {
+            let store:Store
+            if(AST.scope != nil) {
+                store = AST.scope!.storeTable[identifier]!
+            } else {
+                store = AST.globalStoreTable[identifier]!
+            }
+            if(store.type == ValueType.RECORD){
+                return loc
+            }
+            return store.codeReference(loc)
+        }
     }
 
     class FuncCallExpr: Expression {
@@ -1067,6 +1355,11 @@ class AST {
         
         override func check() throws -> (ValueType, ExpressionType) {
             return try! routineCall.check()
+        }
+        
+        override func code(loc: Int) throws -> Int {
+            print("yolo")
+            return loc
         }
 
     }
