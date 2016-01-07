@@ -356,7 +356,169 @@ Der Record selbst enthält dann die RecordFields:
 	
 ### AST
 
+Beim AST verhält es sich ähnlich wie beim CST, da wurde lediglich das RecordDecl weg reduziert:
+
+```haskell
+	class DeclarationStore: Declaration {
+		let changeMode: ChangeMode?
+		let typedIdent: TypeDeclaration
+		let nextDecl: Declaration?
+		...
+```
+
+```haskell
+	class TypeDeclaration: Declaration {
+        let ident: String
+        let type: Token.Attribute
+        let optionalRecordDecl: DeclarationStore?
+        ...
+```
+Wir bauen dann die Record Felder rekursiv über DeclarationStore auf, da TypeDeclaration auch ein Kind von DeclarationStore ist, kann man so theoretisch beliebig viele nested Records in Records deklarieren.
 ### Checker
+Beim Context check mussten wir für die Records einige Ausnahmen bilden. Mit dem eingeführtem Dot-Operator müssen wir ebenfalls speziel verfahren im Gegensatz zu den standart Operatoren:
+
+```haskell
+class DyadicExpr: AST.Expression {
+func check(side:Side) throws -> (ValueType, ExpressionType) {
+...
+if(typeL == ValueType.RECORD) {
+	if(oldScope != nil) {
+		AST.scope = oldScope?.recordTable[(expression as! StoreExpr).identifier]!.scope
+	} else {
+		AST.scope = AST.globalRecordTable[(expression as! StoreExpr).identifier]!.scope
+	}
+}
+if let r = term as? StoreExpr {
+	if(typeL == ValueType.RECORD && side == Side.LEFT) {
+		checkR = try! r.check(.LEFT)
+	} else {
+		checkR = try! r.check(.RIGHT)
+	}
+} else if let r = term as? DyadicExpr {
+	checkR = try! r.check(.RIGHT)
+} else {
+	checkR = try! term.check()
+}
+...
+case .DotOperator:
+	valueSide = .L_Value
+	if(typeL == ValueType.RECORD){
+		let lhs = expression as! StoreExpr
+		let rhs = term as! StoreExpr
+		
+		let leftIdent: String = lhs.identifier
+		let rightIdent: String = rhs.identifier
+		
+		let identifier: String = leftIdent + "." + rightIdent
+		
+		if(AST.scope != nil){
+			guard let type = AST.scope!.storeTable[identifier]?.type else {
+				throw ContextError.SomethingWentWrong
+			}
+			expressionType = type
+		} else {
+			guard let type = AST.globalStoreTable[identifier]?.type else {
+				throw ContextError.SomethingWentWrong
+			}
+			expressionType = type
+		}
+	} else {
+		throw ContextError.TypeErrorInOperator
+	}
+case _:
+	throw ContextError.SomethingWentWrong
+}
+...
+```
+Hier setzen wir dann die linke und rechte Seite vom operator zu einem neuen Identifier zusammen, der jeweils die Seiten mit einem "." trennt. Da Punkte in der normalen Namen nicht erlaubt sind, müssen wir so keine Kollisionen mit anderen Identifier rechnen. Auch müssen wir ein init auf der Rechten Seite eines Operators zulassen, da die Syntax folgendes unterstützen muss: `recordName.recordField init := 4`  
+Bei der `StoreExpr`müssen wir darauf achten, dass der Recordidentifier nicht direkt initializiert werden kann, sondern dass dies nur mit seinen Feldern geht:
+
+```haskell
+class StoreExpr: Expression {
+...
+func check(side:Side) throws -> (ValueType, ExpressionType) {
+...
+if(initToken != nil) {
+	if(side == Side.RIGHT){
+		throw ContextError.InitialisationInTheRightSide
+	}
+	if(expressionType == ValueType.RECORD) {
+		throw ContextError.RecordCanNotBeInitializedDirectly
+	}
+	if(store.initialized) {
+		throw ContextError.IdentifierAlreadyInitialized
+	}
+	store.initialized = true
+} else if(side == Side.LEFT && !store.initialized && expressionType != ValueType.RECORD){
+	throw ContextError.IdentifierNotInitialized
+} else if(side == Side.LEFT && store.isConst) {
+	throw ContextError.NotWriteable
+} else if(side == Side.RIGHT && !store.initialized) {
+	throw ContextError.IdentifierNotInitialized
+}
+...
+```
+
+Weiter unterscheiden wir in `DeclarationStore` ob es sich um ein Record oder nicht handelt. Falls es ein Record ist, Erstellen wir einen Record im Context und prüfen alle Felder über deren Type nach und speichern die entsprechend in aktuellen Scope ab, dabei wird wieder der identifier mit Feld und Record namen gebildet:
+
+```haskell
+if(type == ValueType.RECORD){
+	let record = Record(ident: typedIdent.ident)
+	let recordStore = Store(ident: record.ident, type: type, isConst: isConst)
+	recordStore.initialized = true
+	
+	var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
+	
+	if(AST.scope != nil){
+		let check = AST.scope!.recordTable[record.ident]
+		if(check != nil) {
+			throw ContextError.IdentifierAlreadyDeclared
+		} else {
+			AST.scope!.recordTable[record.ident] = record
+			AST.scope!.storeTable[record.ident] = recordStore
+		}
+	} else {
+		let check = AST.globalRecordTable[record.ident]
+		if(check != nil) {
+			throw ContextError.IdentifierAlreadyDeclared
+		} else {
+			AST.globalRecordTable[record.ident] = record
+			AST.globalStoreTable[record.ident] = recordStore
+		}
+	}
+	while(decl != nil){
+		let store:Store = try! decl!.check()
+		
+		record.scope.storeTable[store.ident] = Store(ident: store.ident, type: store.type, isConst: store.isConst)
+		store.ident = recordStore.ident + "." + store.ident
+		
+		if(isConst && store.isConst != isConst){
+			throw ContextError.RecordIsConstButNotTheirFields
+		}
+		if(AST.scope != nil){
+			let check = AST.scope!.storeTable[store.ident]
+			if(check != nil) {
+				throw ContextError.IdentifierAlreadyDeclared
+			} else {
+				AST.scope!.storeTable[store.ident] = store
+				record.recordFields[store.ident] = store
+			}
+		} else {
+			let check = AST.globalStoreTable[store.ident]
+			if(check != nil) {
+				throw ContextError.IdentifierAlreadyDeclared
+			} else {
+				AST.globalStoreTable[store.ident] = store
+				record.recordFields[store.ident] = store
+			}
+		}
+		store.adress = AST.allocBlock++
+		print("alloc: \(store.ident), adress: \(store.adress)")
+		
+		decl = decl!.nextDecl as? AST.DeclarationStore
+	}
+...
+```
 
 ### Codegeneration
 
