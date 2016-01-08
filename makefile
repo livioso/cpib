@@ -10,7 +10,7 @@ prepare:
 
 build_compiler: prepare
 	@echo "Compiling compiler..."
-	@swiftc \
+	@xcrun -sdk macosx swiftc\
 		./Compiler/Compiler/*.swift \
 		./Compiler/Compiler/parser/*.swift \
 		./Compiler/Compiler/scanner/*.swift \
