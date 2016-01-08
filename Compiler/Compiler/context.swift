@@ -132,6 +132,7 @@ class Routine {
     let returnValue:Store?
     var parameterList: [ContextParameter] = []
     var adress:Int?
+    var calls: [Int] = []
     
     init(ident:String, routineType: RoutineType, returnValue:Store? = nil) {
         self.ident = ident

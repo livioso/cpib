@@ -53,7 +53,11 @@ class AST {
             let newLoc = try! cmd.code(loc + 1)
             AST.codeArray[newLoc] = buildCommand(.Stop)
             try! declaration?.code(newLoc + 1)
-            //TODO: Routines
+            for (_, routine) in AST.globalRoutineTable {
+                for locR in routine.calls {
+                    AST.codeArray[locR] = buildCommand(.Call, param: "\(routine.adress)")
+                }
+            }
             
             return AST.codeArray
         }
@@ -564,7 +568,8 @@ class AST {
             if let newLoc = try! expressionList?.code(loc) {
                 loc1 = newLoc
             }
-            AST.codeArray[loc1 + 1] = buildCommand(.Call, param: ident)
+            let routine = AST.globalRoutineTable[ident]!
+            routine.calls.append(loc1++)
             return loc1
         }
 	}
@@ -663,16 +668,14 @@ class AST {
                 var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
                 
                 if(AST.scope != nil){
-                    let check = AST.scope!.recordTable[record.ident]
-                    if(check != nil) {
+                    if let _ = AST.scope!.recordTable[record.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.scope!.recordTable[record.ident] = record
                         AST.scope!.storeTable[record.ident] = recordStore
                     }
                 } else {
-                    let check = AST.globalRecordTable[record.ident]
-                    if(check != nil) {
+                    if let _ = AST.globalRecordTable[record.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.globalRecordTable[record.ident] = record
@@ -692,39 +695,35 @@ class AST {
                     }
                     
                     if(AST.scope != nil){
-                        let check = AST.scope!.storeTable[store.ident]
-                        if(check != nil) {
+                        if let _ = AST.scope!.storeTable[store.ident] {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.scope!.storeTable[store.ident] = store
                             record.recordFields[store.ident] = store
                         }
                     } else {
-                        let check = AST.globalStoreTable[store.ident]
-                        if(check != nil) {
+                        if let _ = AST.globalStoreTable[store.ident] {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.globalStoreTable[store.ident] = store
                             record.recordFields[store.ident] = store
                         }
+                        store.adress = AST.allocBlock++
+                        print("alloc: \(store.ident), adress: \(store.adress)")
                     }
-                    store.adress = AST.allocBlock++
-                    print("alloc: \(store.ident), adress: \(store.adress)")
                     
                     decl = decl!.nextDecl as? AST.DeclarationStore
                 }
             } else {
                 let store:Store = Store(ident: typedIdent.ident, type: type, isConst: isConst)
                 if(AST.scope != nil){
-                    let check = AST.scope!.storeTable[store.ident]
-                    if(check != nil) {
+                    if let _ = AST.scope!.storeTable[store.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.scope!.storeTable[store.ident] = store
                     }
                 } else {
-                    let check = AST.globalStoreTable[store.ident]
-                    if(check != nil) {
+                    if let _ = AST.globalStoreTable[store.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.globalStoreTable[store.ident] = store
@@ -737,7 +736,10 @@ class AST {
         }
         
         override func code(loc: Int) throws -> Int {
-            return loc
+            guard let newLoc = try! nextDecl?.code(loc) else {
+                return loc
+            }
+            return newLoc
         }
         
         
@@ -782,8 +784,7 @@ class AST {
             AST.scope = function.scope
             try! retVal.checkDeclaration()
             
-            let check = AST.globalRoutineTable[ident]
-            if(check != nil) {
+            if let _ = AST.globalRoutineTable[ident] {
                 throw ContextError.IdentifierAlreadyDeclared
             } else {
                 AST.globalRoutineTable[ident] = function
@@ -800,7 +801,7 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
-            try! returnValue.check(newLoc)
+            try! returnValue.check(newLoc) //TODO: Maybe Not what we want...
             
             try! cmd.check()
             AST.scope = nil
@@ -861,8 +862,7 @@ class AST {
             }
             let procedure = Routine(ident: ident, routineType: .PROC)
             AST.scope = procedure.scope
-            let check = AST.globalRoutineTable[ident]
-            if(check != nil) {
+            if let _ = AST.globalRoutineTable[ident] {
                 throw ContextError.IdentifierAlreadyDeclared
             } else {
                 AST.globalRoutineTable[ident] = procedure
@@ -933,7 +933,7 @@ class AST {
             if(mechType != nil){
                 mechModeType = mechType!
             }
-            let changeMode: ChangeModeType = (store.isConst) ? .CONST : .VAR
+            let changeMode:ChangeModeType = (store.isConst) ? .CONST : .VAR
             AST.scope!.storeTable[store.ident]!.initialized = true
             let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
             routine.parameterList.append(contextParameter)
@@ -944,9 +944,8 @@ class AST {
             var loc1 = loc
 			
 			let checkResult = try! declarationStorage.check()
-			let index = checkResult.ident
 			
-            let store = AST.scope!.storeTable[index]!
+            let store = AST.scope!.storeTable[checkResult.ident]!
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
@@ -987,7 +986,7 @@ class AST {
         }
         
         override func checkDeclaration() throws {
-            try!optionalRecordDecl?.checkDeclaration()
+            //Banane mit Brot
         }
     }
 
