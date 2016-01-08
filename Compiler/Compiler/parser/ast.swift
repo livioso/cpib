@@ -483,7 +483,7 @@ class AST {
             var lhs:Store?
             var rhs:Store?
             var loc1:Int
-            if let l = leftHandExpression as? DyadicExpr{
+            if let l = rightHandExpression as? DyadicExpr{
                 switch(l.opr){
                 case .DotOperator():
                     let expr1 = l.expression as! StoreExpr
@@ -499,7 +499,7 @@ class AST {
                 }
             }
             
-            if let r = rightHandExpression as? DyadicExpr {
+            if let r = leftHandExpression as? DyadicExpr {
                 switch(r.opr){
                 case .DotOperator():
                     let expr1 = r.expression as! StoreExpr
@@ -519,13 +519,13 @@ class AST {
             if let newLoc = lhs?.code(loc) {
                 loc1 = newLoc
             } else {
-                loc1 = try! leftHandExpression.code(loc)
+                loc1 = try! rightHandExpression.code(loc)
             }
             if let newLoc = rhs?.codeReference(loc1) {
                 
                 loc1 = newLoc
             } else {
-                loc1 = try! rightHandExpression.code(loc1)
+                loc1 = try! leftHandExpression.code(loc1)
             }
             AST.codeArray[loc1++] = buildCommand(.Store)
             guard let newLoc = try! nextCmd?.code(loc1) else {
