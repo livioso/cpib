@@ -52,7 +52,7 @@ func main() {
 			print("🔴 Saving intermediate file")
 			Intermediate.save(code, path: outputPath)
 			
-            print("🔴 Compilation Finished... :D")
+            print("🔴 Compilation Finished... 😫")
 			
 		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")
