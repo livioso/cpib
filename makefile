@@ -16,6 +16,7 @@ build_compiler: prepare
 		./Compiler/Compiler/scanner/*.swift \
 		./Compiler/Compiler/extensions/*.swift \
 		./Compiler/Compiler/codegen/*.swift \
+		./Compiler/Compiler/context/*.swift \
 		-o ./bin/compiler/iml_compiler
 
 build_vm: prepare
@@ -26,19 +27,32 @@ build_vm: prepare
 		./VirtualMachine/src/*.java \
 		./VirtualMachine/src/vm/*.java
 
-compile_example_1:
-	@echo "Compilinng example 1..."
+run_test_example_1:
+	@echo "-> Compiling example 1..."
 	./bin/compiler/iml_compiler ./TestSources/test-01.iml ./bin/intermediate/test-01.intermediate
+	@echo "-> Running example 1 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-01.intermediate | java Machine
 
-compile_example_2:
-	@echo "Compiling example 2..."
+run_test_example_2_should_fail:
+	@echo "-> Compiling example 2 (error)..."
 	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml ./bin/intermediate/test-02.intermediate
 
-compile_example_4:
-	@echo "Compiling example 4..."
-	./bin/compiler/iml_compiler ./TestSources/test-04.iml ./bin/intermediate/test-04.intermediate
+run_test_example_3:
+	@echo "-> Compiling example 3..."
+	./bin/compiler/iml_compiler ./TestSources/test-03.iml ./bin/intermediate/test-03.intermediate
+	@echo "-> Running example 3 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-03.intermediate | java Machine
 
-run_example_vmtest:
+run_test_example_4:
+	@echo " -> Compiling example 4..."
+	./bin/compiler/iml_compiler ./TestSources/test-04.iml ./bin/intermediate/test-04.intermediate
+	@echo " -> Running example 4 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-04.intermediate | java Machine
+
+run_test_virtualmachine:
 	@cp ./TestSources/*.intermediate ./bin/intermediate/
 	@cd ./bin/vm/; \
 		cat ../intermediate/test-virtualmachine.intermediate | java Machine
