@@ -636,10 +636,10 @@ class CST {
 
 	class CommandCall: Command {
 
-		let identifier: Token
+		let identifier: Token.Attribute
 		let expressionList: ExpressionList
 
-		init(identifier: Token, expressionList: ExpressionList) {
+		init(identifier: Token.Attribute, expressionList: ExpressionList) {
 			self.identifier = identifier
 			self.expressionList = expressionList
 		}
@@ -653,9 +653,15 @@ class CST {
 		}
 
 		func toAbstract(repeatingCmds: ASTConvertible?) throws -> AST? {
-			return AST.CmdCall(
-				expressionList: try! expressionList.toAbstract() as! AST.ExpressionList,
-				nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
+            if case Token.Attribute.Ident(let ident) = identifier {
+                return AST.CmdCall(
+                    routineCall: AST.RoutineCall(
+                        ident: ident,
+                        expressionList: try! expressionList.toAbstract() as? AST.ExpressionList),
+                    nextCmd: try! repeatingCmds?.toAbstract() as? AST.Cmd)
+            } else {
+                throw ParseError.WrongTokenAttribute
+            }
 		}
 	}
 

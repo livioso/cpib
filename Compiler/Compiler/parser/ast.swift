@@ -394,27 +394,28 @@ class AST {
 
 	class CmdCall: Cmd {
 
-		let expressionList: ExpressionList
+		//let expressionList: ExpressionList
+        let routineCall:RoutineCall
 		let nextCmd: Cmd?
 
-		init(expressionList: ExpressionList, nextCmd: Cmd?) {
-			self.expressionList = expressionList
+		init(routineCall: RoutineCall, nextCmd: Cmd?) {
+			self.routineCall = routineCall
 			self.nextCmd = nextCmd
 		}
         
         override func printTree(tab: String) {
             print(tab + description)
-            expressionList.printTree(tab + "\t")
+            routineCall.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
         }
         
         override func check() throws {
-            try! expressionList.check()
+            try! routineCall.check()
             try! nextCmd?.check()
         }
         
         override func code(loc: Int) throws -> Int {  //CodeCheck
-            let loc1 = try! expressionList.code(loc)
+            let loc1 = try! routineCall.code(loc)
             return loc1
         }
 	}
@@ -534,9 +535,9 @@ class AST {
 	class RoutineCall: AST {
 
 		let ident: String
-		let expressionList: ExpressionList
+		let expressionList: ExpressionList?
 
-		init(ident: String, expressionList: ExpressionList) {
+		init(ident: String, expressionList: ExpressionList?) {
 			self.ident = ident
 			self.expressionList = expressionList
 		}
@@ -548,14 +549,23 @@ class AST {
         func printTree(tab: String) {
             print(tab + description)
             print(tab + ident)
-            expressionList.printTree(tab + "\t")
+            expressionList?.printTree(tab + "\t")
         }
         
         func check() throws -> (ValueType, ExpressionType) {
             let routine:Routine = AST.globalRoutineTable[ident]!
             let type = routine.returnValue!.type //not working with Procedures!
-            try! expressionList.check()
+            try! expressionList?.check()
             return (type, .R_Value)
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            var loc1 = loc
+            if let newLoc = try! expressionList?.code(loc) {
+                loc1 = newLoc
+            }
+            AST.codeArray[loc1 + 1] = buildCommand(.Call, param: ident)
+            return loc1
         }
 	}
 
@@ -1364,9 +1374,11 @@ class AST {
             return try! routineCall.check()
         }
         
-        override func code(loc: Int) throws -> Int {
-            print("yolo")
-            return loc
+        override func code(loc: Int) throws -> Int { //CodeCheck
+            var loc1 = loc
+            AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
+            loc1 = try! routineCall.code(loc1)
+            return loc1
         }
 
     }

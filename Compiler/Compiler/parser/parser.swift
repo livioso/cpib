@@ -129,7 +129,7 @@ class Parser {
 		case Terminal.CALL:
 			print("cmd ::= CALL IDENT expressionList")
 			try! consume(Terminal.CALL)
-			let ident = try! consume(Terminal.IDENT)
+			let ident = try! consume(Terminal.IDENT).attribute!
 			let exprList = try! expressionList()
 			return CST.CommandCall(
 				identifier: ident,

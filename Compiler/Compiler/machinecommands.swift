@@ -35,7 +35,7 @@ enum MachineCommand:String {
     case UncondJump
 }
 
-func buildCommand(cmd:MachineCommand, param:String = "") -> String {
+func buildCommand(cmd:MachineCommand, param:String? = nil) -> String {
     switch(cmd) {
     //Int
     case .AllocBlock: fallthrough
@@ -52,7 +52,7 @@ func buildCommand(cmd:MachineCommand, param:String = "") -> String {
     case .OutputInt: fallthrough
     case .InputInt: fallthrough
     case .InputBool:
-        return "\(cmd.rawValue) (\(param))"
+        return "\(cmd.rawValue) (\(param!))"
         
     //void
     case .AddInt: fallthrough
