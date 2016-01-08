@@ -636,7 +636,7 @@ class AST {
                     }
                     return newLoc
                 } else {
-                    store.adress = 2 + loc + 1
+                    store.adress = -loc
                     print("setAdress: \(store.ident), adress: \(store.adress)")
                     store.reference = false
                     store.relative = true
@@ -812,12 +812,12 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
-            try! returnValue.check(newLoc) //TODO: Maybe Not what we want...
+            try! returnValue.check(routine.parameterList.count + 1)
             
             try! cmd.check()
             AST.scope = nil
-            guard let newerLoc = try! nextDecl?.check(loc) else {
-                return loc
+            guard let newerLoc = try! nextDecl?.check(newLoc) else {
+                return newLoc
             }
             return newerLoc
         }
@@ -834,8 +834,8 @@ class AST {
                 if(param.mechMode == MechModeType.REF){
                     loc1 = store.code(loc1)
                 } else {
-                    AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
                     loc1 = store.code(loc1)
+                    //AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
                 }
             }
             loc1 = try! cmd.code(loc1)
@@ -1000,7 +1000,7 @@ class AST {
         }
         
         func calculateAdress(paramListSize:Int, loc:Int) -> Int {
-            var loc1 = loc
+            let loc1 = loc
             var paramSize = paramListSize
 			
 			let checkResult = try! declarationStorage.check()
@@ -1020,25 +1020,29 @@ class AST {
                         print("setAdress: \(ident), adress: \(field.adress)")
                         field.reference = true
                         field.relative = true
-                        paramSize -= 1
                     } else {
-                        field.adress = 2 + ++loc1
+                        //field.adress = 2 + ++loc1
+                        field.adress = -paramSize
                         print("setAdress: \(ident), adress: \(field.adress)")
                         field.relative = true
                     }
+                    paramSize -= 1
                 }
-            }
-            if(mechTest != nil && mechTest == MechModeType.REF){
-                store.adress = -paramSize
-                print("setAdress: \(store.ident), adress: \(store.adress)")
-                store.reference = true
-                store.relative = true
             } else {
-                store.adress = 2 + ++loc1
-                print("setAdress: \(store.ident), adress: \(store.adress)")
-                store.relative = true
+                if(mechTest != nil && mechTest == MechModeType.REF){
+                    store.adress = -paramSize
+                    print("setAdress: \(store.ident), adress: \(store.adress)")
+                    store.reference = true
+                    store.relative = true
+                } else {
+                    //store.adress = 2 + ++loc1
+                    store.adress = -paramSize
+                    print("setAdress: \(store.ident), adress: \(store.adress)")
+                    store.relative = true
+                }
+                paramSize -= 1
             }
-            guard let newLoc = nextParam?.calculateAdress(paramSize - 1, loc: loc1) else {
+            guard let newLoc = nextParam?.calculateAdress(paramSize, loc: loc1) else {
                 return loc1
             }
             return newLoc

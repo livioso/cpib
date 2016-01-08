@@ -8,7 +8,7 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	/*let iAmRaphi = false
+	let iAmRaphi = true
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
@@ -24,7 +24,7 @@ func main() {
 		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
-	}*/
+	}
 	
 
 	if let outputPath = arguments.popLast() {
@@ -48,9 +48,13 @@ func main() {
 			ast.printTree()
 			ast.check()
             let code = ast.code(0)
+            
+            for(var loc = 0; loc < code.count; loc++) {
+                print("\(loc), \(code[loc]!),")
+            }
 			
 			print("🔴 Saving intermediate file")
-			Intermediate.save(code, path: outputPath)
+			//Intermediate.save(code, path: outputPath)
 			
             print("🔴 Compilation Finished... 😫")
 			
