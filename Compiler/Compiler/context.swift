@@ -94,7 +94,7 @@ class Symbol {
 class Store : Symbol{
     var initialized:Bool
     var isConst:Bool
-    var adress:Int?
+    var adress:Int = Int.min
     var reference:Bool = false
     var relative:Bool = false
     
