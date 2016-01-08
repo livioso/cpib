@@ -1,0 +1,15 @@
+program main
+global
+    var position: record ( var x:int64, const y:int64 ) ;
+    professor: record ( id:int64, level:int64 )
+
+do
+    position.x init := 4;
+    position.y init := 5;
+
+    professor.id init := 1007;
+    professor.level init := 19;
+
+    position.x := 42
+
+endprogram
