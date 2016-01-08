@@ -310,8 +310,8 @@ class AST {
             case _:
                 AST.codeArray[loc1++] = buildCommand(.InputInt, param: ident)
             }
-            guard let newLoc = try! nextCmd?.code(loc) else {
-                return loc
+            guard let newLoc = try! nextCmd?.code(loc1) else {
+                return loc1
             }
             return newLoc
         }
@@ -389,8 +389,8 @@ class AST {
             case _:
                 AST.codeArray[loc1++] = buildCommand(.OutputInt, param: ident)
             }
-            guard let newLoc = try! nextCmd?.code(loc) else {
-                return loc
+            guard let newLoc = try! nextCmd?.code(loc1) else {
+                return loc1
             }
             return newLoc
         }
