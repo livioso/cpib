@@ -336,14 +336,14 @@ class AST {
         
         override func check() throws {
             if let expr = expression as? StoreExpr {
-                try! expr.check(.LEFT)
+                try! expr.check(.RIGHT)
                 if(AST.scope != nil) {
                     type = AST.scope!.storeTable[expr.identifier]!.type
                 } else {
                     type = AST.globalStoreTable[expr.identifier]!.type
                 }
             } else if let expr = expression as? DyadicExpr {
-                try! expr.check(.LEFT)
+                try! expr.check(.RIGHT)
                 switch(expr.opr){
                 case .DotOperator():
                     let lhs = expr.expression as! StoreExpr
