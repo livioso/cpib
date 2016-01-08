@@ -11,10 +11,11 @@ prepare:
 build_compiler: prepare
 	@echo "Compiling compiler..."
 	@swiftc \
-		./Compiler/Compiler/main.swift \
+		./Compiler/Compiler/*.swift \
 		./Compiler/Compiler/parser/*.swift \
 		./Compiler/Compiler/scanner/*.swift \
 		./Compiler/Compiler/extensions/*.swift \
+		./Compiler/Compiler/codegen/*.swift \
 		-o ./bin/compiler/iml_compiler
 
 build_vm: prepare
@@ -32,6 +33,10 @@ compile_example_1:
 compile_example_2:
 	@echo "Compiling example 2..."
 	./bin/compiler/iml_compiler ./TestSources/test-02-error.iml ./bin/intermediate/test-02.intermediate
+
+compile_example_4:
+	@echo "Compiling example 4..."
+	./bin/compiler/iml_compiler ./TestSources/test-04.iml ./bin/intermediate/test-04.intermediate
 
 run_example_vmtest:
 	@cp ./TestSources/*.intermediate ./bin/intermediate/
