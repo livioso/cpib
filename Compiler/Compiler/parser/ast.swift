@@ -48,7 +48,7 @@ class AST {
             try! cmd.check()
         }
         
-        func code(let loc:Int) -> [Int:String] {
+        func code(let loc:Int) -> [Int:String] { //CheckCode
             AST.codeArray[loc] = buildCommand(.AllocBlock, param: "\(AST.allocBlock)")
             let newLoc = try! cmd.code(loc + 1)
             AST.codeArray[newLoc] = buildCommand(.Stop)
@@ -413,9 +413,9 @@ class AST {
             try! nextCmd?.check()
         }
         
-        override func code(loc: Int) throws -> Int {
-            //TODO: implement CmdCall (used for procedures!)
-            throw ImplementationError.ToBeImplement
+        override func code(loc: Int) throws -> Int {  //CodeCheck
+            let loc1 = try! expressionList.code(loc)
+            return loc1
         }
 	}
 
@@ -517,11 +517,12 @@ class AST {
                 loc1 = try! leftHandExpression.code(loc)
             }
             if let newLoc = rhs?.codeReference(loc1) {
-                AST.codeArray[loc1++] = buildCommand(.Store)
+                
                 loc1 = newLoc
             } else {
                 loc1 = try! rightHandExpression.code(loc1)
             }
+            AST.codeArray[loc1++] = buildCommand(.Store)
             guard let newLoc = try! nextCmd?.code(loc1) else {
                 return loc1
             }
@@ -1147,8 +1148,6 @@ class AST {
             var loc1 = try! expression.code(loc)
             loc1 = try! term.code(loc1)
             switch(opr){
-            case .DotOperator():
-                loc1++
             case .AddOperator(.PLUS):
                 AST.codeArray[loc1++] = buildCommand(.AddInt)
             case .AddOperator(.MINUS):
@@ -1201,6 +1200,14 @@ class AST {
         
         func check() throws {
             //TODO: check ParameterList with Expressionlist: Type, Count, Mechmode and Changemode
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            guard let newLoc = try! optExpression?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
         }
 
 	}
