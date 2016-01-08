@@ -8,22 +8,20 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	let iAmRaphi = true
+	let iAmRaphi = false
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
 	if iAmRaphi {
 		debugSourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
 		debugSourcePath += "TestSources/test-03.iml"
-		debugOutputPath = "~/Documents/FHNW/Semester5/cpib/cpib/"
-		debugOutputPath += "Compiler/bin/intermediate/out.intermediate"
+		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
 	} else {
 		debugSourcePath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
-		debugSourcePath += "TestSources/test-01.iml"
-		debugOutputPath = "~/Dropbox/FHNW/cpib/__underconstruction/cpib-github/"
-		debugOutputPath += "Compiler/bin/intermediate/out.intermediate"
+		debugSourcePath += "TestSources/test-04.iml"
+		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
 	}
@@ -49,11 +47,12 @@ func main() {
 			let ast = try! cst.toAbstract() as! AST.Program
 			ast.printTree()
 			ast.check()
-            let code = ast.code(0) //TODO catch code
-            for(var i = 0; i < code.count; i++){
-                print("\(i), \(code[i]!),")
-            }
-            print("finish")
+            let code = ast.code(0)
+			
+			print("🔴 Saving intermediate file")
+			Intermediate.save(code, path: outputPath)
+			
+            print("🔴 Compilation Finished... :D")
 			
 		} else { 
 			print("Missing Parameter _ <ouput.intermediate>")

@@ -14,6 +14,8 @@ do
     professor.level init := 19;
 
     position.x := 42;
+    position.x := 5 * (position.y + 5) + 1;
+    debugout position.x;
 
     debugout professor.id
 
