@@ -51,7 +51,7 @@ func main() {
 			ast.check()
             let code = ast.code(0) //TODO catch code
             for(var i = 0; i < code.count; i++){
-                print(code[i]!)
+                print("\(i):\(code[i]!)")
             }
             print("finish")
 			

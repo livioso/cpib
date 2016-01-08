@@ -94,7 +94,7 @@ class Symbol {
 class Store : Symbol{
     var initialized:Bool
     var isConst:Bool
-    var adress:Int?
+    var adress:Int = Int.min
     var reference:Bool = false
     var relative:Bool = false
     
@@ -132,6 +132,7 @@ class Routine {
     let returnValue:Store?
     var parameterList: [ContextParameter] = []
     var adress:Int?
+    var calls: [Int] = []
     
     init(ident:String, routineType: RoutineType, returnValue:Store? = nil) {
         self.ident = ident

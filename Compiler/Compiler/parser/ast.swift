@@ -48,12 +48,16 @@ class AST {
             try! cmd.check()
         }
         
-        func code(let loc:Int) -> [Int:String] {
+        func code(let loc:Int) -> [Int:String] { //CheckCode
             AST.codeArray[loc] = buildCommand(.AllocBlock, param: "\(AST.allocBlock)")
             let newLoc = try! cmd.code(loc + 1)
             AST.codeArray[newLoc] = buildCommand(.Stop)
             try! declaration?.code(newLoc + 1)
-            //TODO: Routines
+            for (_, routine) in AST.globalRoutineTable {
+                for locR in routine.calls {
+                    AST.codeArray[locR] = buildCommand(.Call, param: "\(routine.adress!)")
+                }
+            }
             
             return AST.codeArray
         }
@@ -394,28 +398,29 @@ class AST {
 
 	class CmdCall: Cmd {
 
-		let expressionList: ExpressionList
+		//let expressionList: ExpressionList
+        let routineCall:RoutineCall
 		let nextCmd: Cmd?
 
-		init(expressionList: ExpressionList, nextCmd: Cmd?) {
-			self.expressionList = expressionList
+		init(routineCall: RoutineCall, nextCmd: Cmd?) {
+			self.routineCall = routineCall
 			self.nextCmd = nextCmd
 		}
         
         override func printTree(tab: String) {
             print(tab + description)
-            expressionList.printTree(tab + "\t")
+            routineCall.printTree(tab + "\t")
             nextCmd?.printTree(tab + "\t")
         }
         
         override func check() throws {
-            try! expressionList.check()
+            try! routineCall.check()
             try! nextCmd?.check()
         }
         
-        override func code(loc: Int) throws -> Int {
-            //TODO: implement CmdCall (used for procedures!)
-            throw ImplementationError.ToBeImplement
+        override func code(loc: Int) throws -> Int {  //CodeCheck
+            let loc1 = try! routineCall.code(loc)
+            return loc1
         }
 	}
 
@@ -494,7 +499,7 @@ class AST {
                 }
             }
             
-            if let r = leftHandExpression as? DyadicExpr {
+            if let r = rightHandExpression as? DyadicExpr {
                 switch(r.opr){
                 case .DotOperator():
                     let expr1 = r.expression as! StoreExpr
@@ -517,11 +522,12 @@ class AST {
                 loc1 = try! leftHandExpression.code(loc)
             }
             if let newLoc = rhs?.codeReference(loc1) {
-                AST.codeArray[loc1++] = buildCommand(.Store)
+                
                 loc1 = newLoc
             } else {
                 loc1 = try! rightHandExpression.code(loc1)
             }
+            AST.codeArray[loc1++] = buildCommand(.Store)
             guard let newLoc = try! nextCmd?.code(loc1) else {
                 return loc1
             }
@@ -533,9 +539,9 @@ class AST {
 	class RoutineCall: AST {
 
 		let ident: String
-		let expressionList: ExpressionList
+		let expressionList: ExpressionList?
 
-		init(ident: String, expressionList: ExpressionList) {
+		init(ident: String, expressionList: ExpressionList?) {
 			self.ident = ident
 			self.expressionList = expressionList
 		}
@@ -547,14 +553,24 @@ class AST {
         func printTree(tab: String) {
             print(tab + description)
             print(tab + ident)
-            expressionList.printTree(tab + "\t")
+            expressionList?.printTree(tab + "\t")
         }
         
         func check() throws -> (ValueType, ExpressionType) {
             let routine:Routine = AST.globalRoutineTable[ident]!
             let type = routine.returnValue!.type //not working with Procedures!
-            try! expressionList.check()
+            try! expressionList?.check()
             return (type, .R_Value)
+        }
+        
+        func code(let loc:Int) throws -> Int {
+            var loc1 = loc
+            if let newLoc = try! expressionList?.code(loc) {
+                loc1 = newLoc
+            }
+            let routine = AST.globalRoutineTable[ident]!
+            routine.calls.append(loc1++)
+            return loc1
         }
 	}
 
@@ -603,7 +619,10 @@ class AST {
         
         override func check(let loc:Int) throws -> Int {
             if(loc < 0){
-                return -1
+                guard let newLoc = try! nextDecl?.check(loc) else {
+                    return loc
+                }
+                return newLoc
             } else {
                 let store:Store
                 if(AST.scope != nil){
@@ -612,13 +631,19 @@ class AST {
                     store = AST.globalStoreTable[typedIdent.ident]!
                 }
                 if(store.type == ValueType.RECORD){
-                    return loc
+                    guard let newLoc = try! nextDecl?.check(loc) else {
+                        return loc
+                    }
+                    return newLoc
                 } else {
                     store.adress = 2 + loc + 1
                     print("setAdress: \(store.ident), adress: \(store.adress)")
                     store.reference = false
                     store.relative = true
-                    return loc + 1
+                    guard let newLoc = try! nextDecl?.check(loc + 1) else {
+                        return loc + 1
+                    }
+                    return newLoc + 1
                 }
             }
         }
@@ -652,16 +677,14 @@ class AST {
                 var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
                 
                 if(AST.scope != nil){
-                    let check = AST.scope!.recordTable[record.ident]
-                    if(check != nil) {
+                    if let _ = AST.scope!.recordTable[record.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.scope!.recordTable[record.ident] = record
                         AST.scope!.storeTable[record.ident] = recordStore
                     }
                 } else {
-                    let check = AST.globalRecordTable[record.ident]
-                    if(check != nil) {
+                    if let _ = AST.globalRecordTable[record.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.globalRecordTable[record.ident] = record
@@ -672,48 +695,46 @@ class AST {
                 while(decl != nil){
                     let store:Store = try! decl!.check()
                     
-                    record.scope.storeTable[store.ident] = Store(ident: store.ident, type: store.type, isConst: store.isConst)
+                    let oldIdent = store.ident
                     
                     store.ident = recordStore.ident + "." + store.ident
+                    
+                    record.scope.storeTable[oldIdent] = store
                     
                     if(isConst && store.isConst != isConst){
                         throw ContextError.RecordIsConstButNotTheirFields
                     }
                     
                     if(AST.scope != nil){
-                        let check = AST.scope!.storeTable[store.ident]
-                        if(check != nil) {
+                        if let _ = AST.scope!.storeTable[store.ident] {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.scope!.storeTable[store.ident] = store
                             record.recordFields[store.ident] = store
                         }
                     } else {
-                        let check = AST.globalStoreTable[store.ident]
-                        if(check != nil) {
+                        if let _ = AST.globalStoreTable[store.ident] {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.globalStoreTable[store.ident] = store
                             record.recordFields[store.ident] = store
                         }
+                        store.adress = AST.allocBlock++
+                        print("alloc: \(store.ident), adress: \(store.adress)")
                     }
-                    store.adress = AST.allocBlock++
-                    print("alloc: \(store.ident), adress: \(store.adress)")
                     
                     decl = decl!.nextDecl as? AST.DeclarationStore
                 }
             } else {
                 let store:Store = Store(ident: typedIdent.ident, type: type, isConst: isConst)
                 if(AST.scope != nil){
-                    let check = AST.scope!.storeTable[store.ident]
-                    if(check != nil) {
+                    if let _ = AST.scope!.storeTable[store.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.scope!.storeTable[store.ident] = store
                     }
                 } else {
-                    let check = AST.globalStoreTable[store.ident]
-                    if(check != nil) {
+                    if let _ = AST.globalStoreTable[store.ident] {
                         throw ContextError.IdentifierAlreadyDeclared
                     } else {
                         AST.globalStoreTable[store.ident] = store
@@ -726,7 +747,10 @@ class AST {
         }
         
         override func code(loc: Int) throws -> Int {
-            return loc
+            guard let newLoc = try! nextDecl?.code(loc) else {
+                return loc
+            }
+            return newLoc
         }
         
         
@@ -771,8 +795,7 @@ class AST {
             AST.scope = function.scope
             try! retVal.checkDeclaration()
             
-            let check = AST.globalRoutineTable[ident]
-            if(check != nil) {
+            if let _ = AST.globalRoutineTable[ident] {
                 throw ContextError.IdentifierAlreadyDeclared
             } else {
                 AST.globalRoutineTable[ident] = function
@@ -789,11 +812,14 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             let newLoc = parameterList.calculateAdress(routine.parameterList.count, loc: 0)
-            try! returnValue.check(newLoc)
+            try! returnValue.check(newLoc) //TODO: Maybe Not what we want...
             
             try! cmd.check()
             AST.scope = nil
-            return -1
+            guard let newerLoc = try! nextDecl?.check(loc) else {
+                return loc
+            }
+            return newerLoc
         }
         
         override func code(loc: Int) throws -> Int {
@@ -802,18 +828,26 @@ class AST {
             AST.scope = routine.scope
             routine.adress = loc1
             let params = routine.parameterList
+            AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
             for param in params {
-                throw ImplementationError.ToBeImplement
+                let store = AST.scope!.storeTable[param.ident]!
                 if(param.mechMode == MechModeType.REF){
-                    //TODO: no alloc needed
+                    loc1 = store.code(loc1)
                 } else {
-                    let store = AST.scope!.storeTable[param.ident]
+                    AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
+                    loc1 = store.code(loc1)
                 }
             }
-            //TODO: What to do here?
+            loc1 = try! cmd.code(loc1)
+            
+            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(params.count)")
             
             AST.scope = nil
-            return loc1
+            
+            guard let newLoc = try! nextDecl?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
         }
 	}
 
@@ -850,8 +884,7 @@ class AST {
             }
             let procedure = Routine(ident: ident, routineType: .PROC)
             AST.scope = procedure.scope
-            let check = AST.globalRoutineTable[ident]
-            if(check != nil) {
+            if let _ = AST.globalRoutineTable[ident] {
                 throw ContextError.IdentifierAlreadyDeclared
             } else {
                 AST.globalRoutineTable[ident] = procedure
@@ -875,11 +908,37 @@ class AST {
             
             try! cmd.check()
             AST.scope = nil
-            return -1
+            guard let newLoc = try! nextDecl?.check(loc) else {
+                return loc
+            }
+            return newLoc
         }
         
         override func code(loc: Int) throws -> Int {
-            throw ImplementationError.ToBeImplement
+            var loc1 = loc
+            let routine = AST.globalRoutineTable[ident]!
+            AST.scope = routine.scope
+            routine.adress = loc1
+            let params = routine.parameterList
+            for param in params {
+                let store = AST.scope!.storeTable[param.ident]!
+                if(param.mechMode == MechModeType.REF){
+                    loc1 = store.code(loc1)
+                } else {
+                    AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
+                    loc1 = store.code(loc1)
+                }
+            }
+            loc1 = try! cmd.code(loc1)
+            
+            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(params.count)")
+            
+            AST.scope = nil
+            
+            guard let newLoc = try! nextDecl?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
         }
 	}
 
@@ -922,7 +981,7 @@ class AST {
             if(mechType != nil){
                 mechModeType = mechType!
             }
-            let changeMode: ChangeModeType = (store.isConst) ? .CONST : .VAR
+            let changeMode:ChangeModeType = (store.isConst) ? .CONST : .VAR
             AST.scope!.storeTable[store.ident]!.initialized = true
             let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
             routine.parameterList.append(contextParameter)
@@ -933,9 +992,8 @@ class AST {
             var loc1 = loc
 			
 			let checkResult = try! declarationStorage.check()
-			let index = checkResult.ident
 			
-            let store = AST.scope!.storeTable[index]!
+            let store = AST.scope!.storeTable[checkResult.ident]!
             let mechTest = try!  mechMode?.check()
             if(mechTest != nil && mechTest == MechModeType.REF){
                 store.adress = -paramListSize
@@ -976,7 +1034,7 @@ class AST {
         }
         
         override func checkDeclaration() throws {
-            try!optionalRecordDecl?.checkDeclaration()
+            //Banane mit Brot
         }
     }
 
@@ -1145,10 +1203,17 @@ class AST {
         
         override func code(loc: Int) throws -> Int {
             var loc1 = try! expression.code(loc)
-            loc1 = try! term.code(loc1)
+            if(loc == loc1) {
+                let expr1 = expression as! StoreExpr
+                let expr2 = term as! StoreExpr
+                expr1.identifier = expr1.identifier + "." + expr2.identifier
+                loc1 = try! expr1.code(loc1)
+            } else {
+                loc1 = try! term.code(loc1)
+            }
             switch(opr){
             case .DotOperator():
-                loc1++
+                return loc1
             case .AddOperator(.PLUS):
                 AST.codeArray[loc1++] = buildCommand(.AddInt)
             case .AddOperator(.MINUS):
@@ -1202,6 +1267,14 @@ class AST {
         func check() throws {
             //TODO: check ParameterList with Expressionlist: Type, Count, Mechmode and Changemode
         }
+        
+        func code(let loc:Int) throws -> Int {
+            let loc1 = try! expression.code(loc)
+            guard let newLoc = try! optExpression?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
+        }
 
 	}
 
@@ -1254,7 +1327,7 @@ class AST {
 
     class StoreExpr: Expression {
 
-        let identifier: String
+        var identifier: String
         let initToken: Token?
 
         init(identifier: String, initToken: Token?) {
@@ -1357,9 +1430,10 @@ class AST {
             return try! routineCall.check()
         }
         
-        override func code(loc: Int) throws -> Int {
-            print("yolo")
-            return loc
+        override func code(loc: Int) throws -> Int { //CodeCheck
+            var loc1 = loc
+            loc1 = try! routineCall.code(loc1)
+            return loc1
         }
 
     }
