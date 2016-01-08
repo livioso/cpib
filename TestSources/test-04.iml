@@ -1,7 +1,7 @@
 program main
 global
-    var position: record ( var x:int64, const y:int64 ) ;
-    professor: record ( id:int64, level:int64 )
+    var position: record ( var x:int32, const y:int32 ) ;
+    professor: record ( id:int32, level:int32 )
 
 do
     position.x init := 4;

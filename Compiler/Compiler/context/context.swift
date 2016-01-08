@@ -24,7 +24,7 @@ enum ContextError: ErrorType {
 
 enum ValueType {
     case BOOL
-    case INT64
+    case INT32
     case RECORD
     
     case Unknown //Has to be replaced at the end!

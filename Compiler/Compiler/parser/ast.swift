@@ -600,8 +600,8 @@ class AST {
             switch(typedIdent.type){
             case .Type(.BOOLEAN):
                 type = .BOOL
-            case .Type(.INT64):
-                type = .INT64
+            case .Type(.INT32):
+                type = .INT32
             case .Type(.RECORD):
                 type = .RECORD
             case _:
@@ -661,8 +661,8 @@ class AST {
             switch(typedIdent.type){
             case .Type(.BOOLEAN):
                 type = .BOOL
-            case .Type(.INT64):
-                type = .INT64
+            case .Type(.INT32):
+                type = .INT32
             case .Type(.RECORD):
                 type = .RECORD
             case _:
@@ -1174,14 +1174,14 @@ class AST {
             case .MultOperator(.MOD_E): fallthrough
             case .AddOperator(.PLUS): fallthrough
             case .AddOperator(.MINUS):
-                if(typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
-                    expressionType = .INT64
+                if(typeL == ValueType.INT32 &&  typeR == ValueType.INT32){
+                    expressionType = .INT32
                 } else {
                     throw ContextError.TypeErrorInOperator
                 }
             case .RelOperator(.EQ): fallthrough
             case .RelOperator(.NE):
-                if(typeL == ValueType.BOOL &&  typeR == ValueType.BOOL || typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
+                if(typeL == ValueType.BOOL &&  typeR == ValueType.BOOL || typeL == ValueType.INT32 &&  typeR == ValueType.INT32){
                     expressionType = .BOOL
                 } else {
                     throw ContextError.TypeErrorInOperator
@@ -1190,7 +1190,7 @@ class AST {
             case .RelOperator(.GT): fallthrough
             case .RelOperator(.LE): fallthrough
             case .RelOperator(.GE):
-                if(typeL == ValueType.INT64 &&  typeR == ValueType.INT64){
+                if(typeL == ValueType.INT32 &&  typeR == ValueType.INT32){
                     expressionType = .BOOL
                 } else {
                     throw ContextError.TypeErrorInOperator
@@ -1360,7 +1360,7 @@ class AST {
             case .Boolean(false):
                 type = .BOOL
             case _:
-                type = .INT64
+                type = .INT32
             }
             
             return (type, .R_Value)
