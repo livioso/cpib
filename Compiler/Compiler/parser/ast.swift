@@ -971,20 +971,31 @@ class AST {
             if(store.type == ValueType.RECORD) {
                 let record = AST.scope!.recordTable[store.ident]!
                 let recordFields = record.recordFields
-                for (idents, _) in recordFields {
+                for (idents, recordField) in recordFields {
                     record.setInitializedDot(idents)
+                    
+                    var mechModeType:MechModeType = MechModeType.COPY
+                    let mechType = try! mechMode?.check()
+                    if(mechType != nil){
+                        mechModeType = mechType!
+                    }
+                    let changeMode:ChangeModeType = (recordField.isConst) ? .CONST : .VAR
+                    AST.scope!.storeTable[idents]!.initialized = true
+                    let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: idents, type: recordField.type)
+                    routine.parameterList.append(contextParameter)
                 }
                 
+            } else {
+                var mechModeType:MechModeType = MechModeType.COPY
+                let mechType = try! mechMode?.check()
+                if(mechType != nil){
+                    mechModeType = mechType!
+                }
+                let changeMode:ChangeModeType = (store.isConst) ? .CONST : .VAR
+                AST.scope!.storeTable[store.ident]!.initialized = true
+                let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
+                routine.parameterList.append(contextParameter)
             }
-            var mechModeType:MechModeType = MechModeType.COPY
-            let mechType = try! mechMode?.check()
-            if(mechType != nil){
-                mechModeType = mechType!
-            }
-            let changeMode:ChangeModeType = (store.isConst) ? .CONST : .VAR
-            AST.scope!.storeTable[store.ident]!.initialized = true
-            let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: store.ident, type: store.type)
-            routine.parameterList.append(contextParameter)
             try! nextParam?.check(routine)
         }
         
@@ -1269,7 +1280,30 @@ class AST {
         }
         
         func code(let loc:Int) throws -> Int {
-            let loc1 = try! expression.code(loc)
+            var loc1:Int = loc
+            if let expr = expression as? StoreExpr {
+                let store:Store
+                if(AST.scope != nil){
+                    store = AST.scope!.storeTable[expr.identifier]!
+                } else {
+                    store = AST.globalStoreTable[expr.identifier]!
+                }
+                if(store.type == ValueType.RECORD){
+                    let record:Record
+                    if(AST.scope != nil){
+                        record = AST.scope!.recordTable[expr.identifier]!
+                    } else {
+                        record = AST.globalRecordTable[expr.identifier]!
+                    }
+                    for (_, field) in record.recordFields {
+                        loc1 = field.code(loc1)
+                    }
+                } else {
+                    loc1 = try! expression.code(loc1)
+                }
+            } else {
+                loc1 = try! expression.code(loc1)
+            }
             guard let newLoc = try! optExpression?.code(loc1) else {
                 return loc1
             }
