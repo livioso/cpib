@@ -11,7 +11,7 @@ global
       copy const y:int64
     ) returns const d:int64
     do
-      d init := x * q.x + y * q.y
+      d init := x * q.x
     endfun
 
 do
