@@ -1001,13 +1001,35 @@ class AST {
         
         func calculateAdress(paramListSize:Int, loc:Int) -> Int {
             var loc1 = loc
+            var paramSize = paramListSize
 			
 			let checkResult = try! declarationStorage.check()
 			
             let store = AST.scope!.storeTable[checkResult.ident]!
             let mechTest = try!  mechMode?.check()
+            if(store.type == ValueType.RECORD) {
+                let record:Record
+                if(AST.scope != nil){
+                    record = AST.scope!.recordTable[store.ident]!
+                } else {
+                    record = AST.globalRecordTable[store.ident]!
+                }
+                for (ident, field) in record.recordFields {
+                    if(mechTest != nil && mechTest == MechModeType.REF){
+                        field.adress = -paramSize
+                        print("setAdress: \(ident), adress: \(field.adress)")
+                        field.reference = true
+                        field.relative = true
+                        paramSize -= 1
+                    } else {
+                        field.adress = 2 + ++loc1
+                        print("setAdress: \(ident), adress: \(field.adress)")
+                        field.relative = true
+                    }
+                }
+            }
             if(mechTest != nil && mechTest == MechModeType.REF){
-                store.adress = -paramListSize
+                store.adress = -paramSize
                 print("setAdress: \(store.ident), adress: \(store.adress)")
                 store.reference = true
                 store.relative = true
@@ -1016,7 +1038,7 @@ class AST {
                 print("setAdress: \(store.ident), adress: \(store.adress)")
                 store.relative = true
             }
-            guard let newLoc = nextParam?.calculateAdress(paramListSize - 1, loc: loc1) else {
+            guard let newLoc = nextParam?.calculateAdress(paramSize - 1, loc: loc1) else {
                 return loc1
             }
             return newLoc
