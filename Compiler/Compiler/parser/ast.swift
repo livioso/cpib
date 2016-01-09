@@ -986,8 +986,8 @@ class AST {
             try! nextParam?.check(routine)
         }
         
-        func calculateAdress(paramListSize:Int, loc:Int) -> Int {
-            var loc1 = loc
+        func calculateAdress(let paramListSize:Int, let loc:Int) -> Int {
+            let loc1 = loc
             var paramSize = paramListSize
 			
 			let checkResult = try! declarationStorage.check()
@@ -1516,6 +1516,7 @@ class AST {
         
         override func code(loc: Int) throws -> Int { //CodeCheck
             var loc1 = loc
+            AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
             loc1 = try! routineCall.code(loc1)
             return loc1
         }
