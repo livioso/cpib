@@ -49,8 +49,8 @@ run_test_example_4:
 	@echo " -> Compiling example 4..."
 	./bin/compiler/iml_compiler ./TestSources/test-04.iml ./bin/intermediate/test-04.intermediate
 	@echo " -> Running example 4 on virtual machine..."
-	@cd ./bin/vm/; \
-		cat ../intermediate/test-04.intermediate | java Machine
+	@cat ./bin/intermediate/test-04.intermediate | pbcopy
+	@cd ./bin/vm/; read -d'' -s -n1 | java Machine
 
 run_test_example_5:
 	@echo " -> Compiling example 5..."

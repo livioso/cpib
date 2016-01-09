@@ -9,7 +9,7 @@ Die Erweiterung **Records in IML** wurden als eigener Typ `record` umgesetzt.
 *Der Compiler ist in [Swift](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/GuidedTour.html#//apple_ref/doc/uid/TP40014097-CH2-ID1) geschrieben. Den Sourcecode findet man auf [Github](https://github.com/livioso/cpib).*
 
 ### Beschreibung der Erweiterung
-Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen. Ein Record soll dabei als neuer Datentyp zur Verfügung stehen. Er soll beliebig viele Felder beinhalten können *(mindestens jedoch eins)*. Felder können vom Datentyp Integer, Boolean oder Record sein. ~~RFC! Deklarierte Records sind im ganzen Programm verfügbar *(in global zu definieren).*~~
+Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *compound data*)[^1] zur Verfügung stellen. Ein Record soll dabei als neuer Datentyp zur Verfügung stehen. Er soll beliebig viele Felder beinhalten können *(mindestens jedoch eins)*. Felder können vom Datentyp Integer, Boolean oder Record sein.
 
 Eine **Deklaration** in IML sieht wie folgt aus:
 
@@ -17,33 +17,38 @@ Eine **Deklaration** in IML sieht wie folgt aus:
 
 Der **Zugriff** ist wie folgt möglich:
 
+- `debugin example.x`
 - `debugout example.x`
 
-- Die Felder können vom Datentyp `boolean`oder `int32`sein `record`. *Nested Records sind möglich.*
+- Die Felder können vom Datentyp `boolean`oder `int32`sein `record`. *Nested Records sind vorgesehen.*
 
 \pagebreak
 
 ### Beispiel
 ```javascript
-program prog
+program main
 global
-	var position: record(x: int32, y: int32);
-	const professor: record(id: int32, level: int32)
+    var position: record ( var x:int32, const y:int32 ) ;
+    professor: record ( id:int32, level:int32 )
+
 do
-	// all fields must be initialised!
-	position(x init := 4, y init := 5);
-	professor(id init := 1007, level: 19);
-	
-	// fields can be changed
-	debugin position.y;
-	position.x := 42;
-	
-	// field 'id' is const => can not be changed
-	// professor.id := 423;
-	
-	offsetInY init := 5;
-	position.y := position.y + offsetInY
-	
+    position.x init := 4;
+    position.y init := 5;
+
+    debugout position.x;
+    debugin position.x;
+
+    debugout position.x;
+
+    professor.id init := 1007;
+    professor.level init := 19;
+
+    position.x := 42;
+    position.x := 5 * (position.y + 5) + 1;
+    debugout position.x;
+
+    debugout professor.id
+
 endprogram
 ```
 
@@ -74,7 +79,7 @@ Zu beachten ist, dass dies aber natürlich generell gilt:
 
 ``` javascript
 var position: int32;
-var position: record(x: int32, y: int32);
+var position: record(x: int32, y: int32); // Fehler
     ^^^^^^^^
 ```
 
@@ -92,8 +97,8 @@ var positionXY: record(x: int32, y: int32);
 var positionXYZ: record(x: int32, y: int32, z: int32)                                 
 ```
 
-### Typenchecking (`bool`, `int32`)
-Der zugewiesene Wert muss vom Typ sein, der in der Deklaration angegeben wurde (`bool` oder `int32`):
+### Typenchecking (`bool`, `int32`, `record`)
+Der zugewiesene Wert muss vom Typ sein, der in der Deklaration angegeben wurde (`bool`, `int32` oder `record`):
 
 ``` javascript
 var point: record(x: int32, y: int32);
@@ -127,14 +132,14 @@ point: record(x: int32, y: int32)
 Wird interpretiert als:
 
 ``` javascript
-var point: record(x: int32, y: int32)
+const point: record(const x: int32, const y: int32)
 ```
 
 Felder unterstützen ebenfalls `CHANGEMODE`, wenn jedoch der ganze Record `const` ist, dürfen seine Felder nicht `var` sein:
 
 ``` javascript
-point: record(const x: int32, y: int32) // Fehler
-              ^^^^^
+const point: record(const x: int32, var y: int32) // Fehler
+                                    ^^^
 ```
 
 ### Operationen auf Records:
@@ -218,7 +223,9 @@ var v1: record(x: int32, y: int32, z: int32)
 Initialisierung:
 
 ```javascript
-v1(x init := 42, y init := 42, z init := 42)
+v1.x init := 42;
+v1.y init := 42;
+v1.z init := 42
 ```
 
 **Einfluss auf unsere Lösung**:
@@ -241,18 +248,19 @@ Im Folgenden gilt:  Esp = Epsilon
 ```haskell
     optRecordDeclaration ::= LPAREN recordDecl RPAREN | Eps
     recordDecl               ::= storageDeclaration repRecordFields
-    repRecordFields          ::= COMMA storageDeclaration repRecordFields | Eps
+    repRecordFields          ::= 
+      COMMA storageDeclaration repRecordFields | Eps
     optionalCHANGEMODE       ::= CHANGEMODE | Eps
     storageDeclaration       ::= optionalCHANGEMOD typeIdent
     typeIdent                ::= IDENT COLON typeDeclaration
     typeDeclaration          ::= TYPE optRecordDeclarationList
     optionalCHANGEMODE       ::= CHANGEMODE | Eps
 ```
-*`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie haben einen eigenen TYPE der mit einem RECORD Token repräsentiert wird.*
+*`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variablen behandelt. Sie haben einen eigenen TYPE der mit einem RECORD Token repräsentiert wird.*
 
 *Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.*
 
-```javascript
+```haskell
 expression                   ::= term1 BOOLOPRterm1
 BOOLOPRterm1                 ::= BOOLOPR term1 BOOLOPRterm1 | Eps
 term1                        ::= term 2 RELOPRterm2
@@ -273,8 +281,6 @@ optionalExpressions          ::= expression
 repeatingOptionalExpressions ::= COMMA expression 
                                  repeatingOptionalExpressions | Eps
 ```
-
-\pagebreak
 
 ## Compiler
 *Wir haben unseren IML Compiler in [Swift](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/GuidedTour.html#//apple_ref/doc/uid/TP40014097-CH2-ID1) programmiert. Insgesamt waren wir sehr zufrieden mit unserer Entscheidung. Vor allem das Konzept der Optionals / bzw. des [Optional Chaining](https://developer.apple.com/library/ios/documentation/Swift/Conceptual/Swift_Programming_Language/OptionalChaining.html) aber auch Pattern Matching stellte sich als äusserst praktisch heraus. Einzig die Anbindung an die Virtuelle Maschine gestaltete sich schwierig (da in Java).*
@@ -318,7 +324,7 @@ Der Record selbst enthält dann die RecordFields:
 	
 ### AST
 
-Beim AST verhält es sich ähnlich wie beim CST, da wurde lediglich das RecordDecl weg reduziert:
+Beim AST verhält es sich ähnlich wie beim CST, da wurde lediglich das RecordDecl weg abstrahiert:
 
 ```haskell
 	class DeclarationStore: Declaration {
@@ -336,20 +342,27 @@ Beim AST verhält es sich ähnlich wie beim CST, da wurde lediglich das RecordDe
         ...
 ```
 Wir bauen dann die Record Felder rekursiv über DeclarationStore auf, da TypeDeclaration auch ein Kind von DeclarationStore ist, kann man so theoretisch beliebig viele nested Records in Records deklarieren.
+
 ### Checker
-Beim Context check mussten wir für die Records einige Ausnahmen bilden. Mit dem eingeführtem Dot-Operator müssen wir ebenfalls speziel verfahren im Gegensatz zu den standart Operatoren:
+Beim Context Check mussten wir für die Records einige Ausnahmen bilden. Mit dem eingeführtem Dot-Operator müssen wir ebenfalls speziell verfahren im Gegensatz zu den Standard-Operatoren:
 
 ```haskell
 class DyadicExpr: AST.Expression {
 func check(side:Side) throws -> (ValueType, ExpressionType) {
 ...
+
 if(typeL == ValueType.RECORD) {
 	if(oldScope != nil) {
-		AST.scope = oldScope?.recordTable[(expression as! StoreExpr).identifier]!.scope
+		AST.scope =
+      oldScope?.recordTable
+        [(expression as! StoreExpr).identifier]!.scope
 	} else {
-		AST.scope = AST.globalRecordTable[(expression as! StoreExpr).identifier]!.scope
+		AST.scope =
+      AST.globalRecordTable
+        [(expression as! StoreExpr).identifier]!.scope
 	}
 }
+
 if let r = term as? StoreExpr {
 	if(typeL == ValueType.RECORD && side == Side.LEFT) {
 		checkR = try! r.check(.LEFT)
@@ -362,6 +375,7 @@ if let r = term as? StoreExpr {
 	checkR = try! term.check()
 }
 ...
+
 case .DotOperator:
 	valueSide = .L_Value
 	if(typeL == ValueType.RECORD){
@@ -374,13 +388,15 @@ case .DotOperator:
 		let identifier: String = leftIdent + "." + rightIdent
 		
 		if(AST.scope != nil){
-			guard let type = AST.scope!.storeTable[identifier]?.type else {
-				throw ContextError.SomethingWentWrong
+			guard let type =
+        AST.scope!.storeTable[identifier]?.type else {
+				  throw ContextError.SomethingWentWrong
 			}
 			expressionType = type
 		} else {
-			guard let type = AST.globalStoreTable[identifier]?.type else {
-				throw ContextError.SomethingWentWrong
+			guard let type =
+        AST.globalStoreTable[identifier]?.type else {
+				  throw ContextError.SomethingWentWrong
 			}
 			expressionType = type
 		}
@@ -393,7 +409,7 @@ case _:
 ...
 ```
 Hier setzen wir dann die linke und rechte Seite vom operator zu einem neuen Identifier zusammen, der jeweils die Seiten mit einem "." trennt. Da Punkte in der normalen Namen nicht erlaubt sind, müssen wir so keine Kollisionen mit anderen Identifier rechnen. Auch müssen wir ein init auf der Rechten Seite eines Operators zulassen, da die Syntax folgendes unterstützen muss: `recordName.recordField init := 4`  
-Bei der `StoreExpr`müssen wir darauf achten, dass der Recordidentifier nicht direkt initializiert werden kann, sondern dass dies nur mit seinen Feldern geht:
+Bei der `StoreExpr` müssen wir darauf achten, dass der Recordidentifier nicht direkt initialisiert werden kann, sondern dass dies nur mit seinen Feldern geht:
 
 ```haskell
 class StoreExpr: Expression {
@@ -411,7 +427,8 @@ if(initToken != nil) {
 		throw ContextError.IdentifierAlreadyInitialized
 	}
 	store.initialized = true
-} else if(side == Side.LEFT && !store.initialized && expressionType != ValueType.RECORD){
+} else if(side == Side.LEFT && !store.initialized
+  && expressionType != ValueType.RECORD){
 	throw ContextError.IdentifierNotInitialized
 } else if(side == Side.LEFT && store.isConst) {
 	throw ContextError.NotWriteable
@@ -421,12 +438,15 @@ if(initToken != nil) {
 ...
 ```
 
-Weiter unterscheiden wir in `DeclarationStore` ob es sich um ein Record handelt. Falls es ein Record ist, Erstellen wir einen Record im Context und prüfen den Type Felder und speichern Sie entsprechend im aktuellen Scope ab, dabei wird der Identifier mit dem Recordfeld- und dem Recordnamen gebildet:
+Weiter unterscheiden wir in `DeclarationStore` ob es sich dabei um einen Record handelt. Falls es ein Record ist, erstellen wir einen Record im Context und prüfen die Type Felder und speichern sie entsprechend im aktuellen Scope ab, dabei wird der Identifier mit dem Recordfeld- und dem Recordnamen gebildet:
 
 ```haskell
 if(type == ValueType.RECORD){
 	let record = Record(ident: typedIdent.ident)
-	let recordStore = Store(ident: record.ident, type: type, isConst: isConst)
+	let recordStore = Store(
+    ident: record.ident,
+    type: type,
+    isConst: isConst)
 	recordStore.initialized = true
 	
 	var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
@@ -446,6 +466,7 @@ if(type == ValueType.RECORD){
 			AST.globalStoreTable[record.ident] = recordStore
 		}
 	}
+	
 	while(decl != nil){
 		let store:Store = try! decl!.check()
 		
@@ -480,7 +501,7 @@ if(type == ValueType.RECORD){
 ```
 
 ### Codegeneration
-Alle AST Klassen habe eine Funktion `code(let loc:Int) throws -> Int` welcher den code für die entsprechende Klasse generiert. Dieser ruft dann rekursiv weiter die Funktion bei seinen Kindern auf. Dabei wird `loc` mitgegeben, welcher die Codelocation repräsentiert. Damit können wird dann das `codeArray` mit der richtigen Position befüllen.
+Alle AST Klassen haben eine Funktion `code(let loc:Int) throws -> Int` welcher den Code für die entsprechende Klasse generiert. Dieser ruft dann rekursiv weiter die Funktion bei seinen Kindern auf. Dabei wird `loc` mitgegeben, welcher die Codelocation repräsentiert. Damit können wird dann das `codeArray` mit der richtigen Position befüllen.
 
 Ähnlich wie beim AST, mussten wir für Records jeweils immer eine Sonderausnahme implementieren. Diese sind jedoch von der Art her überall ähnlich. Wir müssen Prüfen ob der Identifier der gerade gefragt ist ein Record ist, falls ja ersetzen wir unseren Record durch seine Felder und lassen dann den Code generieren:
 
@@ -521,11 +542,11 @@ func code(let loc:Int) throws -> Int {
 ```
 
 ### Virtualmachine
-Da wir nicht direkt von Swift mit unserer Virtuellen Machine kommunizieren können, haben wir ein kleines CLI Interface programmiert, welches uns erlaubt die Virtuelle Maschine (das `CodeArray`) via `System.in` zu steuern. Das sieht dann etwa so aus:
+Da wir nicht direkt von Swift mit unserer Virtuellen Machine kommunizieren können, haben wir ein kleines CLI Interface programmiert, welches uns erlaubt die virtuelle Maschine (das `CodeArray`) via `System.in` zu steuern. Das sieht dann etwa so aus:
 
 ```javascript
 # pipes code generated by compiler to vm
-cat code.intermediate | java virtualmachine
+cat code.intermediate | java machine
 
 ```
 
@@ -539,7 +560,7 @@ Wobei der Code in `code.intermediate` wie folgt vorliegt:
 ...
 ```
 
-Siehe auch:
+*Siehe auch:*
 
 - `VirtualMachine/src/Machine.java`, *CLI Interface*
 - `VirtualMachine/src/vm/CodeArray.java`, `fromSystemIn(...)`
@@ -547,21 +568,16 @@ Siehe auch:
 ### Offene Punkte
 Die folgenden Punkte konnten wir bis zur Abgabe leider nicht komplett lösen:
 
+- Mehrere Dyadic-Operationen in einer Expression führen zu Fehlermeldungen.
 - Nested Records konnte leider nicht implementiert werden.
-- Funktionen und Prozeduren funktionieren nicht
-- Mehrere Dyadic-Operationen in einer Expression führen zu Fehlermeldungen
+- Funktionen funktionieren nicht.
 
 ## Appendix
 
 - **Sourcecode & Dokumentation: https://github.com/livioso/cpib**
-- *Arbeitsteilung: Wir haben die Arbeiten wie folgt im Team verteilt.* *Bieri: Scanner, Zwischenbericht, CST, AST, VM, Schlussbericht* / *Brunner: Grammatik (SML), Zwischenbericht, AST, Checker, Codegeneration*. 
+- *Arbeitsteilung: Wir haben die Arbeiten wie folgt im Team verteilt.* *Bieri: Scanner, Zwischenbericht, CST, AST, VM, Codegeneration, Schlussbericht* / *Brunner: Grammatik (SML), Zwischenbericht, AST, Checker, Codegeneration, Schlussbericht*. 
 
 [^1]: https://en.wikipedia.org/wiki/Record_(computer_science)
-
-## Feedback Sonstiges
-
-- v1 := v2: Möglich?
-- v1.y := v1.x + 5?
 
 ## Ehrlichkeitserklärung
 
