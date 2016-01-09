@@ -13,13 +13,13 @@ Die Erweiterung soll sogenannte **Records** (auch bekannt als *struct* oder *com
 
 Eine **Deklaration** in IML sieht wie folgt aus:
 
-- `var example: record(x: int64, b: boolean)`
+- `var example: record(x: int32, b: boolean)`
 
 Der **Zugriff** ist wie folgt möglich:
 
 - `debugout example.x`
 
-- Die Felder können vom Datentyp `boolean`, `int64` oder `record` sein. *Nested Records sind möglich. Es gibt keine Limitierung der Tiefe des Nestlings.*
+- Die Felder können vom Datentyp `boolean`oder `int32`sein `record`. *Nested Records sind möglich.*
 
 \pagebreak
 
@@ -27,8 +27,8 @@ Der **Zugriff** ist wie folgt möglich:
 ```javascript
 program prog
 global
-	var position: record(x: int64, y: int64);
-	const professor: record(id: int64, level: int64)
+	var position: record(x: int32, y: int32);
+	const professor: record(id: int32, level: int32)
 do
 	// all fields must be initialised!
 	position(x init := 4, y init := 5);
@@ -49,14 +49,14 @@ endprogram
 
 ## Funktionalität und Typeinschränkung
 
-### Deklaration des Record in `global`
-Die Deklaration eines Records muss im `global` vorgenommen werden:
+### Deklaration des Record
+Die Deklaration eines Records kann im `global` aber auch lokal vorgenommen werden:
 
 ``` javascript
 ...
 global
-	var position: record(x: int64, y: int64);
-	const professor: record(id: int64, level: int64)
+	var position: record(x: int32, y: int32);
+	const professor: record(id: int32, level: int32)
 do
 ...
 ```
@@ -65,37 +65,38 @@ do
 Die Deklaration (der *Identifier*) eines Records muss eindeutig sein:
 
 ``` javascript
-var position: record(x: int64, y: int64);
-const position: record(z: int64, u: int64) // Fehler
+var position: record(x: int32, y: int32);
+const position: record(z: int32, u: int32) // Fehler
       ^^^^^^^^
 ```
 
 Zu beachten ist, dass dies aber natürlich generell gilt:
 
 ``` javascript
-var position: int64;
-var position: record(x: int64, y: int64);
+var position: int32;
+var position: record(x: int32, y: int32);
+    ^^^^^^^^
 ```
 
 ### Eindeutigkeit der Record Felder Identifier
 Die Deklaration eines Record Felds muss eindeutig sein:
 
 ``` javascript
-var position: record(x: int64, x: int64) // Fehler
+var position: record(x: int32, x: int32) // Fehler
                                ^
 ```
 *Felder Eindeutigkeit muss aber _nur innerhalb_ eines Records gegeben sein:*
 
 ``` javascript
-var positionXY: record(x: int64, y: int64);
-var positionXYZ: record(x: int64, y: int64, z: int64)                                 
+var positionXY: record(x: int32, y: int32);
+var positionXYZ: record(x: int32, y: int32, z: int32)                                 
 ```
 
-### Typenchecking (`bool`, `int64`)
-Der zugewiesene Wert muss vom Typ sein, der in der Deklaration angegeben wurde (`bool` oder `int64`):
+### Typenchecking (`bool`, `int32`)
+Der zugewiesene Wert muss vom Typ sein, der in der Deklaration angegeben wurde (`bool` oder `int32`):
 
 ``` javascript
-var point: record(x: int64, y: int64);
+var point: record(x: int32, y: int32);
 
 point.x := true; // Fehler
            ^^^^                        
@@ -105,7 +106,7 @@ point.x := true; // Fehler
 Der Zugriff auf Felder, die nicht definiert wurden, ist nicht möglich:
 
 ``` javascript
-var point: record(x: int64, y: int64);
+var point: record(x: int32, y: int32);
 
 point.z = 42; // Fehler
       ^  
@@ -120,19 +121,19 @@ Records unterstützen `CHANGEMODE` (`var`, `const`):
 - Falls nicht angegeben, wird `const` verwendet.
 
 ``` javascript
-point: record(x: int64, y: int64)
+point: record(x: int32, y: int32)
 ```
 
 Wird interpretiert als:
 
 ``` javascript
-var point: record(x: int64, y: int64)
+var point: record(x: int32, y: int32)
 ```
 
-Felder unterstützen _kein_ `CHANGEMODE`:
+Felder unterstützen ebenfalls `CHANGEMODE`, wenn jedoch der ganze Record `const` ist, dürfen seine Felder nicht `var` sein:
 
 ``` javascript
-point: record(const x: int64, y: int64) // Fehler
+point: record(const x: int32, y: int32) // Fehler
               ^^^^^
 ```
 
@@ -140,8 +141,8 @@ point: record(const x: int64, y: int64) // Fehler
 Records selbst haben _keine Operationen_. *Folgendes ist also nicht möglich / wird nicht unterstützt:*
 
 ``` javascript
-pointZero: record(var x: int64, var y: int64);
-pointOne: record(var x: int64, var y: int64)
+pointZero: record(var x: int32, var y: int32);
+pointOne: record(var x: int32, var y: int32)
 ...
 
 pointZero = pointZero + pointOne // Fehler
@@ -211,7 +212,7 @@ v1.z = 20;
 Deklaration:
 
 ```javascript
-var v1: record(x: int64, y: int64, z: int64)
+var v1: record(x: int32, y: int32, z: int32)
 ```
 
 Initialisierung:
@@ -224,7 +225,6 @@ v1(x init := 42, y init := 42, z init := 42)
 
 - Unser Ziel war es eine IML-ähnliche Syntax beizubehalten.
 - Unsere Spezifikation orientiert sich lose an der Pascal Spezifikation.
-- Wir fanden eine einfache Initialisierung wichtig *(in einem Kommando).*
 
 \pagebreak
 
@@ -239,54 +239,16 @@ Im Folgenden gilt:  Esp = Epsilon
 ```
 
 ```haskell
-recordDeclaration   ::= optional CHANGEMOD IDENT COLON
-                        RECORD recordFieldList
-recordFieldList     ::= LPAREN recordFields RPAREN
-recordFields        ::= recordField optionalRecordField
-recordField         ::= IDENT COLON TYPE
-optionalRecordField ::= COMMA recordField 
-                        optionalRecordField | Eps
-optionalCHANGEMODE  ::= CHANGEMODE | Eps
+    optRecordDeclaration ::= LPAREN recordDecl RPAREN | Eps
+    recordDecl               ::= storageDeclaration repRecordFields
+    repRecordFields          ::= COMMA storageDeclaration repRecordFields | Eps
+    optionalCHANGEMODE       ::= CHANGEMODE | Eps
+    storageDeclaration       ::= optionalCHANGEMOD typeIdent
+    typeIdent                ::= IDENT COLON typeDeclaration
+    typeDeclaration          ::= TYPE optRecordDeclarationList
+    optionalCHANGEMODE       ::= CHANGEMODE | Eps
 ```
-
-*Um nun ein Record in der Grammatik mit dem Rest unserer Programmiersprache zu verwenden, müssen wir die Produktion `recordDeclaration` anders angehen, da wir sonst einen Konflikt mit der Produktion `storageDeclaration`erhalten.*
-
-Initialisierung eingebunden in `storageDeclaration`:
-
-```haskell
-storageDeclaration  ::= optionalCHANGEMOD typeIdent
-typeIdent           ::= IDENT COLON typeDeclaration
-typeDeclaration     ::= TYPE | RECORD recordFieldList
-recordFieldList     ::= LPAREN recordFields RPAREN
-recordFields        ::= recordField optionalRecordField
-recordField         ::= IDENT COLON TYPE
-optionalRecordField ::= COMMA recordField 
-                        optionalRecordField | Eps
-optionalCHANGEMODE  ::= CHANGEMODE | Eps
-```
-*`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie sind jedoch kein eigener TYPE und haben einen eigenen RECORD Token.*
-
-*Nun möchten wir die Records in einer einzigen Zeile initialisieren, um Zugriffe auf undefined values von einem Record zu vermeiden.*
-
-Die Grammatik würde etwa so aussehen:
-
-```javascript
-recordInit         ::= IDENT LPAREN recordInit RPAREN
-recordInit         ::= IDENT INIT BECOMES 
-                       LITERAL optinalRecordInit
-optionalRecordInit ::= COMMA recordInit | Eps
-```
-
-*Hier haben wir jedoch noch einen Konflikt, da der Grammatikteil in den `cmd` Teil eingefügt werden soll, und da die Expressions auch mit IDENT beginnen können. Das Problem konnten wir bisher noch nicht lösen. Eventuell müssen wir es auch als Expression definieren.*
-
-```javascript
-recordInitialisation     ::= IDENT LPAREN 
-                             recordInitialisationList RPAREN
-recordInitialisationList ::= recordInit optionalRecordInit
-recordInit               ::= IDENT INIT BECOMES factor
-optionalRecordInit       ::= COMMA recordInit 
-                             optionalRecordInit | Eps
-```
+*`storageDeclaration` wird im globalen Raum deklariert und somit werden Records gleich wie die normalen Variabeln behandelt. Sie haben einen eigenen TYPE der mit einem RECORD Token repräsentiert wird.*
 
 *Zugriffe auf die Werte in einem Record sollen in die Expression Grammatik eingefügt werden, damit wir uns nicht separat mit den Problemen wie `Debugin` oder `Debugout` beschäftigen müssen.*
 
@@ -300,7 +262,7 @@ ADDOPRterm3                  ::= ADDOPR term3 ADDOPRterm3 | Eps
 term3                        ::= term4 MULTOPRterm4
 MULTOPRterm4                 ::= MULTOPR term4 MULTOPRterm4 | Eps
 term4                        ::= factor DOTOPRfactor
-DOTOPRfactor                 ::= DOTOPR factor | Eps
+DOTOPRfactor                 ::= DOTOPR IDENT | Eps
 factor                       ::= LITERAL 
                                  | IDENT optionalIInitFuncSpec  
                                  | LPAREN expression RPAREN
@@ -459,7 +421,7 @@ if(initToken != nil) {
 ...
 ```
 
-Weiter unterscheiden wir in `DeclarationStore` ob es sich um ein Record oder nicht handelt. Falls es ein Record ist, Erstellen wir einen Record im Context und prüfen alle Felder über deren Type nach und speichern die entsprechend in aktuellen Scope ab, dabei wird wieder der identifier mit Feld und Record namen gebildet:
+Weiter unterscheiden wir in `DeclarationStore` ob es sich um ein Record handelt. Falls es ein Record ist, Erstellen wir einen Record im Context und prüfen den Type Felder und speichern Sie entsprechend im aktuellen Scope ab, dabei wird der Identifier mit dem Recordfeld- und dem Recordnamen gebildet:
 
 ```haskell
 if(type == ValueType.RECORD){
@@ -470,16 +432,14 @@ if(type == ValueType.RECORD){
 	var decl:DeclarationStore? = typedIdent.optionalRecordDecl!
 	
 	if(AST.scope != nil){
-		let check = AST.scope!.recordTable[record.ident]
-		if(check != nil) {
+		if let _ = AST.scope!.recordTable[record.ident] {
 			throw ContextError.IdentifierAlreadyDeclared
 		} else {
 			AST.scope!.recordTable[record.ident] = record
 			AST.scope!.storeTable[record.ident] = recordStore
 		}
 	} else {
-		let check = AST.globalRecordTable[record.ident]
-		if(check != nil) {
+		if let _ = AST.globalRecordTable[record.ident] {
 			throw ContextError.IdentifierAlreadyDeclared
 		} else {
 			AST.globalRecordTable[record.ident] = record
@@ -489,31 +449,30 @@ if(type == ValueType.RECORD){
 	while(decl != nil){
 		let store:Store = try! decl!.check()
 		
-		record.scope.storeTable[store.ident] = Store(ident: store.ident, type: store.type, isConst: store.isConst)
+		let oldIdent = store.ident
 		store.ident = recordStore.ident + "." + store.ident
+		record.scope.storeTable[oldIdent] = store
 		
 		if(isConst && store.isConst != isConst){
 			throw ContextError.RecordIsConstButNotTheirFields
 		}
 		if(AST.scope != nil){
-			let check = AST.scope!.storeTable[store.ident]
-			if(check != nil) {
+			if let _ = AST.scope!.storeTable[store.ident] {
 				throw ContextError.IdentifierAlreadyDeclared
 			} else {
 				AST.scope!.storeTable[store.ident] = store
 				record.recordFields[store.ident] = store
 			}
 		} else {
-			let check = AST.globalStoreTable[store.ident]
-			if(check != nil) {
+			if let _ = AST.globalStoreTable[store.ident] {
 				throw ContextError.IdentifierAlreadyDeclared
 			} else {
 				AST.globalStoreTable[store.ident] = store
 				record.recordFields[store.ident] = store
 			}
+			store.adress = AST.allocBlock++
+			print("alloc: \(store.ident), adress: \(store.adress)")
 		}
-		store.adress = AST.allocBlock++
-		print("alloc: \(store.ident), adress: \(store.adress)")
 		
 		decl = decl!.nextDecl as? AST.DeclarationStore
 	}
@@ -521,6 +480,45 @@ if(type == ValueType.RECORD){
 ```
 
 ### Codegeneration
+Alle AST Klassen habe eine Funktion `code(let loc:Int) throws -> Int` welcher den code für die entsprechende Klasse generiert. Dieser ruft dann rekursiv weiter die Funktion bei seinen Kindern auf. Dabei wird `loc` mitgegeben, welcher die Codelocation repräsentiert. Damit können wird dann das `codeArray` mit der richtigen Position befüllen.
+
+Ähnlich wie beim AST, mussten wir für Records jeweils immer eine Sonderausnahme implementieren. Diese sind jedoch von der Art her überall ähnlich. Wir müssen Prüfen ob der Identifier der gerade gefragt ist ein Record ist, falls ja ersetzen wir unseren Record durch seine Felder und lassen dann den Code generieren:
+
+```haskell
+class ExpressionList: AST {
+...
+func code(let loc:Int) throws -> Int {
+	var loc1:Int = loc
+	if let expr = expression as? StoreExpr {
+		let store:Store
+		if(AST.scope != nil){
+			store = AST.scope!.storeTable[expr.identifier]!
+		} else {
+			store = AST.globalStoreTable[expr.identifier]!
+		}
+		if(store.type == ValueType.RECORD){
+			let record:Record
+			if(AST.scope != nil){
+				record = AST.scope!.recordTable[expr.identifier]!
+			} else {
+				record = AST.globalRecordTable[expr.identifier]!
+			}
+			for (_, field) in record.recordFields {
+				loc1 = field.code(loc1)
+			}
+		} else {
+			loc1 = try! expression.code(loc1)
+		}
+	} else {
+		loc1 = try! expression.code(loc1)
+	}
+	guard let newLoc = try! optExpression?.code(loc1) else {
+		return loc1
+	}
+	return newLoc
+}
+...
+```
 
 ### Virtualmachine
 Da wir nicht direkt von Swift mit unserer Virtuellen Machine kommunizieren können, haben wir ein kleines CLI Interface programmiert, welches uns erlaubt die Virtuelle Maschine (das `CodeArray`) via `System.in` zu steuern. Das sieht dann etwa so aus:
@@ -550,6 +548,8 @@ Siehe auch:
 Die folgenden Punkte konnten wir bis zur Abgabe leider nicht komplett lösen:
 
 - Nested Records konnte leider nicht implementiert werden.
+- Funktionen und Prozeduren funktionieren nicht
+- Mehrere Dyadic-Operationen in einer Expression führen zu Fehlermeldungen
 
 ## Appendix
 
@@ -565,7 +565,7 @@ Die folgenden Punkte konnten wir bis zur Abgabe leider nicht komplett lösen:
 
 ## Ehrlichkeitserklärung
 
-*Hiermit erklären wir, dass wir die vorliegenden Bericht und den Compiler selbständig verfasst bzw. programmiert haben. Wir haben die Grundstruktur der Grammatik (sml) von einer Gruppe (Manuel Jenny) aus dem letzen Jahr verwendet und entsprechend angepasst (Records Grammatik hinzugefügt). Eine sonstige Zusammenarbeit mit anderen Teams fand nicht statt.*
+*Hiermit erklären wir, dass wir die vorliegenden Bericht und den Compiler selbständig verfasst bzw. programmiert haben. Eine Zusammenarbeit mit anderen Teams fand nicht statt.*
 
 *Ort / Datum / Unterschrift*
 
