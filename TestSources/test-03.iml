@@ -5,14 +5,14 @@ global
 
     offsetInY:int32;
 
-    fun manhattenDistance (
+    proc manhattenDistance (
       ref const q: record ( x:int32, y:int32 ) ,
       copy const x:int32,
       copy const y:int32
-    ) returns const d:int32
+    )
     do
-      d init := x + q.x
-    endfun
+      q.x := x * y + q.x * q.y
+    endproc
 
 do
     position.x init := 4;
@@ -23,7 +23,8 @@ do
 
     position.x := 42;
 
-    offsetInY init := manhattenDistance ( position, 5, 4 ) ;
-    position.x := position.y + offsetInY
+    call manhattenDistance ( position, 5, 4 ) ;
+    debugout position.x;
+    debugout position.y
 
 endprogram

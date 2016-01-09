@@ -1,6 +1,6 @@
 program main
 global
-    const professor: record ( id:int64, level:int64 )
+    const professor: record ( id:int32, level:int32 )
 
 do
     professor.id init := 1007;

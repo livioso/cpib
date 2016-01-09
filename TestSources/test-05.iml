@@ -1,9 +1,9 @@
 program main
 global
-    var input: record ( const one:int64, const two:int64 ) ;
+    var input: record ( const one:int32, const two:int32 )
 
 do
-    debugin input.one;
-    debugin input.two
+    debugin input.one init ;
+    debugin input.two init
 
 endprogram

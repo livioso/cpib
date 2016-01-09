@@ -104,6 +104,15 @@ class Store : Symbol{
         super.init(ident: ident, type: type)
     }
     
+    func paramCode(let loc:Int, let mechMode:MechModeType) -> Int {
+        var loc1:Int = loc
+        AST.codeArray[loc1++] = buildCommand(.LoadImInt, param: "\(adress)")
+        if(mechMode == MechModeType.COPY) {
+            AST.codeArray[loc1++] = buildCommand(.Deref)
+        }
+        return loc1
+    }
+    
     func code(let loc:Int) -> Int {
         var loc1 = codeReference(loc)
         AST.codeArray[loc1++] = buildCommand(.Deref)
@@ -145,7 +154,7 @@ class Routine {
 class Record {
     let ident:String
     let scope:Scope
-    var recordFields: [String:Store] = [:]
+    var recordFields: [Store] = []
     
     init(ident:String) {
         self.ident = ident
@@ -155,11 +164,19 @@ class Record {
     func setInitialized(identifier:String) {
         scope.storeTable[identifier]?.initialized = true
         scope.storeTable[identifier]?.isConst = false
-        recordFields[ident + "." + identifier]?.initialized = true
+        for store in recordFields {
+            if(store.ident == (ident + "." + identifier)) {
+                store.initialized = true
+            }
+        }
     }
     
     func setInitializedDot(identifier:String) {
-        recordFields[identifier]?.initialized = true
+        for store in recordFields {
+            if(store.ident == identifier) {
+                store.initialized = true
+            }
+        }
         let idList = identifier.characters.split{ $0 == "." }.map(String.init)
         scope.storeTable[idList[1]]?.initialized = true
         scope.storeTable[idList[1]]?.isConst = false

@@ -120,7 +120,7 @@ class AST {
             throw ImplementationError.ShouldBeOverritten
         }
         
-        func code(let loc:Int) throws -> Int {
+        func code(let loc:Int, let param:Bool = false) throws -> Int {
             throw CodeImplementation.ToBeOverwritten
         }
     }
@@ -420,7 +420,10 @@ class AST {
         
         override func code(loc: Int) throws -> Int {  //CodeCheck
             let loc1 = try! routineCall.code(loc)
-            return loc1
+            guard let newLoc = try! nextCmd?.code(loc1) else {
+                return loc1
+            }
+            return newLoc
         }
 	}
 
@@ -557,13 +560,14 @@ class AST {
         }
         
         func check() throws -> (ValueType, ExpressionType) {
-            let routine:Routine = AST.globalRoutineTable[ident]!
-            let type = routine.returnValue!.type //not working with Procedures!
+            //let routine:Routine = AST.globalRoutineTable[ident]!
+            //let type = routine.returnValue!.type //not working with Procedures!
+            let type = ValueType.Unknown
             try! expressionList?.check()
             return (type, .R_Value)
         }
         
-        func code(let loc:Int) throws -> Int {
+        func code(let loc:Int, let param:Bool = false) throws -> Int {
             var loc1 = loc
             if let newLoc = try! expressionList?.code(loc) {
                 loc1 = newLoc
@@ -638,8 +642,8 @@ class AST {
                 } else {
                     store.adress = -loc
                     print("setAdress: \(store.ident), adress: \(store.adress)")
-                    store.reference = false
-                    store.relative = true
+                    store.reference = true
+                    store.relative = false
                     guard let newLoc = try! nextDecl?.check(loc + 1) else {
                         return loc + 1
                     }
@@ -710,14 +714,14 @@ class AST {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.scope!.storeTable[store.ident] = store
-                            record.recordFields[store.ident] = store
+                            record.recordFields.append(store)
                         }
                     } else {
                         if let _ = AST.globalStoreTable[store.ident] {
                             throw ContextError.IdentifierAlreadyDeclared
                         } else {
                             AST.globalStoreTable[store.ident] = store
-                            record.recordFields[store.ident] = store
+                            record.recordFields.append(store)
                         }
                         store.adress = AST.allocBlock++
                         print("alloc: \(store.ident), adress: \(store.adress)")
@@ -827,9 +831,7 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             routine.adress = loc1
-            loc1 = parameterList.codeIn(loc1, count: routine.parameterList.count + 1, locs: 0)
             loc1 = try! cmd.code(loc1)
-            loc1 = parameterList.codeOut(loc1, count: routine.parameterList.count + 1, locs: 0)
             
             AST.codeArray[loc1++] = buildCommand(.Return, param: "\(routine.parameterList.count)")
             
@@ -910,13 +912,7 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             routine.adress = loc1
-            if let newloc = parameterList?.codeIn(loc1, count: routine.parameterList.count, locs: 0) {
-                loc1 = newloc
-            }
             loc1 = try! cmd.code(loc1)
-            if let newloc = parameterList?.codeOut(loc1, count: routine.parameterList.count, locs: 0) {
-                loc1 = newloc
-            }
             
             AST.codeArray[loc1++] = buildCommand(.Return, param: "\(routine.parameterList.count)")
             
@@ -958,17 +954,17 @@ class AST {
             if(store.type == ValueType.RECORD) {
                 let record = AST.scope!.recordTable[store.ident]!
                 let recordFields = record.recordFields
-                for (idents, recordField) in recordFields {
-                    record.setInitializedDot(idents)
+                for (var i = 0; i < recordFields.count; i++) {
+                    record.setInitializedDot(recordFields[i].ident)
                     
                     var mechModeType:MechModeType = MechModeType.COPY
                     let mechType = try! mechMode?.check()
                     if(mechType != nil){
                         mechModeType = mechType!
                     }
-                    let changeMode:ChangeModeType = (recordField.isConst) ? .CONST : .VAR
-                    AST.scope!.storeTable[idents]!.initialized = true
-                    let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: idents, type: recordField.type)
+                    let changeMode:ChangeModeType = (recordFields[i].isConst) ? .CONST : .VAR
+                    AST.scope!.storeTable[recordFields[i].ident]!.initialized = true
+                    let contextParameter = ContextParameter(mechMode: mechModeType, changeMode: changeMode, ident: recordFields[i].ident, type: recordFields[i].type)
                     routine.parameterList.append(contextParameter)
                 }
                 
@@ -1002,14 +998,14 @@ class AST {
                 } else {
                     record = AST.globalRecordTable[store.ident]!
                 }
-                for (ident, field) in record.recordFields {
-                    field.adress = -paramSize
-                    print("setAdress: \(ident), adress: \(field.adress)")
-                    field.relative = true
+                for (var i = 0; i < record.recordFields.count; i++) {
+                    record.recordFields[i].adress = -paramSize
+                    print("setAdress: \(record.recordFields[i].ident), adress: \(record.recordFields[i].adress)")
+                    record.recordFields[i].relative = true
                     if (mechTest != nil && mechTest == MechModeType.REF) {
-                        field.reference = true
+                        record.recordFields[i].reference = true
                     } else {
-                        field.reference = false
+                        record.recordFields[i].reference = false
                     }
                     paramSize -= 1
                 }
@@ -1026,46 +1022,6 @@ class AST {
             }
         
             guard let newLoc = nextParam?.calculateAdress(paramSize, loc: loc1) else {
-                return loc1
-            }
-            return newLoc
-        }
-        
-        func codeIn(let loc:Int, let count:Int, let locs:Int) -> Int{
-            var locs1 = locs
-            var loc1 = loc
-            var mechModeType:MechModeType = MechModeType.COPY
-            let mechType = try! mechMode?.check()
-            if(mechType != nil){
-                mechModeType = mechType!
-            }
-            if(mechModeType == MechModeType.COPY){
-                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(2 + ++locs1)")
-                AST.codeArray[loc1++] = buildCommand(.Deref)
-                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(-count)")
-                AST.codeArray[loc1++] = buildCommand(.Store)
-            }
-            guard let newLoc = nextParam?.codeIn(loc1, count: count - 1, locs: locs) else {
-                return loc1
-            }
-            return newLoc
-        }
-        
-        func codeOut(let loc:Int, let count:Int, let locs:Int) -> Int {
-            var locs1 = locs
-            var loc1 = loc
-            var mechModeType:MechModeType = MechModeType.COPY
-            let mechType = try! mechMode?.check()
-            if(mechType != nil){
-                mechModeType = mechType!
-            }
-            if(mechModeType == MechModeType.COPY){
-                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(-count)")
-                AST.codeArray[loc1++] = buildCommand(.Deref)
-                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(2 + ++locs1)")
-                AST.codeArray[loc1++] = buildCommand(.Store)
-            }
-            guard let newLoc = nextParam?.codeOut(loc1, count: count - 1, locs: locs) else {
                 return loc1
             }
             return newLoc
@@ -1262,7 +1218,7 @@ class AST {
             return (expressionType, valueSide)
         }
         
-        override func code(loc: Int) throws -> Int {
+        override func code(loc: Int,let param:Bool = false) throws -> Int {
             var loc1 = try! expression.code(loc)
             if(loc == loc1) {
                 let expr1 = expression as! StoreExpr
@@ -1340,19 +1296,21 @@ class AST {
                 }
                 if(store.type == ValueType.RECORD){
                     let record:Record
+                    let isReference = store.reference
                     if(AST.scope != nil){
                         record = AST.scope!.recordTable[expr.identifier]!
                     } else {
                         record = AST.globalRecordTable[expr.identifier]!
                     }
-                    for (_, field) in record.recordFields {
-                        loc1 = field.code(loc1)
+                    for (var i = 0; i < record.recordFields.count; i++) {
+                        record.recordFields[i].reference = isReference
+                        loc1 = record.recordFields[i].paramCode(loc1, mechMode: MechModeType.REF)
                     }
                 } else {
-                    loc1 = try! expression.code(loc1)
+                    loc1 = try! expression.code(loc1, param: true)
                 }
             } else {
-                loc1 = try! expression.code(loc1)
+                loc1 = try! expression.code(loc1, param: true)
             }
             guard let newLoc = try! optExpression?.code(loc1) else {
                 return loc1
@@ -1390,7 +1348,7 @@ class AST {
             return (type, .R_Value)
         }
         
-        override func code(loc: Int) throws -> Int {
+        override func code(loc: Int, let param:Bool = false) throws -> Int {
             let lit:Int
             switch(literal) {
             case .Integer(let v):
@@ -1470,7 +1428,7 @@ class AST {
             return (expressionType, .L_Value)
         }
         
-        override func code(loc: Int) throws -> Int {
+        override func code(loc: Int, let param:Bool = false) throws -> Int {
             let store:Store
             if(AST.scope != nil) {
                 store = AST.scope!.storeTable[identifier]!
@@ -1480,7 +1438,11 @@ class AST {
             if(store.type == ValueType.RECORD){
                 return loc
             }
-            return store.code(loc)
+            if(param) {
+                return store.paramCode(loc, mechMode: MechModeType.REF)
+            } else {
+                return store.code(loc)
+            }
         }
         
         func codeReference(let loc:Int) -> Int {
@@ -1514,10 +1476,10 @@ class AST {
             return try! routineCall.check()
         }
         
-        override func code(loc: Int) throws -> Int { //CodeCheck
+        override func code(loc: Int, param:Bool = false) throws -> Int { //CodeCheck
             var loc1 = loc
             AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
-            loc1 = try! routineCall.code(loc1)
+            loc1 = try! routineCall.code(loc1, param:param)
             return loc1
         }
 
