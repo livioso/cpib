@@ -1,0 +1,9 @@
+program main
+global
+    var input: record ( const one:int64, const two:int64 ) ;
+
+do
+    debugin input.one;
+    debugin input.two
+
+endprogram
