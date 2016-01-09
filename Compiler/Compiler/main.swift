@@ -14,7 +14,7 @@ func main() {
 	
 	if iAmRaphi {
 		debugSourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
-		debugSourcePath += "TestSources/test-03.iml"
+		debugSourcePath += "TestSources/test-04.iml"
 		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)

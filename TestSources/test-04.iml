@@ -8,7 +8,9 @@ do
     position.y init := 5;
 
     debugout position.x;
-    debugout position.y;
+    debugin position.x;
+
+    debugout position.x;
 
     professor.id init := 1007;
     professor.level init := 19;
