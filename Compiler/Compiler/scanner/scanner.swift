@@ -125,8 +125,10 @@ class Scanner: KeywordProvider {
 		
 		//check if Int is not out of Int64 range
 		let checkInt = Double.init(literal)
-		if checkInt != nil && checkInt > Double.init(integerLiteral: INT64_MAX) {
+		if checkInt != nil && checkInt > 2_147_483_647 {
 			currentState = .ErrorState(description: "❌ Int64 out of Range: \(currentLine.number)")
+        } else if checkInt != nil && checkInt < -2_147_483_648 {
+            currentState = .ErrorState(description: "❌ Int64 out of Range: \(currentLine.number)")
 		} else {
 			let token = Token(
 				terminal: Terminal.LITERAL,
