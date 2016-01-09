@@ -8,13 +8,13 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	/*let iAmRaphi = true
+	let iAmRaphi = true
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
 	if iAmRaphi {
 		debugSourcePath = "~/Documents/FHNW/Semester5/cpib/cpib/"
-		debugSourcePath += "TestSources/test-04.iml"
+		debugSourcePath += "TestSources/test-03.iml"
 		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
@@ -24,7 +24,7 @@ func main() {
 		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
-	}*/
+	}
 	
 
 	if let outputPath = arguments.popLast() {

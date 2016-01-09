@@ -827,20 +827,11 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             routine.adress = loc1
-            let params = routine.parameterList
-            AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
-            for param in params {
-                let store = AST.scope!.storeTable[param.ident]!
-                if(param.mechMode == MechModeType.REF){
-                    loc1 = store.code(loc1)
-                } else {
-                    loc1 = store.code(loc1)
-                    //AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
-                }
-            }
+            loc1 = parameterList.codeIn(loc1, count: routine.parameterList.count + 1, locs: 0)
             loc1 = try! cmd.code(loc1)
+            loc1 = parameterList.codeOut(loc1, count: routine.parameterList.count + 1, locs: 0)
             
-            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(params.count)")
+            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(routine.parameterList.count)")
             
             AST.scope = nil
             
@@ -919,19 +910,15 @@ class AST {
             let routine = AST.globalRoutineTable[ident]!
             AST.scope = routine.scope
             routine.adress = loc1
-            let params = routine.parameterList
-            for param in params {
-                let store = AST.scope!.storeTable[param.ident]!
-                if(param.mechMode == MechModeType.REF){
-                    loc1 = store.code(loc1)
-                } else {
-                    AST.codeArray[loc1++] = buildCommand(.AllocBlock, param: "1")
-                    loc1 = store.code(loc1)
-                }
+            if let newloc = parameterList?.codeIn(loc1, count: routine.parameterList.count, locs: 0) {
+                loc1 = newloc
             }
             loc1 = try! cmd.code(loc1)
+            if let newloc = parameterList?.codeOut(loc1, count: routine.parameterList.count, locs: 0) {
+                loc1 = newloc
+            }
             
-            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(params.count)")
+            AST.codeArray[loc1++] = buildCommand(.Return, param: "\(routine.parameterList.count)")
             
             AST.scope = nil
             
@@ -1000,7 +987,7 @@ class AST {
         }
         
         func calculateAdress(paramListSize:Int, loc:Int) -> Int {
-            let loc1 = loc
+            var loc1 = loc
             var paramSize = paramListSize
 			
 			let checkResult = try! declarationStorage.check()
@@ -1021,8 +1008,8 @@ class AST {
                         field.reference = true
                         field.relative = true
                     } else {
-                        //field.adress = 2 + ++loc1
-                        field.adress = -paramSize
+                        field.adress = 2 + ++loc1
+                        //field.adress = -paramSize
                         print("setAdress: \(ident), adress: \(field.adress)")
                         field.relative = true
                     }
@@ -1035,8 +1022,8 @@ class AST {
                     store.reference = true
                     store.relative = true
                 } else {
-                    //store.adress = 2 + ++loc1
-                    store.adress = -paramSize
+                    store.adress = 2 + ++loc1
+                    //store.adress = -paramSize
                     print("setAdress: \(store.ident), adress: \(store.adress)")
                     store.relative = true
                 }
@@ -1047,6 +1034,47 @@ class AST {
             }
             return newLoc
         }
+        
+        func codeIn(let loc:Int, let count:Int, let locs:Int) -> Int{
+            var locs1 = locs
+            var loc1 = locs
+            var mechModeType:MechModeType = MechModeType.COPY
+            let mechType = try! mechMode?.check()
+            if(mechType != nil){
+                mechModeType = mechType!
+            }
+            if(mechModeType == MechModeType.COPY){
+                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(2 + ++locs1)")
+                AST.codeArray[loc1++] = buildCommand(.Deref)
+                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(-count)")
+                AST.codeArray[loc1++] = buildCommand(.Store)
+            }
+            guard let newLoc = nextParam?.codeIn(loc1, count: count - 1, locs: locs) else {
+                return loc1
+            }
+            return newLoc
+        }
+        
+        func codeOut(let loc:Int, let count:Int, let locs:Int) -> Int {
+            var locs1 = locs
+            var loc1 = locs
+            var mechModeType:MechModeType = MechModeType.COPY
+            let mechType = try! mechMode?.check()
+            if(mechType != nil){
+                mechModeType = mechType!
+            }
+            if(mechModeType == MechModeType.COPY){
+                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(-count)")
+                AST.codeArray[loc1++] = buildCommand(.Deref)
+                AST.codeArray[loc1++] = buildCommand(.LoadAddrRel, param: "\(2 + ++locs1)")
+                AST.codeArray[loc1++] = buildCommand(.Store)
+            }
+            guard let newLoc = nextParam?.codeOut(loc1, count: count - 1, locs: locs) else {
+                return loc1
+            }
+            return newLoc
+        }
+        
 	}
 
     class TypeDeclaration: Declaration {
