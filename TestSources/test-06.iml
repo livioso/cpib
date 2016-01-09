@@ -1,0 +1,12 @@
+program main
+global
+    const professor: record ( id:int64, level:int64 )
+
+do
+    professor.id init := 1007;
+    professor.level init := 19;
+
+    debugout professor.id;
+    debugout professor.level
+
+endprogram

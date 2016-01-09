@@ -3,7 +3,6 @@ xcshareddata
 bin/
 out/
 .idea/
-*.iml
 
 # Xcode
 #

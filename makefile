@@ -52,6 +52,27 @@ run_test_example_4:
 	@cd ./bin/vm/; \
 		cat ../intermediate/test-04.intermediate | java Machine
 
+run_test_example_5:
+	@echo " -> Compiling example 5..."
+	./bin/compiler/iml_compiler ./TestSources/test-05.iml ./bin/intermediate/test-05.intermediate
+	@echo " -> Running example 5 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-05.intermediate | java Machine
+
+run_test_example_6_should_fail:
+	@echo " -> Compiling example 6 (error)..."
+	./bin/compiler/iml_compiler ./TestSources/test-06-error.iml ./bin/intermediate/test-06-error.intermediate
+	@echo " -> Running example 6 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-06-error.intermediate | java Machine
+
+run_test_example_6:
+	@echo " -> Compiling example 6..."
+	./bin/compiler/iml_compiler ./TestSources/test-06.iml ./bin/intermediate/test-06.intermediate
+	@echo " -> Running example 6 on virtual machine..."
+	@cd ./bin/vm/; \
+		cat ../intermediate/test-06.intermediate | java Machine
+
 run_test_virtualmachine:
 	@cp ./TestSources/*.intermediate ./bin/intermediate/
 	@cd ./bin/vm/; \
