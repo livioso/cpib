@@ -994,6 +994,7 @@ class AST {
 			
             let store = AST.scope!.storeTable[checkResult.ident]!
             let mechTest = try!  mechMode?.check()
+            
             if(store.type == ValueType.RECORD) {
                 let record:Record
                 if(AST.scope != nil){
@@ -1002,33 +1003,28 @@ class AST {
                     record = AST.globalRecordTable[store.ident]!
                 }
                 for (ident, field) in record.recordFields {
-                    if(mechTest != nil && mechTest == MechModeType.REF){
-                        field.adress = -paramSize
-                        print("setAdress: \(ident), adress: \(field.adress)")
+                    field.adress = -paramSize
+                    print("setAdress: \(ident), adress: \(field.adress)")
+                    field.relative = true
+                    if (mechTest != nil && mechTest == MechModeType.REF) {
                         field.reference = true
-                        field.relative = true
                     } else {
-                        field.adress = 2 + ++loc1
-                        //field.adress = -paramSize
-                        print("setAdress: \(ident), adress: \(field.adress)")
-                        field.relative = true
+                        field.reference = false
                     }
                     paramSize -= 1
                 }
             } else {
-                if(mechTest != nil && mechTest == MechModeType.REF){
-                    store.adress = -paramSize
-                    print("setAdress: \(store.ident), adress: \(store.adress)")
+                store.adress = -paramSize
+                print("setAdress: \(store.ident), adress: \(store.adress)")
+                store.relative = true
+                if (mechTest != nil && mechTest == MechModeType.REF) {
                     store.reference = true
-                    store.relative = true
                 } else {
-                    store.adress = 2 + ++loc1
-                    //store.adress = -paramSize
-                    print("setAdress: \(store.ident), adress: \(store.adress)")
-                    store.relative = true
+                    store.reference = false
                 }
                 paramSize -= 1
             }
+        
             guard let newLoc = nextParam?.calculateAdress(paramSize, loc: loc1) else {
                 return loc1
             }
