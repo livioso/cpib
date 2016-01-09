@@ -8,7 +8,7 @@ func main() {
 	
 	
 	// get rid of this when done ;-)
-	let iAmRaphi = true
+	/*let iAmRaphi = true
 	var debugSourcePath = ""
 	var debugOutputPath = ""
 	
@@ -24,7 +24,7 @@ func main() {
 		debugOutputPath = "/tmp/out.intermediate"
 		arguments.append(debugSourcePath)
 		arguments.append(debugOutputPath)
-	}
+	}*/
 	
 
 	if let outputPath = arguments.popLast() {
