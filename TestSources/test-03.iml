@@ -1,30 +1,30 @@
 program main
 global
-    var position: record ( var x:int32, const y:int32 ) ;
-    professor: record ( id:int32, level:int32 ) ;
+    var position2D: record ( var x:int32, const y:int32 ) ;
+    var position3D: record ( var x:int32, const y:int32, z:int32 ) ;
 
-    offsetInY:int32;
+    distance:int32;
 
-    proc manhattenDistance (
-      ref const q: record ( x:int32, y:int32 ) ,
-      copy const x:int32,
-      copy const y:int32
+    proc marshallDistance (
+      ref const pointOne: record ( x:int32, y:int32 ) ,
+      ref const pointTwo: record ( x:int32, y:int32, z:int32 ) ,
+      ref var result:int32
     )
     do
-      q.x := x * y + q.x * q.y
+      result := ( pointOne.x - pointTwo.x ) * ( pointOne.y - pointTwo.y )
     endproc
 
 do
-    position.x init := 4;
-    position.y init := 5;
+    position2D.x init := 4;
+    position2D.y init := 5;
 
-    professor.id init := 1007;
-    professor.level init := 19;
+    distance init := 2;
 
-    position.x := 42;
+    position3D.x init := 42;
+    position3D.y init := 40;
+    position3D.z init := 13;
 
-    call manhattenDistance ( position, 5, 4 ) ;
-    debugout position.x;
-    debugout position.y
+    call marshallDistance ( position2D, position3D, distance ) ;
+    debugout distance
 
 endprogram

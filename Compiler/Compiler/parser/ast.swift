@@ -522,7 +522,8 @@ class AST {
             if let newLoc = lhs?.codeReference(loc) {
                 loc1 = newLoc
             } else {
-                loc1 = try! leftHandExpression.code(loc)
+                let l = leftHandExpression as! StoreExpr
+                loc1 = l.codeReference(loc)
             }
             if let newLoc = rhs?.codeReference(loc1) {
                 
