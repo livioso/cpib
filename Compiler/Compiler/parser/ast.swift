@@ -1037,7 +1037,7 @@ class AST {
         
         func codeIn(let loc:Int, let count:Int, let locs:Int) -> Int{
             var locs1 = locs
-            var loc1 = locs
+            var loc1 = loc
             var mechModeType:MechModeType = MechModeType.COPY
             let mechType = try! mechMode?.check()
             if(mechType != nil){
@@ -1057,7 +1057,7 @@ class AST {
         
         func codeOut(let loc:Int, let count:Int, let locs:Int) -> Int {
             var locs1 = locs
-            var loc1 = locs
+            var loc1 = loc
             var mechModeType:MechModeType = MechModeType.COPY
             let mechType = try! mechMode?.check()
             if(mechType != nil){
