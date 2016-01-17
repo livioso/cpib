@@ -12,11 +12,24 @@ global
     )
     do
       result := ( pointOne.x - pointTwo.x ) * ( pointOne.y - pointTwo.y )
+    endproc;
+
+    proc increment ( 
+      ref var point: record ( x:int32, y:int32 ) 
+    )
+    do
+      point.x := point.x + 1;
+      point.y := point.y + 1
     endproc
 
 do
-    position2D.x init := 4;
-    position2D.y init := 5;
+    position2D.x init := 3;
+    position2D.y init := 4;
+
+    call increment ( position2D ) ;
+
+    debugout position2D.x;
+    debugout position2D.y;
 
     distance init := 2;
 
